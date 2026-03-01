@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../../test/utils';
 import { WishlistChips } from '../WishlistChips';
 import { makeEnrichedHolding } from '../../../test/fixtures';
 
 describe('WishlistChips', () => {
   it('renders nothing when the holdings list is empty', () => {
-    const { container } = render(<WishlistChips holdings={[]} />);
-    expect(container.firstChild).toBeNull();
+    render(<WishlistChips holdings={[]} />);
+    expect(screen.queryByText('Watchlist')).toBeNull();
   });
 
   it('renders a chip for each holding', () => {

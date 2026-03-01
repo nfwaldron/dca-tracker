@@ -15,7 +15,7 @@ function holdingToRow(h: Holding, userId: string) {
     category: h.category,
     positions: h.positions,
     ath: h.ath,
-    double_down: h.doubleDown,
+    double_down: h.doubleDown ?? false,
   };
 }
 
@@ -28,7 +28,7 @@ function rowToHolding(r: Record<string, unknown>): Holding {
     category: r.category as 'core' | 'extra' | 'wishlist',
     positions: r.positions as Holding['positions'],
     ath: r.ath as number | null,
-    doubleDown: r.double_down as boolean,
+    doubleDown: (r.double_down ?? false) as boolean,
   };
 }
 

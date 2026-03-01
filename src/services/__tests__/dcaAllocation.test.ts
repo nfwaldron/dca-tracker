@@ -179,10 +179,10 @@ describe('affordability', () => {
   it('marks canFullyCover true when doubleDownBudget covers all double-downs', () => {
     const holdings = [makeHolding({ id: 'A', ticker: 'A', category: 'core', doubleDown: true })];
     const priceMap = { A: makePriceRow({ price: 40, ma200: 55 }) };
-    // $100 budget / 1 slot / 10 days = $10/day needed per active stock per period = $100
+    // $100 budget / 1 slot / 10 days = $10/day → extraNeeded = $100; budget $200 covers it
     const result = computeDcaAllocation(holdings, [], priceMap, 100, 200, BI_WEEKLY_DAYS);
     expect(result.canFullyCover).toBe(true);
-    expect(result.shortfall).toBeLessThan(0); // over-funded
+    expect(result.shortfall).toBe(0); // shortfall is floored at 0 even when over-funded
   });
 
   it('marks canFullyCover false when doubleDownBudget is insufficient', () => {
@@ -194,9 +194,11 @@ describe('affordability', () => {
     expect(result.shortfall).toBeGreaterThan(0);
   });
 
-  it('returns actualPerStock of 0 when no active double-down stocks', () => {
+  it('returns extraNeededPeriod of 0 and coverageRatio of 1 when no stocks opted in', () => {
+    // coreHoldings uses makeHolding defaults: doubleDown = false
     const result = computeDcaAllocation(coreHoldings('A'), [], prices('A'), 100, 50, BI_WEEKLY_DAYS);
-    expect(result.actualPerStock).toBe(0);
+    expect(result.extraNeededPeriod).toBe(0);
+    expect(result.coverageRatio).toBe(1); // no extra needed → fully covered by convention
   });
 
   it('caps actualExtraTotal at extraNeededPeriod even if budget exceeds it', () => {
@@ -204,5 +206,35 @@ describe('affordability', () => {
     const priceMap = { A: makePriceRow({ price: 40, ma200: 55 }) };
     const result = computeDcaAllocation(holdings, [], priceMap, 100, 9999, BI_WEEKLY_DAYS);
     expect(result.actualExtraTotal).toBe(result.extraNeededPeriod);
+  });
+
+  it('coverageRatio is proportional when budget is partial', () => {
+    const holdings = [makeHolding({ id: 'A', ticker: 'A', category: 'core', doubleDown: true })];
+    const priceMap = { A: makePriceRow({ price: 40, ma200: 55 }) };
+    // extraNeeded = $100, budget = $50 → coverageRatio = 0.5
+    const result = computeDcaAllocation(holdings, [], priceMap, 100, 50, BI_WEEKLY_DAYS);
+    expect(result.coverageRatio).toBeCloseTo(0.5);
+  });
+
+  it('bucketed stock gets a proportionally smaller base daily than a solo stock', () => {
+    // A is solo (1 slot → $10/day); B+C share a bucket (1 slot → $5/day each)
+    const holdings = [
+      makeHolding({ id: 'A', ticker: 'A', category: 'core', doubleDown: false }),
+      makeHolding({ id: 'B', ticker: 'B', category: 'core', doubleDown: true }),
+      makeHolding({ id: 'C', ticker: 'C', category: 'core', doubleDown: false }),
+    ];
+    const bucket = makeBucket({ id: 'b1', tickers: ['B', 'C'] });
+    const priceMapAll = {
+      A: makePriceRow({ price: 40, ma200: 55 }),
+      B: makePriceRow({ price: 40, ma200: 55 }),
+      C: makePriceRow({ price: 40, ma200: 55 }),
+    };
+    // $200 / 2 slots / 10 days = $10/slot/day; B is bucketed → $5/day base
+    const result = computeDcaAllocation(holdings, [bucket], priceMapAll, 200, 200, BI_WEEKLY_DAYS);
+    const bEnriched = result.allCore.find(h => h.ticker === 'B')!;
+    const aEnriched = result.allCore.find(h => h.ticker === 'A')!;
+    expect(bEnriched.baseDaily).toBeCloseTo(aEnriched.baseDaily / 2);
+    // B is opted-in and triggered → extraDaily equals its base (coverageRatio 1)
+    expect(bEnriched.extraDaily).toBeCloseTo(bEnriched.baseDaily);
   });
 });

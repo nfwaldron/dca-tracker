@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../../test/utils';
 import userEvent from '@testing-library/user-event';
 import { EditRow, holdingToEdit, editToHolding, BLANK_EDIT } from '../EditRow';
 import { makeHolding } from '../../../test/fixtures';
@@ -24,7 +24,7 @@ describe('holdingToEdit', () => {
     const h = makeHolding({ positions: [] });
     const result = holdingToEdit(h);
     expect(result.positions).toHaveLength(1);
-    expect(result.positions[0]).toEqual({ broker: '', shares: '0', avgCost: '0' });
+    expect(result.positions[0]).toEqual({ broker: '', shares: '', avgCost: '' });
   });
 
   it('sets athStr to empty string when ath is null', () => {
@@ -143,8 +143,8 @@ describe('EditRow', () => {
     renderInTable(
       <EditRow isNew={false} colSpan={10} init={holdingToEdit(h)} onSave={vi.fn()} onCancel={vi.fn()} />,
     );
-    const before = screen.getAllByPlaceholderText('Broker name').length;
+    const before = screen.getAllByPlaceholderText('e.g. Fidelity').length;
     await user.click(screen.getByRole('button', { name: /add broker/i }));
-    expect(screen.getAllByPlaceholderText('Broker name')).toHaveLength(before + 1);
+    expect(screen.getAllByPlaceholderText('e.g. Fidelity')).toHaveLength(before + 1);
   });
 });

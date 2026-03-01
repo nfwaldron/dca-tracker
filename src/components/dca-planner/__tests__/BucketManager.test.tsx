@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within, waitFor } from '../../../test/utils';
 import userEvent from '@testing-library/user-event';
 import { BucketManager } from '../BucketManager';
 import { makeHolding, makeEnrichedHolding, makeBucket } from '../../../test/fixtures';
@@ -37,7 +37,7 @@ function renderBucketManager(
 
 describe('BucketManager', () => {
   it('returns null when there are no core holdings', () => {
-    const { container } = render(
+    render(
       <BucketManager
         buckets={[]}
         coreHoldings={[]}
@@ -47,7 +47,7 @@ describe('BucketManager', () => {
         dispatch={vi.fn()}
       />,
     );
-    expect(container.firstChild).toBeNull();
+    expect(screen.queryByText('DCA Buckets')).toBeNull();
   });
 
   it('shows the "DCA Buckets" section heading', () => {
@@ -75,13 +75,14 @@ describe('BucketManager', () => {
       const user = userEvent.setup();
       renderBucketManager();
       await user.click(screen.getByRole('button', { name: /add bucket/i }));
-      expect(screen.getByText('New Bucket')).toBeInTheDocument();
+      expect(await screen.findByText('New Bucket')).toBeInTheDocument();
     });
 
     it('shows all core tickers as selectable chips', async () => {
       const user = userEvent.setup();
       renderBucketManager();
       await user.click(screen.getByRole('button', { name: /add bucket/i }));
+      await screen.findByText('New Bucket'); // wait for modal
       expect(screen.getByText('AMZN')).toBeInTheDocument();
       expect(screen.getByText('NVDA')).toBeInTheDocument();
       expect(screen.getByText('PLTR')).toBeInTheDocument();
@@ -91,6 +92,7 @@ describe('BucketManager', () => {
       const user = userEvent.setup();
       renderBucketManager();
       await user.click(screen.getByRole('button', { name: /add bucket/i }));
+      await screen.findByText('New Bucket'); // wait for modal
       await user.click(screen.getByRole('button', { name: /save bucket/i }));
       expect(screen.getByText(/bucket name is required/i)).toBeInTheDocument();
     });
@@ -99,6 +101,7 @@ describe('BucketManager', () => {
       const user = userEvent.setup();
       renderBucketManager();
       await user.click(screen.getByRole('button', { name: /add bucket/i }));
+      await screen.findByText('New Bucket'); // wait for modal
       await user.type(screen.getByPlaceholderText(/cybersecurity pair/i), 'My Bucket');
       // Select only 1 ticker
       await user.click(screen.getByText('AMZN'));
@@ -120,6 +123,7 @@ describe('BucketManager', () => {
         />,
       );
       await user.click(screen.getByRole('button', { name: /add bucket/i }));
+      await screen.findByText('New Bucket'); // wait for modal
       await user.type(screen.getByPlaceholderText(/cybersecurity pair/i), 'Cloud Pair');
       await user.click(screen.getByText('AMZN'));
       await user.click(screen.getByText('NVDA'));
@@ -136,8 +140,9 @@ describe('BucketManager', () => {
       const user = userEvent.setup();
       renderBucketManager();
       await user.click(screen.getByRole('button', { name: /add bucket/i }));
+      await screen.findByText('New Bucket'); // wait for modal
       await user.click(screen.getByRole('button', { name: /cancel/i }));
-      expect(screen.queryByText('New Bucket')).toBeNull();
+      await waitFor(() => expect(screen.queryByText('New Bucket')).toBeNull());
     });
   });
 
@@ -145,7 +150,6 @@ describe('BucketManager', () => {
 
   describe('delete', () => {
     it('dispatches DELETE_BUCKET after confirming', async () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
       const user = userEvent.setup();
       const dispatch = vi.fn();
       const buckets = [makeBucket({ id: 'b1', name: 'Cloud Pair', tickers: ['AMZN', 'NVDA'] })];
@@ -160,11 +164,13 @@ describe('BucketManager', () => {
         />,
       );
       await user.click(screen.getByRole('button', { name: /remove/i }));
+      // Mantine confirm modal opens — click the confirm "Remove" button inside it
+      const dialog = await screen.findByRole('dialog');
+      await user.click(within(dialog).getByRole('button', { name: /^remove$/i }));
       expect(dispatch).toHaveBeenCalledWith({ type: 'DELETE_BUCKET', payload: 'b1' });
     });
 
     it('does not dispatch when deletion is cancelled', async () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
       const user = userEvent.setup();
       const dispatch = vi.fn();
       const buckets = [makeBucket({ id: 'b1', name: 'Cloud Pair', tickers: ['AMZN', 'NVDA'] })];
@@ -179,6 +185,8 @@ describe('BucketManager', () => {
         />,
       );
       await user.click(screen.getByRole('button', { name: /remove/i }));
+      const dialog = await screen.findByRole('dialog');
+      await user.click(within(dialog).getByRole('button', { name: /cancel/i }));
       expect(dispatch).not.toHaveBeenCalled();
     });
   });

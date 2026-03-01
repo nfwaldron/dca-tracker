@@ -258,4 +258,26 @@ describe('enrich', () => {
       expect(result.dailyChange).toBe(0);
     });
   });
+
+  describe('sector', () => {
+    it('passes sector from the price row through to the enriched holding', () => {
+      const holding = makeHolding();
+      const prices = { TEST: makePriceRow({ sector: 'Technology' }) };
+      const result = enrichHolding(holding, prices, 0, 0);
+      expect(result.sector).toBe('Technology');
+    });
+
+    it('returns undefined sector when the price row has no sector', () => {
+      const holding = makeHolding();
+      const prices = { TEST: makePriceRow({ sector: undefined }) };
+      const result = enrichHolding(holding, prices, 0, 0);
+      expect(result.sector).toBeUndefined();
+    });
+
+    it('returns undefined sector when ticker is not in the prices map', () => {
+      const holding = makeHolding();
+      const result = enrichHolding(holding, {}, 0, 0);
+      expect(result.sector).toBeUndefined();
+    });
+  });
 });

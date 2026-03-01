@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '../../../test/utils';
 import userEvent from '@testing-library/user-event';
 import { HoldingsTable } from '../HoldingsTable';
 import { makeHolding } from '../../../test/fixtures';
@@ -32,27 +32,30 @@ describe('HoldingsTable', () => {
     const user = userEvent.setup();
     render(<HoldingsTable holdings={[]} dispatch={dispatch} />);
     await user.click(screen.getByRole('button', { name: /add holding/i }));
-    expect(screen.getByPlaceholderText('TICKER')).toBeInTheDocument();
+    expect(await screen.findByPlaceholderText('TICKER')).toBeInTheDocument();
   });
 
   it('dispatches DELETE_HOLDING after confirming deletion', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     const user = userEvent.setup();
     const holdings = [makeHolding({ id: 'AMZN', ticker: 'AMZN' })];
     render(<HoldingsTable holdings={holdings} dispatch={dispatch} />);
     // Buttons in order: [Add Holding, Chevron, Edit, Trash]
     const allBtns = screen.getAllByRole('button');
     await user.click(allBtns.at(-1)!); // last = trash
+    // Mantine confirm modal opens — click the "Delete" confirm button
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: /delete/i }));
     expect(dispatch).toHaveBeenCalledWith({ type: 'DELETE_HOLDING', payload: 'AMZN' });
   });
 
   it('does not dispatch DELETE_HOLDING when confirmation is cancelled', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
     const user = userEvent.setup();
     const holdings = [makeHolding({ id: 'AMZN', ticker: 'AMZN' })];
     render(<HoldingsTable holdings={holdings} dispatch={dispatch} />);
     const allBtns = screen.getAllByRole('button');
     await user.click(allBtns[allBtns.length - 1]);
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: /cancel/i }));
     expect(dispatch).not.toHaveBeenCalled();
   });
 
@@ -66,7 +69,6 @@ describe('HoldingsTable', () => {
       ],
     });
     render(<HoldingsTable holdings={[h]} dispatch={dispatch} />);
-    // Chevron has title "Show broker breakdown"; "Add Holding" button has no title
     const chevron = screen.getByTitle('Show broker breakdown');
     await user.click(chevron);
     expect(screen.getByText('Robinhood')).toBeInTheDocument();
