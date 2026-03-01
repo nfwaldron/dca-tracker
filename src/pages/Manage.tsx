@@ -15,7 +15,7 @@ import { PriceTable } from '../components/manage/PriceTable';
 import { RolesManager } from '../components/manage/RolesManager';
 import { TabContent, SectionTitle, SectionDesc } from '../components/ui/Layout';
 import { InfoTip } from '../components/ui/InfoTip';
-import { BsDownload, BsUpload } from 'react-icons/bs';
+import { BsDownload, BsUpload, BsLayoutTextWindow, BsTrash } from 'react-icons/bs';
 import type { PayFrequency, DisplayPeriod } from '../types';
 
 const PAY_OPTIONS: { value: PayFrequency; label: string }[] = [
@@ -85,6 +85,54 @@ export default function Manage() {
     e.target.value = '';
   }
 
+  function loadTemplate() {
+    fetch('/template.json')
+      .then(r => r.json())
+      .then(data => {
+        const total = (data.holdings as { ticker?: string }[]).length;
+        const preview = (data.holdings as { ticker?: string }[]).slice(0, 5).map(h => h.ticker ?? '?').join(', ');
+        modals.openConfirmModal({
+          title: 'Load example portfolio?',
+          children: (
+            <Stack gap="sm">
+              <Text size="sm">
+                This will <strong>replace ALL</strong> your current holdings, prices, and settings with the example portfolio.
+                Positions are empty — just the tickers, roles, and categories to get you started.
+              </Text>
+              <Text size="xs" c="dimmed">
+                {preview}{total > 5 ? ` … and ${total - 5} more` : ''} ({total} holdings)
+              </Text>
+            </Stack>
+          ),
+          labels: { confirm: 'Load Example', cancel: 'Cancel' },
+          confirmProps: { color: 'blue' },
+          onConfirm: () => {
+            dispatch({ type: 'LOAD_SNAPSHOT', payload: data });
+            notifications.show({ color: 'green', title: 'Example loaded', message: 'Add your own positions to get started.', autoClose: 4000 });
+          },
+        });
+      })
+      .catch(() => notifications.show({ color: 'red', message: 'Could not load example portfolio.' }));
+  }
+
+  function clearAllHoldings() {
+    modals.openConfirmModal({
+      title: 'Clear all holdings?',
+      children: (
+        <Text size="sm">
+          This will permanently delete all {state.holdings.length} holding{state.holdings.length !== 1 ? 's' : ''}.
+          Your settings and roles will be kept. This cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: 'Delete All', cancel: 'Cancel' },
+      confirmProps: { color: 'red' },
+      onConfirm: () => {
+        dispatch({ type: 'LOAD_SNAPSHOT', payload: { ...state, holdings: [], buckets: [] } });
+        notifications.show({ color: 'green', title: 'Cleared', message: 'All holdings deleted. Ready for a fresh start.', autoClose: 3000 });
+      },
+    });
+  }
+
   function toggleDisplayPeriod(period: DisplayPeriod) {
     const current = state.displayPeriods;
     const next = current.includes(period)
@@ -97,7 +145,7 @@ export default function Manage() {
 
   return (
     <TabContent>
-      <Group mb="md" gap="sm">
+      <Group mb="md" gap="sm" wrap="wrap">
         <Button
           variant="default"
           size="sm"
@@ -115,6 +163,26 @@ export default function Manage() {
           title="Restore from a previously exported file — WARNING: replaces ALL current data"
         >
           Import JSON
+        </Button>
+        <Button
+          variant="default"
+          size="sm"
+          leftSection={<BsLayoutTextWindow />}
+          onClick={loadTemplate}
+          title="Load a pre-built example portfolio to explore the app — positions are empty, just tickers and roles"
+        >
+          Load Example Portfolio
+        </Button>
+        <Button
+          variant="subtle"
+          color="red"
+          size="sm"
+          leftSection={<BsTrash />}
+          onClick={clearAllHoldings}
+          disabled={state.holdings.length === 0}
+          title="Delete all holdings and start fresh — settings and roles are kept"
+        >
+          Clear All Holdings
         </Button>
         <input ref={fileRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
       </Group>

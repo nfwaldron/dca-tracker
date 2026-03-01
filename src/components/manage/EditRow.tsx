@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Group, Stack, SimpleGrid, Text, Checkbox, ActionIcon, Alert } from '@mantine/core';
+import { Group, Stack, SimpleGrid, Text, Checkbox, ActionIcon, Alert, Input, Loader } from '@mantine/core';
 import { BsTrash, BsPlus } from 'react-icons/bs';
 import { InfoTip } from '../ui/InfoTip';
 import { InputCell, SelectCell } from '../ui/Input';
 import { BtnPrimary, BtnGhost } from '../ui/Button';
+import { fetchCompanyName } from '../../api/yahooFinance';
 import type { Holding, BrokerPosition } from '../../types';
 
 type PositionDraft = { broker: string; shares: string; avgCost: string };
@@ -86,6 +87,15 @@ export function EditRow({
 }) {
   const [form, setForm] = useState<EditState>(init);
   const [errors, setErrors] = useState<string[]>([]);
+  const [nameFetching, setNameFetching] = useState(false);
+
+  async function handleTickerBlur() {
+    if (!isNew || !form.ticker.trim() || form.name.trim()) return;
+    setNameFetching(true);
+    const name = await fetchCompanyName(form.ticker);
+    if (name) setField('name', name);
+    setNameFetching(false);
+  }
 
   function validateAndSave() {
     const errs: string[] = [];
@@ -131,6 +141,7 @@ export function EditRow({
               setField('ticker', e.target.value.toUpperCase());
               setField('id', e.target.value.toUpperCase());
             }}
+            onBlur={handleTickerBlur}
           />
         </Stack>
 
@@ -138,10 +149,13 @@ export function EditRow({
           <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
             Name
           </Text>
-          <InputCell
-            placeholder="Company name"
+          <Input
+            size="xs"
+            styles={{ input: { fontSize: '0.83rem' } }}
+            placeholder={nameFetching ? 'Looking up…' : 'Company name'}
             value={form.name}
             onChange={e => setField('name', e.target.value)}
+            rightSection={nameFetching ? <Loader size="xs" /> : undefined}
           />
         </Stack>
 

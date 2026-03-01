@@ -1,5 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Button, Group } from '@mantine/core';
+import { useMemo, useState, useCallback } from 'react';
+import { Button, Group, Modal, TextInput, CopyButton, Stack, Text, ActionIcon } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useAuth } from '@clerk/clerk-react';
+import { BsShareFill, BsClipboard, BsCheck, BsTrash } from 'react-icons/bs';
+import { notifications } from '@mantine/notifications';
 import { useStore } from '../store';
 import { enrichHolding } from '../utils/holding';
 import { formatDollars, formatPercent } from '../utils/format';
@@ -7,6 +11,8 @@ import { SummaryCard } from '../components/SummaryCard';
 import { AllocationPie, PIE_COLORS } from '../components/portfolio/AllocationPie';
 import { HoldingsTable, type Period } from '../components/portfolio/HoldingsTable';
 import { TabContent, CardsGrid, SectionTitle } from '../components/ui/Layout';
+import { makeSupabase } from '../services/supabase';
+import { saveShare, revokeShare } from '../services/db';
 
 const PERIOD_LABELS: Record<Period, string> = {
   daily: 'Today',
@@ -16,7 +22,11 @@ const PERIOD_LABELS: Record<Period, string> = {
 
 export default function Portfolio() {
   const { state } = useStore();
+  const { userId, getToken } = useAuth();
   const [period, setPeriod] = useState<Period>('alltime');
+  const [shareOpened, { open: openShare, close: closeShare }] = useDisclosure(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareLoading, setShareLoading] = useState(false);
 
   const enriched = useMemo(
     () => state.holdings.map(h => enrichHolding(h, state.prices, 0, 0)),
@@ -59,19 +69,61 @@ export default function Portfolio() {
       color: PIE_COLORS[i % PIE_COLORS.length],
     }));
 
+  const handleShare = useCallback(async () => {
+    if (!userId) return;
+    setShareLoading(true);
+    try {
+      const token = await getToken({ template: 'supabase' });
+      const sb = makeSupabase(token);
+      const shareToken = await saveShare(sb, userId, state);
+      const url = `${window.location.origin}${window.location.pathname}?share=${shareToken}`;
+      setShareUrl(url);
+      openShare();
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to generate share link.' });
+    } finally {
+      setShareLoading(false);
+    }
+  }, [userId, getToken, state, openShare]);
+
+  const handleRevoke = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const token = await getToken({ template: 'supabase' });
+      const sb = makeSupabase(token);
+      await revokeShare(sb, userId);
+      setShareUrl(null);
+      closeShare();
+      notifications.show({ color: 'green', message: 'Share link revoked.' });
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to revoke share link.' });
+    }
+  }, [userId, getToken, closeShare]);
+
   return (
     <TabContent>
-      <Group gap="xs" mb="lg">
-        {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
-          <Button
-            key={p}
-            size="xs"
-            variant={period === p ? 'filled' : 'default'}
-            onClick={() => setPeriod(p)}
-          >
-            {PERIOD_LABELS[p]}
-          </Button>
-        ))}
+      <Group justify="space-between" mb="lg">
+        <Group gap="xs">
+          {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
+            <Button
+              key={p}
+              size="xs"
+              variant={period === p ? 'filled' : 'default'}
+              onClick={() => setPeriod(p)}
+            >
+              {PERIOD_LABELS[p]}
+            </Button>
+          ))}
+        </Group>
+        <Button
+          size="xs"
+          variant="default"
+          leftSection={<BsShareFill size={12} />}
+          onClick={handleShare}
+          loading={shareLoading}
+        >
+          Share
+        </Button>
       </Group>
 
       <CardsGrid>
@@ -89,6 +141,52 @@ export default function Portfolio() {
 
       <SectionTitle>Holdings</SectionTitle>
       <HoldingsTable holdings={active} totalValue={totalValue} period={period} />
+
+      {/* Share modal */}
+      <Modal
+        opened={shareOpened}
+        onClose={closeShare}
+        title="Share Portfolio"
+        size="md"
+      >
+        <Stack gap="md">
+          <Text size="sm" c="dimmed">
+            Anyone with this link can view a read-only snapshot of your portfolio as it is right now.
+            The snapshot will not update automatically — generate a new link to share fresh data.
+          </Text>
+          {shareUrl && (
+            <CopyButton value={shareUrl}>
+              {({ copied, copy }) => (
+                <TextInput
+                  value={shareUrl}
+                  readOnly
+                  rightSection={
+                    <ActionIcon variant="subtle" color={copied ? 'green' : 'gray'} onClick={copy}>
+                      {copied ? <BsCheck /> : <BsClipboard />}
+                    </ActionIcon>
+                  }
+                  rightSectionWidth={36}
+                  styles={{ input: { fontFamily: 'monospace', fontSize: '0.75rem' } }}
+                />
+              )}
+            </CopyButton>
+          )}
+          <Group justify="flex-end">
+            <Button
+              size="xs"
+              variant="subtle"
+              color="red"
+              leftSection={<BsTrash size={12} />}
+              onClick={handleRevoke}
+            >
+              Revoke Link
+            </Button>
+            <Button size="xs" variant="default" onClick={closeShare}>
+              Close
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </TabContent>
   );
 }

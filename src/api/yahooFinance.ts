@@ -10,6 +10,24 @@ export interface QuoteResult {
 }
 
 /**
+ * Fetch the company name for a single ticker from the Yahoo Finance proxy.
+ * Returns null if the ticker is not found or the request fails.
+ */
+export async function fetchCompanyName(ticker: string): Promise<string | null> {
+  const t = ticker.trim().toUpperCase();
+  if (!t) return null;
+  try {
+    const res = await fetch(`/api/yahoo-quote?symbols=${encodeURIComponent(t)}`);
+    if (!res.ok) return null;
+    const raw: unknown[] = await res.json();
+    const item = raw[0] as Record<string, unknown> | undefined;
+    return (item?.longName as string) ?? (item?.shortName as string) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Fetch live quotes for the given tickers from the Yahoo Finance proxy.
  * Pure function — no side effects, no store coupling.
  */

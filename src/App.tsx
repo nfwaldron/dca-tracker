@@ -21,10 +21,17 @@ import Portfolio from './pages/Portfolio';
 import Manage from './pages/Manage';
 import StrategyGuide from './pages/StrategyGuide';
 import { GlossaryModal } from './components/ui/GlossaryModal';
+import { ShareView } from './pages/ShareView';
+
+// Read once — share token is stable for the lifetime of the page load
+const SHARE_TOKEN = new URLSearchParams(window.location.search).get('share');
 
 type Tab = 'planner' | 'portfolio' | 'manage' | 'guide';
 
 export default function App() {
+  // If a share token is present, render the public share view instead of the full app
+  if (SHARE_TOKEN) return <ShareView token={SHARE_TOKEN} />;
+
   const { state, dispatch, loaded } = useStore();
   const [activeTab, setActiveTab] = useState<Tab>('planner');
   const [glossaryOpened, { open: openGlossary, close: closeGlossary }] = useDisclosure(false);

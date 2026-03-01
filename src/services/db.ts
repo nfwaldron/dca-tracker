@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { DBState, Holding, PriceRow, DcaBucket } from '../types';
 import { SEED_PRICES, SEED_HOLDINGS, SEED_ROLES } from '../seed';
+import { makeSupabase } from './supabase';
 
 // ── Row mappers ──────────────────────────────────────────────────────────────
 
@@ -142,4 +143,43 @@ export async function savePortfolio(
   } else {
     await sb.from('buckets').delete().eq('user_id', userId);
   }
+}
+
+// ── Share links ───────────────────────────────────────────────────────────────
+
+/**
+ * Save a portfolio snapshot to Supabase and return a shareable token.
+ * Each user has at most one active share (upsert on user_id).
+ */
+export async function saveShare(
+  sb: SupabaseClient,
+  userId: string,
+  state: DBState,
+): Promise<string> {
+  const token = crypto.randomUUID();
+  await sb.from('shares').upsert(
+    { token, user_id: userId, snapshot: state },
+    { onConflict: 'user_id' },
+  );
+  return token;
+}
+
+/** Delete the user's active share link. */
+export async function revokeShare(sb: SupabaseClient, userId: string): Promise<void> {
+  await sb.from('shares').delete().eq('user_id', userId);
+}
+
+/**
+ * Load a shared portfolio snapshot by token (no auth required).
+ * Returns null if the token does not exist.
+ */
+export async function loadShare(token: string): Promise<{ snapshot: DBState; createdAt: string } | null> {
+  const sb = makeSupabase(null);
+  const { data, error } = await sb
+    .from('shares')
+    .select('snapshot, created_at')
+    .eq('token', token)
+    .maybeSingle();
+  if (error || !data) return null;
+  return { snapshot: data.snapshot as DBState, createdAt: data.created_at as string };
 }
