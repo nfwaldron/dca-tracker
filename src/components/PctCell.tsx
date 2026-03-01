@@ -1,5 +1,5 @@
 import { Td } from './ui/Table';
-import { fmtPct } from '../selectors';
+import { formatPercent } from '../utils/format';
 
 export function PctCell({ value }: { value: number | null }) {
   if (value === null)
@@ -10,7 +10,7 @@ export function PctCell({ value }: { value: number | null }) {
     );
   return (
     <Td $num style={{ color: value >= 0 ? 'var(--green)' : 'var(--red)' }}>
-      {fmtPct(value)}
+      {formatPercent(value)}
     </Td>
   );
 }

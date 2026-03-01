@@ -193,7 +193,7 @@ export default function Manage() {
             <strong>wishlist</strong> = not yet owned, tracked but excluded from allocation math.
             Click the chevron on any row to see per-broker positions.
           </SectionDesc>
-          <HoldingsTable holdings={state.holdings} dispatch={dispatch} roles={state.roles} />
+          <HoldingsTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} roles={state.roles} />
         </Tabs.Panel>
 
         <Tabs.Panel value="prices">

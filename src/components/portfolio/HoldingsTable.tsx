@@ -1,4 +1,4 @@
-import { fmt$, fmtPct, fmtShares } from '../../selectors';
+import { formatDollars, formatPercent, formatShares } from '../../utils/format';
 import { InfoTip } from '../ui/InfoTip';
 import { CAT_HEX } from '../../constants/categories';
 import {
@@ -98,13 +98,13 @@ export function HoldingsTable({
                 <Td>
                   <CategoryBadge $hex={CAT_HEX[h.category]}>{h.category}</CategoryBadge>
                 </Td>
-                <Td $num>{fmtShares(h.totalShares)}</Td>
-                <Td $num>{h.weightedAvg > 0 ? fmt$(h.weightedAvg) : '—'}</Td>
-                <Td $num>{h.price > 0 ? fmt$(h.price) : <Muted>—</Muted>}</Td>
+                <Td $num>{formatShares(h.totalShares)}</Td>
+                <Td $num>{h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'}</Td>
+                <Td $num>{h.price > 0 ? formatDollars(h.price) : <Muted>—</Muted>}</Td>
                 <Td $num>
                   {h.h52 > 0 ? (
                     <>
-                      {fmt$(h.h52)}
+                      {formatDollars(h.h52)}
                       {h.price > 0 &&
                         (() => {
                           const pct = ((h.price - h.h52) / h.h52) * 100;
@@ -127,14 +127,14 @@ export function HoldingsTable({
                   )}
                 </Td>
                 <Td $num $bold>
-                  {h.mktVal > 0 ? fmt$(h.mktVal) : <Muted>—</Muted>}
+                  {h.mktVal > 0 ? formatDollars(h.mktVal) : <Muted>—</Muted>}
                 </Td>
-                <Td $num>{fmt$(h.costBasis)}</Td>
+                <Td $num>{formatDollars(h.costBasis)}</Td>
                 <Td $num $bold style={{ color: h.price > 0 ? glColor : undefined }}>
-                  {h.price > 0 ? fmt$(gl.dollar) : <Muted>—</Muted>}
+                  {h.price > 0 ? formatDollars(gl.dollar) : <Muted>—</Muted>}
                 </Td>
                 <Td $num style={{ color: h.price > 0 ? glColor : undefined }}>
-                  {h.price > 0 ? fmtPct(gl.pct) : <Muted>—</Muted>}
+                  {h.price > 0 ? formatPercent(gl.pct) : <Muted>—</Muted>}
                 </Td>
                 <Td $num $muted>
                   {h.mktVal > 0 ? alloc.toFixed(1) + '%' : '—'}
@@ -149,11 +149,11 @@ export function HoldingsTable({
               <strong>Total</strong>
             </TotalTd>
             <TotalTd $num $bold>
-              {fmt$(totalValue)}
+              {formatDollars(totalValue)}
             </TotalTd>
-            <TotalTd $num>{fmt$(holdings.reduce((s, h) => s + h.costBasis, 0))}</TotalTd>
+            <TotalTd $num>{formatDollars(holdings.reduce((s, h) => s + h.costBasis, 0))}</TotalTd>
             <TotalTd $num $bold style={{ color: totalGL >= 0 ? 'var(--green)' : 'var(--red)' }}>
-              {fmt$(totalGL)}
+              {formatDollars(totalGL)}
             </TotalTd>
             <TotalTd colSpan={2} />
           </tr>

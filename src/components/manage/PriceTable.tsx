@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Dispatch } from 'react';
 import { IconEdit, IconSave, IconX } from '../icons';
 import { InfoTip } from '../ui/InfoTip';
-import { fmt$ } from '../../selectors';
+import { formatDollars } from '../../utils/format';
 import { CAT_ORDER } from '../../constants/categories';
 import { TableWrap, DataTable, Th, Td, TbodyRow, TickerMain } from '../ui/Table';
 import { BtnGhost, BtnPrimary } from '../ui/Button';
@@ -146,9 +146,9 @@ export function PriceTable({
                       </>
                     ) : (
                       <>
-                        <Td $num>{row.price > 0 ? fmt$(row.price) : <Muted>—</Muted>}</Td>
-                        <Td $num>{row.ma200 > 0 ? fmt$(row.ma200) : <Muted>—</Muted>}</Td>
-                        <Td $num>{row.h52 > 0 ? fmt$(row.h52) : <Muted>—</Muted>}</Td>
+                        <Td $num>{row.price > 0 ? formatDollars(row.price) : <Muted>—</Muted>}</Td>
+                        <Td $num>{row.ma200 > 0 ? formatDollars(row.ma200) : <Muted>—</Muted>}</Td>
+                        <Td $num>{row.h52 > 0 ? formatDollars(row.h52) : <Muted>—</Muted>}</Td>
                         <Td>
                           <BtnGhost $sm onClick={() => startEdit(h.ticker)} {...{ leftSection: <IconEdit /> }}>
                             Edit

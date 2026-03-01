@@ -33,7 +33,7 @@ export function holdingToEdit(h: Holding): EditState {
             shares: String(p.shares),
             avgCost: String(p.avgCost),
           }))
-        : [{ broker: '', shares: '0', avgCost: '0' }],
+        : [{ broker: '', shares: '', avgCost: '' }],
     athStr: h.ath !== null ? String(h.ath) : '',
     doubleDown: h.doubleDown,
   };
@@ -65,7 +65,7 @@ export const BLANK_EDIT: EditState = {
   name: '',
   role: '',
   category: 'core',
-  positions: [{ broker: '', shares: '0', avgCost: '0' }],
+  positions: [{ broker: '', shares: '', avgCost: '' }],
   athStr: '',
   doubleDown: false,
 };
@@ -108,7 +108,7 @@ export function EditRow({
   const addPosition = () =>
     setForm(f => ({
       ...f,
-      positions: [...f.positions, { broker: '', shares: '0', avgCost: '0' }],
+      positions: [...f.positions, { broker: '', shares: '', avgCost: '' }],
     }));
 
   const removePosition = (i: number) =>
@@ -218,24 +218,30 @@ export function EditRow({
           Broker Positions
           <InfoTip text="Enter where you hold this stock and how many shares at what average cost. Add one row per broker. Leave blank for watchlist stocks you don't own yet — positions are optional." />
         </Text>
+        <Group gap="xs" align="center">
+          <Text size="xs" c="dimmed" fw={600} style={{ width: 140 }}>Broker</Text>
+          <Text size="xs" c="dimmed" fw={600} style={{ width: 90 }}>Shares</Text>
+          <div style={{ width: 16 }} />
+          <Text size="xs" c="dimmed" fw={600} style={{ width: 90 }}>Avg cost / share</Text>
+        </Group>
         {form.positions.map((p, i) => (
           <Group key={i} gap="xs" align="center">
             <InputCell
               style={{ width: 140 }}
-              placeholder="Broker name"
+              placeholder="e.g. Fidelity"
               value={p.broker}
               onChange={e => setPosition(i, 'broker', e.target.value)}
             />
             <InputCell
               style={{ width: 90 }}
-              placeholder="Shares"
+              placeholder="e.g. 10"
               value={p.shares}
               onChange={e => setPosition(i, 'shares', e.target.value)}
             />
             <Text size="sm" c="dimmed">@</Text>
             <InputCell
               style={{ width: 90 }}
-              placeholder="Avg cost $"
+              placeholder="e.g. $142.50"
               value={p.avgCost}
               onChange={e => setPosition(i, 'avgCost', e.target.value)}
             />

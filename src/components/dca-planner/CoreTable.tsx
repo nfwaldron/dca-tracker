@@ -4,7 +4,8 @@ import { Group, Stack, Text, Button, Box } from '@mantine/core';
 import { IconCheck, IconChevron } from '../icons';
 import { InfoTip } from '../ui/InfoTip';
 import { PctCell } from '../PctCell';
-import { fmt$, fmtPct, fmtShares, PERIOD_DAYS, PERIOD_COL_LABELS } from '../../selectors';
+import { formatDollars, formatPercent, formatShares } from '../../utils/format';
+import { PERIOD_DAYS, PERIOD_COL_LABELS } from '../../constants/periods';
 import { TriggerBadge } from './TriggerBadge';
 import {
   TableWrap,
@@ -113,8 +114,8 @@ export function CoreTable({
                     <TickerSub>{h.name}</TickerSub>
                   </Td>
                   <Td $muted>{h.role}</Td>
-                  <Td $num>{h.totalShares > 0 ? fmtShares(h.totalShares) : <Muted>—</Muted>}</Td>
-                  <Td $num>{h.price > 0 ? fmt$(h.price) : <Muted>—</Muted>}</Td>
+                  <Td $num>{h.totalShares > 0 ? formatShares(h.totalShares) : <Muted>—</Muted>}</Td>
+                  <Td $num>{h.price > 0 ? formatDollars(h.price) : <Muted>—</Muted>}</Td>
                   <Td>
                     <TriggerBadge h={h} />
                   </Td>
@@ -136,15 +137,15 @@ export function CoreTable({
                     const days = PERIOD_DAYS[p];
                     return (
                       <React.Fragment key={p}>
-                        <Td $num>{fmt$(h.baseDaily * days)}</Td>
+                        <Td $num>{formatDollars(h.baseDaily * days)}</Td>
                         <Td
                           $num
                           style={{ color: h.extraDaily > 0 ? 'var(--amber)' : 'var(--muted)' }}
                         >
-                          {fmt$(h.extraDaily * days)}
+                          {formatDollars(h.extraDaily * days)}
                         </Td>
                         <Td $num $bold>
-                          {fmt$(h.totalDaily * days)}
+                          {formatDollars(h.totalDaily * days)}
                         </Td>
                       </React.Fragment>
                     );
@@ -180,15 +181,15 @@ export function CoreTable({
                         >
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Current Price</Text>
-                            <Text size="sm" fw={600}>{h.price > 0 ? fmt$(h.price) : '—'}</Text>
+                            <Text size="sm" fw={600}>{h.price > 0 ? formatDollars(h.price) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Wtd Avg Cost</Text>
-                            <Text size="sm" fw={600}>{h.weightedAvg > 0 ? fmt$(h.weightedAvg) : '—'}</Text>
+                            <Text size="sm" fw={600}>{h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Cost Basis</Text>
-                            <Text size="sm" fw={600}>{fmt$(h.costBasis)}</Text>
+                            <Text size="sm" fw={600}>{formatDollars(h.costBasis)}</Text>
                           </Stack>
                         </Group>
 
@@ -204,7 +205,7 @@ export function CoreTable({
                         >
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Mkt Value</Text>
-                            <Text size="sm" fw={600}>{h.mktVal > 0 ? fmt$(h.mktVal) : '—'}</Text>
+                            <Text size="sm" fw={600}>{h.mktVal > 0 ? formatDollars(h.mktVal) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>G/L $</Text>
@@ -213,7 +214,7 @@ export function CoreTable({
                               fw={600}
                               style={h.price > 0 ? { color: glColor } : undefined}
                             >
-                              {h.price > 0 ? fmt$(h.gl) : '—'}
+                              {h.price > 0 ? formatDollars(h.gl) : '—'}
                             </Text>
                           </Stack>
                           <Stack gap={2}>
@@ -223,7 +224,7 @@ export function CoreTable({
                               fw={600}
                               style={h.price > 0 ? { color: glColor } : undefined}
                             >
-                              {h.price > 0 ? fmtPct(h.glPct) : '—'}
+                              {h.price > 0 ? formatPercent(h.glPct) : '—'}
                             </Text>
                           </Stack>
                           {totalMktVal > 0 && h.mktVal > 0 && (
@@ -240,11 +241,11 @@ export function CoreTable({
                         >
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>52W High</Text>
-                            <Text size="sm" fw={600}>{h.h52 > 0 ? fmt$(h.h52) : '—'}</Text>
+                            <Text size="sm" fw={600}>{h.h52 > 0 ? formatDollars(h.h52) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>200-MA</Text>
-                            <Text size="sm" fw={600}>{h.ma200 > 0 ? fmt$(h.ma200) : '—'}</Text>
+                            <Text size="sm" fw={600}>{h.ma200 > 0 ? formatDollars(h.ma200) : '—'}</Text>
                           </Stack>
                         </Group>
                       </Group>
@@ -265,13 +266,13 @@ export function CoreTable({
               return (
                 <React.Fragment key={p}>
                   <TotalTd $num>
-                    {fmt$(holdings.reduce((s, h) => s + h.baseDaily * days, 0))}
+                    {formatDollars(holdings.reduce((s, h) => s + h.baseDaily * days, 0))}
                   </TotalTd>
                   <TotalTd $num>
-                    {fmt$(holdings.reduce((s, h) => s + h.extraDaily * days, 0))}
+                    {formatDollars(holdings.reduce((s, h) => s + h.extraDaily * days, 0))}
                   </TotalTd>
                   <TotalTd $num>
-                    {fmt$(holdings.reduce((s, h) => s + h.totalDaily * days, 0))}
+                    {formatDollars(holdings.reduce((s, h) => s + h.totalDaily * days, 0))}
                   </TotalTd>
                 </React.Fragment>
               );

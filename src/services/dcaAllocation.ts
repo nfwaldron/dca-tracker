@@ -1,5 +1,5 @@
 import type { Holding, DcaBucket, EnrichedHolding, PriceRow } from '../types';
-import { enrich } from '../selectors';
+import { enrichHolding } from '../utils/holding';
 
 export interface DcaAllocation {
   // ── Holdings slices ────────────────────────────────────────────
@@ -67,7 +67,7 @@ export function computeDcaAllocation(
   // ── Enriched views ─────────────────────────────────────────────
   const enriched = holdings.map(h => {
     const daily = dailyAmtByTicker[h.ticker] ?? 0;
-    return enrich(h, prices, daily, daily);
+    return enrichHolding(h, prices, daily, daily);
   });
   const soloEnriched = enriched.filter(
     h => h.category === 'core' && !bucketedTickers.has(h.ticker),

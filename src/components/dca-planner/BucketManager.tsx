@@ -12,7 +12,8 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
 import { IconCheck } from '../icons';
-import { fmt$, PERIOD_DAYS, FREQ_LABELS } from '../../selectors';
+import { formatDollars } from '../../utils/format';
+import { PERIOD_DAYS, FREQ_LABELS } from '../../constants/periods';
 import { SectionTitle, SectionDesc } from '../ui/Layout';
 import type { DcaBucket, Holding, EnrichedHolding, Action, PayFrequency } from '../../types';
 
@@ -136,8 +137,8 @@ export function BucketManager({
               >
                 <Text fw={700} size="sm" mb={2}>{b.name}</Text>
                 <Text size="xs" c="dimmed" mb="xs">
-                  1 slot · {fmt$(perSlotDailyAmt * daysInPeriod)}/{freqLabel.toLowerCase()} ·{' '}
-                  {fmt$(perStock)}/stock/day
+                  1 slot · {formatDollars(perSlotDailyAmt * daysInPeriod)}/{freqLabel.toLowerCase()} ·{' '}
+                  {formatDollars(perStock)}/stock/day
                 </Text>
 
                 <Stack gap={6} mb="sm">
@@ -158,7 +159,7 @@ export function BucketManager({
                           title={h?.triggered ? 'Triggered' : 'Clear'}
                         />
                         <Text size="xs" fw={700} style={{ minWidth: 44 }}>{ticker}</Text>
-                        <Text size="xs" c="dimmed" style={{ flex: 1 }}>{fmt$(perStock)}/day</Text>
+                        <Text size="xs" c="dimmed" style={{ flex: 1 }}>{formatDollars(perStock)}/day</Text>
                         {h && (
                           <Button
                             size="compact-xs"
@@ -232,8 +233,8 @@ export function BucketManager({
 
           {perStockInForm !== null && (
             <Text size="xs" c="dimmed">
-              1 slot ÷ {form.tickers.length} stocks = {fmt$(perStockInForm)}/stock/day &nbsp;·{' '}
-              {fmt$(perStockInForm * daysInPeriod)}/stock/{freqLabel.toLowerCase()}
+              1 slot ÷ {form.tickers.length} stocks = {formatDollars(perStockInForm)}/stock/day &nbsp;·{' '}
+              {formatDollars(perStockInForm * daysInPeriod)}/stock/{freqLabel.toLowerCase()}
             </Text>
           )}
 

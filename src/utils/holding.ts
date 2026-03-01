@@ -1,31 +1,7 @@
-import type { Holding, PriceRow, EnrichedHolding, PayFrequency, DisplayPeriod } from './types';
+import type { Holding, PriceRow, EnrichedHolding } from '../types';
 
-// ── Period helpers ─────────────────────────────────────────────────────────────
-
-/** Trading days in each pay / display period */
-export const PERIOD_DAYS: Record<PayFrequency | DisplayPeriod, number> = {
-  daily: 1,
-  weekly: 5,
-  biweekly: 10,
-  monthly: 21,
-};
-
-/** Short column header label for each display period */
-export const PERIOD_COL_LABELS: Record<DisplayPeriod, string> = {
-  daily: 'Day',
-  weekly: 'Wk',
-  biweekly: 'Bi-wk',
-  monthly: 'Mo',
-};
-
-/** Full label for pay frequency (used in input labels, summary cards) */
-export const FREQ_LABELS: Record<PayFrequency, string> = {
-  weekly: 'Weekly',
-  biweekly: 'Bi-weekly',
-  monthly: 'Monthly',
-};
-
-export function enrich(
+/** Compute all derived metrics for a holding — market value, G/L, DCA allocations, trigger status. */
+export function enrichHolding(
   holding: Holding,
   prices: Record<string, PriceRow>,
   baseDailyAmt = 5,
@@ -86,20 +62,4 @@ export function enrich(
     dailyChangePct,
     yearChangePct,
   };
-}
-
-export function fmt$(n: number, digits = 2): string {
-  return (
-    '$' +
-    n.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })
-  );
-}
-
-export function fmtPct(n: number | null): string {
-  if (n === null) return '—';
-  return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-}
-
-export function fmtShares(n: number): string {
-  return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 4 });
 }

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Button, Group } from '@mantine/core';
 import { useStore } from '../store';
-import { enrich, fmt$, fmtPct } from '../selectors';
+import { enrichHolding } from '../utils/holding';
+import { formatDollars, formatPercent } from '../utils/format';
 import { SummaryCard } from '../components/SummaryCard';
 import { AllocationPie, PIE_COLORS } from '../components/portfolio/AllocationPie';
 import { HoldingsTable, type Period } from '../components/portfolio/HoldingsTable';
@@ -18,7 +19,7 @@ export default function Portfolio() {
   const [period, setPeriod] = useState<Period>('alltime');
 
   const enriched = useMemo(
-    () => state.holdings.map(h => enrich(h, state.prices, 0, 0)),
+    () => state.holdings.map(h => enrichHolding(h, state.prices, 0, 0)),
     [state.holdings, state.prices],
   );
 
@@ -74,11 +75,11 @@ export default function Portfolio() {
       </Group>
 
       <CardsGrid>
-        <SummaryCard label="Portfolio Value" value={fmt$(totalValue)} sub="total market value" />
-        <SummaryCard label="Invested" value={fmt$(totalInvested)} sub="total cost basis" />
+        <SummaryCard label="Portfolio Value" value={formatDollars(totalValue)} sub="total market value" />
+        <SummaryCard label="Invested" value={formatDollars(totalInvested)} sub="total cost basis" />
         <SummaryCard
           label={`Gain / Loss — ${PERIOD_LABELS[period]}`}
-          value={`${fmt$(gl.dollar)} (${fmtPct(gl.pct)})`}
+          value={`${formatDollars(gl.dollar)} (${formatPercent(gl.pct)})`}
           sub="unrealized P&L"
           color={gl.dollar >= 0 ? 'var(--green)' : 'var(--red)'}
         />

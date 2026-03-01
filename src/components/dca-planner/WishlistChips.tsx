@@ -1,5 +1,5 @@
 import { Group, Box, Text, Paper } from '@mantine/core';
-import { fmt$ } from '../../selectors';
+import { formatDollars } from '../../utils/format';
 import { SectionTitle, SectionDesc } from '../ui/Layout';
 import type { EnrichedHolding } from '../../types';
 
@@ -17,7 +17,7 @@ export function WishlistChips({ holdings }: { holdings: EnrichedHolding[] }) {
             <Group gap="xs">
               <Text size="xs" fw={700}>{h.ticker}</Text>
               {h.price > 0 && (
-                <Text size="xs" fw={600} c="green">{fmt$(h.price)}</Text>
+                <Text size="xs" fw={600} c="green">{formatDollars(h.price)}</Text>
               )}
               <Text size="xs" c="dimmed">{h.role}</Text>
             </Group>

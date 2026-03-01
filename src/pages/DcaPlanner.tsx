@@ -12,7 +12,8 @@ import {
   Button,
 } from '@mantine/core';
 import { useStore } from '../store';
-import { fmt$, fmtPct, PERIOD_DAYS, FREQ_LABELS } from '../selectors';
+import { formatDollars, formatPercent } from '../utils/format';
+import { PERIOD_DAYS, FREQ_LABELS } from '../constants/periods';
 import { computeDcaAllocation } from '../services/dcaAllocation';
 import { SummaryCard } from '../components/SummaryCard';
 import { InfoTip } from '../components/ui/InfoTip';
@@ -169,7 +170,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
             Portfolio Value
           </Text>
           <Text size="2rem" fw={700} lh={1}>
-            {fmt$(totalValue)}
+            {formatDollars(totalValue)}
           </Text>
         </Stack>
         <Divider orientation="vertical" h={36} style={{ alignSelf: 'center' }} mx="xl" />
@@ -177,7 +178,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
           <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
             Invested
           </Text>
-          <Text size="sm" fw={600}>{fmt$(totalInvested)}</Text>
+          <Text size="sm" fw={600}>{formatDollars(totalInvested)}</Text>
         </Stack>
         <Divider orientation="vertical" h={36} style={{ alignSelf: 'center' }} mx="xl" />
         <Stack gap={2} mr="xl" style={{ whiteSpace: 'nowrap' }}>
@@ -188,7 +189,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
             <InfoTip text="Gain/Loss since your first purchase — market value minus total cost basis across all holdings." />
           </Group>
           <Text size="sm" fw={600} c={totalGL >= 0 ? 'green' : 'red'}>
-            {fmt$(totalGL)} ({fmtPct(totalGLPct)})
+            {formatDollars(totalGL)} ({formatPercent(totalGLPct)})
           </Text>
         </Stack>
         <Divider orientation="vertical" h={36} style={{ alignSelf: 'center' }} mx="xl" />
@@ -197,7 +198,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
             Today's Change
           </Text>
           <Text size="sm" fw={600} c={dailyChange$ >= 0 ? 'green' : 'red'}>
-            {fmt$(dailyChange$)} ({fmtPct(dailyChangePct)})
+            {formatDollars(dailyChange$)} ({formatPercent(dailyChangePct)})
           </Text>
         </Stack>
       </Group>
@@ -214,7 +215,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
             label={`${freqLabel} DCA budget`}
             value={state.biWeeklyBudget}
             onCommit={n => dispatch({ type: 'SET_BIWEEKLY_BUDGET', payload: n })}
-            hint={`${slotBreakdown} · ${fmt$(perSlotPeriodAmt, 0)}/slot/${freqLabel.toLowerCase()} · ${fmt$(perSlotDailyAmt)}/slot/day`}
+            hint={`${slotBreakdown} · ${formatDollars(perSlotPeriodAmt, 0)}/slot/${freqLabel.toLowerCase()} · ${formatDollars(perSlotDailyAmt)}/slot/day`}
           />
           <Divider orientation="vertical" h={40} style={{ alignSelf: 'center' }} />
           <BudgetInput
@@ -223,7 +224,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
             onCommit={n => dispatch({ type: 'SET_DOUBLE_DOWN_BUDGET', payload: n })}
             hint={
               doubleDownActive.length > 0
-                ? `${fmt$(extraNeededPeriod)} needed · ${doubleDownActive.length} stock${doubleDownActive.length > 1 ? 's' : ''}`
+                ? `${formatDollars(extraNeededPeriod)} needed · ${doubleDownActive.length} stock${doubleDownActive.length > 1 ? 's' : ''}`
                 : 'set a budget to see your per-stock target'
             }
           />
@@ -231,33 +232,33 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
           <SummaryCard
             label={`${freqLabel} Budget`}
-            value={fmt$(state.biWeeklyBudget)}
+            value={formatDollars(state.biWeeklyBudget)}
             sub={`${allCore.length} core · ${alloc.effectiveSlots} slots`}
           />
           <SummaryCard
             label={`Per Slot / ${freqLabel}`}
-            value={fmt$(perSlotPeriodAmt)}
-            sub={`${fmt$(perSlotDailyAmt)}/slot/day`}
+            value={formatDollars(perSlotPeriodAmt)}
+            sub={`${formatDollars(perSlotDailyAmt)}/slot/day`}
           />
           <SummaryCard
             label={`Active ${freqLabel}`}
-            value={fmt$(activePeriodTotal)}
+            value={formatDollars(activePeriodTotal)}
             sub={
               activePeriodTotal > state.biWeeklyBudget
-                ? `incl. ${fmt$(activePeriodTotal - state.biWeeklyBudget)} double-down`
+                ? `incl. ${formatDollars(activePeriodTotal - state.biWeeklyBudget)} double-down`
                 : 'base only'
             }
           />
           {triggeredAll.length > 0 && (
             <SummaryCard
               label="Double-Down Budget"
-              value={extraAvailable > 0 ? fmt$(actualExtraTotal) : fmt$(extraNeededPeriod)}
+              value={extraAvailable > 0 ? formatDollars(actualExtraTotal) : formatDollars(extraNeededPeriod)}
               sub={
                 extraAvailable === 0
-                  ? `${fmt$(extraNeededPeriod)} needed — set double-down budget above`
+                  ? `${formatDollars(extraNeededPeriod)} needed — set double-down budget above`
                   : canFullyCover
-                    ? `fully covered · ${fmt$(actualPerStock)}/stock`
-                    : `short ${fmt$(shortfall)} · ${fmt$(actualPerStock)}/stock`
+                    ? `fully covered · ${formatDollars(actualPerStock)}/stock`
+                    : `short ${formatDollars(shortfall)} · ${formatDollars(actualPerStock)}/stock`
               }
               color={
                 extraAvailable === 0

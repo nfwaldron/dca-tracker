@@ -1,76 +1,46 @@
 import React, { useState } from 'react';
 import type { Dispatch } from 'react';
-import { Modal, Group } from '@mantine/core';
+import { Modal, Group, ActionIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { IconEdit, IconTrash, IconPlus, IconChevron } from '../icons';
-import { enrich, fmt$, fmtShares } from '../../selectors';
+import { enrichHolding } from '../../utils/holding';
+import { formatDollars, formatShares } from '../../utils/format';
 import { InfoTip } from '../ui/InfoTip';
 import { CAT_HEX, CAT_ORDER } from '../../constants/categories';
 import { TableWrap, DataTable, Th, Td, TbodyRow, TickerMain } from '../ui/Table';
 import { CategoryBadge, BadgeGreen, BadgeGray } from '../ui/Badge';
 import { BtnPrimary, BtnGhost, BtnDanger } from '../ui/Button';
 import { EditRow, holdingToEdit, BLANK_EDIT } from './EditRow';
-import type { Holding, Action } from '../../types';
+import type { Holding, Action, PriceRow } from '../../types';
 import type { EditState } from './EditRow';
-import styled from 'styled-components';
 
-const ChevronBtn = styled.button`
-  background: none;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:hover { color: var(--text); }
-  &:disabled { cursor: default; }
-`;
-
-const ExpandTd = styled.td`
-  padding: 0;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-`;
-
-const BrokerBreakdown = styled.div`
-  padding: 0.6rem 2.5rem 0.75rem;
-`;
-
-const BrokerTable = styled.table`
-  width: auto;
-  border-collapse: collapse;
-  font-size: 0.78rem;
-`;
-
-const BrokerTh = styled.th`
-  padding: 0.2rem 1rem 0.2rem 0;
-  text-align: right;
-  font-weight: 600;
-  color: var(--muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  &:first-child { text-align: left; }
-`;
-
-const BrokerTd = styled.td`
-  padding: 0.2rem 1rem 0.2rem 0;
-  text-align: right;
-  color: var(--muted);
-  &:first-child { text-align: left; font-weight: 600; color: var(--text); }
-`;
+const brokerThStyle: React.CSSProperties = {
+  padding: '0.2rem 1rem 0.2rem 0',
+  textAlign: 'right',
+  fontWeight: 600,
+  color: 'var(--muted)',
+  fontSize: '0.7rem',
+  textTransform: 'uppercase',
+  letterSpacing: '0.04em',
+};
+const brokerTdStyle: React.CSSProperties = {
+  padding: '0.2rem 1rem 0.2rem 0',
+  textAlign: 'right',
+  color: 'var(--muted)',
+};
 
 const COLS = 10;
 
 export function HoldingsTable({
   holdings,
+  prices = {},
   dispatch,
   roles = [],
 }: {
   holdings: Holding[];
+  prices?: Record<string, PriceRow>;
   dispatch: Dispatch<Action>;
   roles?: string[];
 }) {
@@ -164,8 +134,8 @@ export function HoldingsTable({
                 <InfoTip text="Weighted Average Cost — total cost basis ÷ total shares across all broker positions." />
               </Th>
               <Th $num>
-                ATH
-                <InfoTip text="All-Time High override. When set, the Double Down trigger uses max(ATH, 52W High) as the reference price." />
+                52W High
+                <InfoTip text="52-week high from Yahoo Finance. The Double Down trigger fires when price drops 20%+ below this value (or your manual ATH override if set)." />
               </Th>
               <Th>
                 Double Down
@@ -177,20 +147,23 @@ export function HoldingsTable({
           <tbody>
             {sorted.map(h => {
               const isExpanded = expandedId === h.id;
-              const { totalShares, weightedAvg } = enrich(h, {}, 0, 0);
+              const { totalShares, weightedAvg } = enrichHolding(h, {}, 0, 0);
 
               return (
                 <React.Fragment key={h.id}>
                   <TbodyRow>
                     <Td>
-                      <ChevronBtn
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        size="sm"
                         onClick={() => toggleExpand(h.id)}
                         title={isExpanded ? 'Collapse' : 'Show broker breakdown'}
                         disabled={h.positions.length === 0}
                         style={{ opacity: h.positions.length === 0 ? 0.2 : 1 }}
                       >
                         <IconChevron open={isExpanded} />
-                      </ChevronBtn>
+                      </ActionIcon>
                     </Td>
                     <Td><TickerMain>{h.ticker}</TickerMain></Td>
                     <Td>{h.name}</Td>
@@ -199,15 +172,15 @@ export function HoldingsTable({
                       <CategoryBadge $hex={CAT_HEX[h.category]}>{h.category}</CategoryBadge>
                     </Td>
                     <Td $num>
-                      {fmtShares(totalShares)}
+                      {formatShares(totalShares)}
                       {h.positions.length > 1 && (
                         <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: 5 }}>
                           ({h.positions.length} brokers)
                         </span>
                       )}
                     </Td>
-                    <Td $num $muted>{weightedAvg > 0 ? fmt$(weightedAvg) : '—'}</Td>
-                    <Td $num $muted>{h.ath !== null ? fmt$(h.ath) : '—'}</Td>
+                    <Td $num $muted>{weightedAvg > 0 ? formatDollars(weightedAvg) : '—'}</Td>
+                    <Td $num $muted>{prices[h.ticker]?.h52 ? formatDollars(prices[h.ticker].h52) : '—'}</Td>
                     <Td>{h.doubleDown ? <BadgeGreen>Yes</BadgeGreen> : <BadgeGray>No</BadgeGray>}</Td>
                     <Td>
                       <div style={{ display: 'flex', gap: 6 }}>
@@ -219,30 +192,36 @@ export function HoldingsTable({
 
                   {isExpanded && h.positions.length > 0 && (
                     <tr>
-                      <ExpandTd colSpan={COLS}>
-                        <BrokerBreakdown>
-                          <BrokerTable>
+                      <td
+                        colSpan={COLS}
+                        style={{ padding: 0, background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}
+                      >
+                        <div style={{ padding: '0.6rem 2.5rem 0.75rem' }}>
+                          <table style={{ width: 'auto', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                             <thead>
                               <tr>
-                                <BrokerTh>Broker</BrokerTh>
-                                <BrokerTh>Shares</BrokerTh>
-                                <BrokerTh>Avg Cost</BrokerTh>
-                                <BrokerTh>Cost Basis</BrokerTh>
+                                <th style={{ ...brokerThStyle, textAlign: 'left' }}>Broker</th>
+                                <th style={brokerThStyle}>Shares</th>
+                                <th style={brokerThStyle}>Avg Cost</th>
+                                <th style={brokerThStyle}>
+                                  Cost Basis
+                                  <InfoTip text="Total amount invested in this position — shares × your average cost per share." />
+                                </th>
                               </tr>
                             </thead>
                             <tbody>
                               {h.positions.map((p, i) => (
                                 <tr key={i}>
-                                  <BrokerTd>{p.broker || '—'}</BrokerTd>
-                                  <BrokerTd>{fmtShares(p.shares)}</BrokerTd>
-                                  <BrokerTd>{fmt$(p.avgCost)}</BrokerTd>
-                                  <BrokerTd>{fmt$(p.shares * p.avgCost)}</BrokerTd>
+                                  <td style={{ ...brokerTdStyle, textAlign: 'left', fontWeight: 600, color: 'var(--text)' }}>{p.broker || '—'}</td>
+                                  <td style={brokerTdStyle}>{formatShares(p.shares)}</td>
+                                  <td style={brokerTdStyle}>{formatDollars(p.avgCost)}</td>
+                                  <td style={brokerTdStyle}>{formatDollars(p.shares * p.avgCost)}</td>
                                 </tr>
                               ))}
                             </tbody>
-                          </BrokerTable>
-                        </BrokerBreakdown>
-                      </ExpandTd>
+                          </table>
+                        </div>
+                      </td>
                     </tr>
                   )}
                 </React.Fragment>
