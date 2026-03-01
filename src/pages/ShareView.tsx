@@ -25,15 +25,20 @@ export function ShareView({ token }: { token: string }) {
   const [invalid, setInvalid] = useState(false);
 
   useEffect(() => {
-    loadShare(token).then(result => {
-      if (!result) {
+    loadShare(token)
+      .then(result => {
+        if (!result) {
+          setInvalid(true);
+        } else {
+          setSnapshot(result.snapshot);
+          setCreatedAt(result.createdAt);
+        }
+      })
+      .catch(err => {
+        console.error('[ShareView] failed to load share:', err);
         setInvalid(true);
-      } else {
-        setSnapshot(result.snapshot);
-        setCreatedAt(result.createdAt);
-      }
-      setLoading(false);
-    });
+      })
+      .finally(() => setLoading(false));
   }, [token]);
 
   if (loading) {

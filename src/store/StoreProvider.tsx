@@ -9,11 +9,11 @@ import React, {
   type Dispatch,
 } from 'react';
 import { useAuth } from '@clerk/clerk-react';
-import { notifications } from '@mantine/notifications';
 import type { DBState, Action } from '../types';
 import { makeSupabase } from '../services/supabase';
 import { loadPortfolio, savePortfolio } from '../services/db';
 import { reducer, INITIAL_STATE } from './reducer';
+import { notifyError } from '../utils/notify';
 
 interface StoreCtx {
   state: DBState;
@@ -43,6 +43,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const sb = await getSupabase();
         const snapshot = await loadPortfolio(sb, userId);
         dispatch({ type: 'LOAD_SNAPSHOT', payload: snapshot });
+      } catch (err) {
+        notifyError('Failed to load portfolio', err);
       } finally {
         setLoaded(true);
       }
@@ -58,13 +60,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const sb = await getSupabase();
         await savePortfolio(sb, userId, state);
       } catch (err) {
-        console.error('[StoreProvider] save failed:', err);
-        notifications.show({
-          color: 'red',
-          title: 'Save failed',
-          message: err instanceof Error ? err.message : 'Could not save to database.',
-          autoClose: false,
-        });
+        notifyError('Save failed', err);
       }
     }, 500);
     return () => {

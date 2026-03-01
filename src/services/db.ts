@@ -43,6 +43,10 @@ export async function loadPortfolio(sb: SupabaseClient, userId: string): Promise
     sb.from('settings').select('*').eq('user_id', userId),
   ]);
 
+  const loadError = [holdingsRes, pricesRes, bucketsRes, settingsRes]
+    .find(r => r.error)?.error;
+  if (loadError) throw new Error(loadError.message);
+
   // Holdings: use seed data if this is a new user with no rows yet
   const holdings: Holding[] =
     holdingsRes.data && holdingsRes.data.length > 0
@@ -133,20 +137,16 @@ export async function savePortfolio(
   if (saveError) throw new Error(saveError.message);
 
   // Delete holdings no longer in state
-  if (state.holdings.length > 0) {
-    const ids = state.holdings.map(h => h.id);
-    await sb.from('holdings').delete().eq('user_id', userId).not('id', 'in', `(${ids.map(id => `'${id}'`).join(',')})`);
-  } else {
-    await sb.from('holdings').delete().eq('user_id', userId);
-  }
+  const holdingsDeleteResult = state.holdings.length > 0
+    ? await sb.from('holdings').delete().eq('user_id', userId).not('id', 'in', `(${state.holdings.map(h => `'${h.id}'`).join(',')})`)
+    : await sb.from('holdings').delete().eq('user_id', userId);
+  if (holdingsDeleteResult.error) throw new Error(holdingsDeleteResult.error.message);
 
   // Delete buckets no longer in state
-  if (state.buckets.length > 0) {
-    const ids = state.buckets.map(b => b.id);
-    await sb.from('buckets').delete().eq('user_id', userId).not('id', 'in', `(${ids.map(id => `'${id}'`).join(',')})`);
-  } else {
-    await sb.from('buckets').delete().eq('user_id', userId);
-  }
+  const bucketsDeleteResult = state.buckets.length > 0
+    ? await sb.from('buckets').delete().eq('user_id', userId).not('id', 'in', `(${state.buckets.map(b => `'${b.id}'`).join(',')})`)
+    : await sb.from('buckets').delete().eq('user_id', userId);
+  if (bucketsDeleteResult.error) throw new Error(bucketsDeleteResult.error.message);
 }
 
 // ── Share links ───────────────────────────────────────────────────────────────
@@ -161,16 +161,18 @@ export async function saveShare(
   state: DBState,
 ): Promise<string> {
   const token = crypto.randomUUID();
-  await sb.from('shares').upsert(
+  const { error } = await sb.from('shares').upsert(
     { token, user_id: userId, snapshot: state },
     { onConflict: 'user_id' },
   );
+  if (error) throw new Error(error.message);
   return token;
 }
 
 /** Delete the user's active share link. */
 export async function revokeShare(sb: SupabaseClient, userId: string): Promise<void> {
-  await sb.from('shares').delete().eq('user_id', userId);
+  const { error } = await sb.from('shares').delete().eq('user_id', userId);
+  if (error) throw new Error(error.message);
 }
 
 /**
@@ -184,6 +186,10 @@ export async function loadShare(token: string): Promise<{ snapshot: DBState; cre
     .select('snapshot, created_at')
     .eq('token', token)
     .maybeSingle();
-  if (error || !data) return null;
+  if (error) {
+    console.error('[loadShare]', error.message);
+    return null;
+  }
+  if (!data) return null;
   return { snapshot: data.snapshot as DBState, createdAt: data.created_at as string };
 }
