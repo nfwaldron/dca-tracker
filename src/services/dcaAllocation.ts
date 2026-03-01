@@ -25,8 +25,21 @@ export interface DcaAllocation {
   extraNeededPeriod: number;
   canFullyCover: boolean;
   actualExtraTotal: number;
-  actualPerStock: number;
+  coverageRatio: number; // 0–1: how much of the needed extra the budget covers
   shortfall: number;
+}
+
+/**
+ * Mirror of the trigger check inside enrichHolding — used to compute proportional
+ * extra allocations before the full enrichment pass.
+ */
+function isTriggered(h: Holding, prices: Record<string, PriceRow>): boolean {
+  const p = prices[h.ticker];
+  if (!p || p.price === 0) return false;
+  const highRef = Math.max(h.ath ?? 0, p.h52);
+  const belowMA = p.ma200 > 0 && p.price < p.ma200;
+  const belowATH = highRef > 0 && (highRef - p.price) / highRef >= 0.2;
+  return belowMA || belowATH;
 }
 
 /**
@@ -36,7 +49,7 @@ export interface DcaAllocation {
  * @param buckets       Bucket definitions from state
  * @param prices        Current price map from state
  * @param budget        Per-pay-period DCA budget (stored as biWeeklyBudget in state)
- * @param extraBudget   Per-pay-period extra budget for double-downs
+ * @param doubleDownBudget  Per-pay-period extra budget for double-downs
  * @param daysInPayPeriod  Trading days in the user's pay period (5/10/21)
  */
 export function computeDcaAllocation(
@@ -53,7 +66,8 @@ export function computeDcaAllocation(
   const effectiveSlots = soloCore.length + buckets.length;
   const perSlotDailyAmt = effectiveSlots > 0 ? budget / effectiveSlots / daysInPayPeriod : 0;
 
-  // ── Per-ticker daily allocation ────────────────────────────────
+  // ── Per-ticker base daily allocation ───────────────────────────
+  // Bucketed stocks share one slot equally; solo core stocks get a full slot each.
   const dailyAmtByTicker: Record<string, number> = {};
   for (const h of holdings) {
     if (h.category !== 'core') {
@@ -64,11 +78,44 @@ export function computeDcaAllocation(
     dailyAmtByTicker[h.ticker] = bucket ? perSlotDailyAmt / bucket.tickers.length : perSlotDailyAmt;
   }
 
+  // ── Double-down coverage ratio (pre-enrichment) ────────────────
+  // Which core holdings are actually triggered AND opted in right now?
+  // We compute this before enrichHolding so we can pass proportional extra amounts in.
+  const ddEntries = holdings.filter(
+    h => h.category === 'core' && h.doubleDown && isTriggered(h, prices),
+  );
+  // Total "weight" = sum of each opted-in stock's base daily amount.
+  // Bucketed stocks already have a smaller base (1/N of the slot), so the extra
+  // they need is proportionally smaller — matching the user's intent.
+  const totalDDWeight = ddEntries.reduce((s, h) => s + (dailyAmtByTicker[h.ticker] ?? 0), 0);
+  const extraNeededPeriod = totalDDWeight * daysInPayPeriod;
+  const canFullyCover = doubleDownBudget >= extraNeededPeriod;
+  const actualExtraTotal = Math.min(doubleDownBudget, extraNeededPeriod);
+  const coverageRatio = totalDDWeight > 0
+    ? Math.min(1, doubleDownBudget / daysInPayPeriod / totalDDWeight)
+    : 1;
+  const shortfall = Math.max(0, extraNeededPeriod - doubleDownBudget);
+
+  // Per-ticker extra daily = base × coverageRatio (only for opted-in + triggered stocks).
+  // enrichHolding still gates on triggered && doubleDown internally, so passing 0 for
+  // non-qualifying stocks is safe.
+  const ddSet = new Set(ddEntries.map(h => h.ticker));
+  const extraDailyByTicker: Record<string, number> = {};
+  for (const h of holdings) {
+    extraDailyByTicker[h.ticker] = ddSet.has(h.ticker)
+      ? (dailyAmtByTicker[h.ticker] ?? 0) * coverageRatio
+      : 0;
+  }
+
   // ── Enriched views ─────────────────────────────────────────────
-  const enriched = holdings.map(h => {
-    const daily = dailyAmtByTicker[h.ticker] ?? 0;
-    return enrichHolding(h, prices, daily, daily);
-  });
+  const enriched = holdings.map(h =>
+    enrichHolding(
+      h,
+      prices,
+      dailyAmtByTicker[h.ticker] ?? 0,
+      extraDailyByTicker[h.ticker] ?? 0,
+    ),
+  );
   const soloEnriched = enriched.filter(
     h => h.category === 'core' && !bucketedTickers.has(h.ticker),
   );
@@ -85,17 +132,10 @@ export function computeDcaAllocation(
     `${effectiveSlots} slots`,
   ].join(' · ');
 
-  // ── Double-down groups ─────────────────────────────────────────
+  // ── Double-down groups (from enriched holdings) ────────────────
   const triggeredAll = allCore.filter(h => h.triggered);
   const doubleDownActive = allCore.filter(h => h.triggered && h.doubleDown);
   const doubleDownPending = allCore.filter(h => h.triggered && !h.doubleDown);
-
-  // ── Affordability ──────────────────────────────────────────────
-  const extraNeededPeriod = doubleDownActive.reduce((s, h) => s + h.baseDaily * daysInPayPeriod, 0);
-  const canFullyCover = doubleDownBudget >= extraNeededPeriod;
-  const actualExtraTotal = Math.min(doubleDownBudget, extraNeededPeriod);
-  const actualPerStock = doubleDownActive.length > 0 ? actualExtraTotal / doubleDownActive.length : 0;
-  const shortfall = extraNeededPeriod - doubleDownBudget;
 
   return {
     allEnriched: enriched,
@@ -114,7 +154,7 @@ export function computeDcaAllocation(
     extraNeededPeriod,
     canFullyCover,
     actualExtraTotal,
-    actualPerStock,
+    coverageRatio,
     shortfall,
   };
 }

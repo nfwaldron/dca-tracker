@@ -109,7 +109,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
     extraNeededPeriod,
     canFullyCover,
     actualExtraTotal,
-    actualPerStock,
+    coverageRatio,
     shortfall,
   } = alloc;
 
@@ -257,8 +257,8 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
                 extraAvailable === 0
                   ? `${formatDollars(extraNeededPeriod)} needed — set double-down budget above`
                   : canFullyCover
-                    ? `fully covered · ${formatDollars(actualPerStock)}/stock`
-                    : `short ${formatDollars(shortfall)} · ${formatDollars(actualPerStock)}/stock`
+                    ? 'fully covered'
+                    : `short ${formatDollars(shortfall)} · ${Math.round(coverageRatio * 100)}% covered`
               }
               color={
                 extraAvailable === 0
