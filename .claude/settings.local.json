@@ -16,7 +16,10 @@
       "Bash(npm run build)",
       "Bash(npm install react-icons)",
       "Bash(npm install @mantine/core @mantine/hooks @mantine/modals @mantine/notifications)",
-      "Bash(npm install yahoo-finance2 --save-prod)"
+      "Bash(npm install yahoo-finance2 --save-prod)",
+      "Bash(git config http.postBuffer 104857600)",
+      "Bash(git push dca-tracker main)",
+      "Bash(git push dca-tracker master)"
     ]
   }
 }

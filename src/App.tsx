@@ -57,6 +57,7 @@ export default function App() {
   return (
     <AppShell
       header={{ height: 56 }}
+      footer={{ height: 32 }}
       padding={0}
     >
       <AppShell.Header
@@ -129,6 +130,20 @@ export default function App() {
           {activeTab === 'guide' && <StrategyGuide />}
         </div>
       </AppShell.Main>
+
+      <AppShell.Footer
+        style={{
+          background: 'var(--card)',
+          borderTop: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text size="xs" c="dimmed">
+          For informational purposes only — not financial advice. Data via Yahoo Finance. Always do your own research.
+        </Text>
+      </AppShell.Footer>
 
       <GlossaryModal opened={glossaryOpened} onClose={closeGlossary} />
     </AppShell>
