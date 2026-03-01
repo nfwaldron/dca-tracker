@@ -1,0 +1,378 @@
+{
+  "holdings": [
+    {
+      "id": "AMZN",
+      "ticker": "AMZN",
+      "name": "Amazon",
+      "role": "Landlord",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 0.5332,
+          "avgCost": 206.077
+        },
+        {
+          "broker": "Robinhood",
+          "shares": 18.063,
+          "avgCost": 231.11
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "ANET",
+      "ticker": "ANET",
+      "name": "Arista Networks",
+      "role": "Roads",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "MooMoo",
+          "shares": 6.6647,
+          "avgCost": 132.779
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "ASML",
+      "ticker": "ASML",
+      "name": "ASML Holding",
+      "role": "Chip Litho",
+      "category": "wishlist",
+      "positions": [],
+      "ath": null,
+      "funded": false
+    },
+    {
+      "id": "BE",
+      "ticker": "BE",
+      "name": "Bloom Energy",
+      "role": "Power Grid",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 0.512,
+          "avgCost": 154.238
+        },
+        {
+          "broker": "Robinhood",
+          "shares": 25,
+          "avgCost": 138.64
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "BITF",
+      "ticker": "BITF",
+      "name": "Bitfarms",
+      "role": "Crypto Mining",
+      "category": "extra",
+      "positions": [
+        {
+          "broker": "Robinhood",
+          "shares": 621.142,
+          "avgCost": 2.66
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "BMNR",
+      "ticker": "BMNR",
+      "name": "BitMiner",
+      "role": "Crypto Mining",
+      "category": "extra",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 7,
+          "avgCost": 19.813
+        },
+        {
+          "broker": "Robinhood",
+          "shares": 100.111,
+          "avgCost": 19.31
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "CEG",
+      "ticker": "CEG",
+      "name": "Constellation Energy",
+      "role": "Nuclear Power",
+      "category": "wishlist",
+      "positions": [],
+      "ath": null,
+      "funded": false
+    },
+    {
+      "id": "DDOG",
+      "ticker": "DDOG",
+      "name": "Datadog",
+      "role": "Foremen",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 1.8806,
+          "avgCost": 112.22
+        }
+      ],
+      "ath": 201.69
+    },
+    {
+      "id": "GOOGL",
+      "ticker": "GOOGL",
+      "name": "Alphabet",
+      "role": "Search & AI",
+      "category": "wishlist",
+      "positions": [],
+      "ath": null,
+      "funded": false
+    },
+    {
+      "id": "NVDA",
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "role": "Building Materials",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 0.4048,
+          "avgCost": 186.833
+        },
+        {
+          "broker": "Robinhood",
+          "shares": 25,
+          "avgCost": 174.26
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "PLTR",
+      "ticker": "PLTR",
+      "name": "Palantir",
+      "role": "Operating System",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 0.8335,
+          "avgCost": 131.518
+        },
+        {
+          "broker": "Robinhood",
+          "shares": 30,
+          "avgCost": 134.57
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "TSM",
+      "ticker": "TSM",
+      "name": "TSMC",
+      "role": "Foundry",
+      "category": "wishlist",
+      "positions": [],
+      "ath": null,
+      "funded": false
+    },
+    {
+      "id": "VRT",
+      "ticker": "VRT",
+      "name": "Vertiv",
+      "role": "Power Grid",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 3.4155,
+          "avgCost": 257.787
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "ZETA",
+      "ticker": "ZETA",
+      "name": "Zeta Global",
+      "role": "MarTech",
+      "category": "extra",
+      "positions": [
+        {
+          "broker": "Robinhood",
+          "shares": 175,
+          "avgCost": 16.99
+        }
+      ],
+      "ath": null
+    },
+    {
+      "id": "ZS",
+      "ticker": "ZS",
+      "name": "Zscaler",
+      "role": "Security Guards",
+      "category": "core",
+      "positions": [
+        {
+          "broker": "Moomoo",
+          "shares": 1.7793,
+          "avgCost": 147.513
+        }
+      ],
+      "ath": 376.11
+    }
+  ],
+  "prices": {
+    "AMZN": {
+      "price": 210,
+      "ma200": 224.3463,
+      "h52": 258.6,
+      "dailyChange": 2.0800018,
+      "dailyChangePct": 1.0003856,
+      "yearChangePct": 0
+    },
+    "NVDA": {
+      "price": 177.19,
+      "ma200": 174.9574,
+      "h52": 212.19,
+      "dailyChange": -7.7,
+      "dailyChangePct": -4.16464,
+      "yearChangePct": 0
+    },
+    "PLTR": {
+      "price": 137.19,
+      "ma200": 161.50203,
+      "h52": 207.52,
+      "dailyChange": 1.25,
+      "dailyChangePct": 0.9195233,
+      "yearChangePct": 0
+    },
+    "DDOG": {
+      "price": 111.96,
+      "ma200": 138.80424,
+      "h52": 201.69,
+      "dailyChange": -4.5,
+      "dailyChangePct": -3.86399,
+      "yearChangePct": 0
+    },
+    "BE": {
+      "price": 155.67,
+      "ma200": 80.1599,
+      "h52": 180.9,
+      "dailyChange": -12.9,
+      "dailyChangePct": -7.65261,
+      "yearChangePct": 0
+    },
+    "ANET": {
+      "price": 133.5,
+      "ma200": 127.09645,
+      "h52": 164.94,
+      "dailyChange": 3.25,
+      "dailyChangePct": 2.4952,
+      "yearChangePct": 0
+    },
+    "ZS": {
+      "price": 146.99,
+      "ma200": 265.89932,
+      "h52": 336.99,
+      "dailyChange": -20.369995,
+      "dailyChangePct": -12.171364,
+      "yearChangePct": 0
+    },
+    "VRT": {
+      "price": 254.89,
+      "ma200": 156.09676,
+      "h52": 264.86,
+      "dailyChange": -4.34001,
+      "dailyChangePct": -1.67419,
+      "yearChangePct": 0
+    },
+    "ASML": {
+      "price": 1450.56,
+      "ma200": 980.1738,
+      "h52": 1547.22,
+      "dailyChange": -13.23999,
+      "dailyChangePct": -0.9044944,
+      "yearChangePct": 0
+    },
+    "BITF": {
+      "price": 2.2,
+      "ma200": 2.224085,
+      "h52": 6.6,
+      "dailyChange": -0.12999988,
+      "dailyChangePct": -5.5793943,
+      "yearChangePct": 0
+    },
+    "BMNR": {
+      "price": 18.98,
+      "ma200": 37.72625,
+      "h52": 161,
+      "dailyChange": -1.46,
+      "dailyChangePct": -7.14286,
+      "yearChangePct": 0
+    },
+    "CEG": {
+      "price": 329.88,
+      "ma200": 328.35712,
+      "h52": 412.7,
+      "dailyChange": 6.32001,
+      "dailyChangePct": 1.95327,
+      "yearChangePct": 0
+    },
+    "GOOGL": {
+      "price": 311.76,
+      "ma200": 249.6001,
+      "h52": 349,
+      "dailyChange": 4.38,
+      "dailyChangePct": 1.42495,
+      "yearChangePct": 0
+    },
+    "TSM": {
+      "price": 374.58,
+      "ma200": 273.34494,
+      "h52": 390.21,
+      "dailyChange": -2.23001,
+      "dailyChangePct": -0.591813,
+      "yearChangePct": 0
+    },
+    "ZETA": {
+      "price": 16.95,
+      "ma200": 17.734,
+      "h52": 24.9,
+      "dailyChange": -1.11,
+      "dailyChangePct": -6.14617,
+      "yearChangePct": 0
+    }
+  },
+  "biWeeklyBudget": 300,
+  "doubleDownBudget": 0,
+  "buckets": [],
+  "payFrequency": "biweekly",
+  "displayPeriods": [
+    "biweekly"
+  ],
+  "roles": [
+    "Landlord",
+    "Building Materials",
+    "Power Grid",
+    "Roads",
+    "Foremen",
+    "Operating System",
+    "Security Guards",
+    "Crypto Mining",
+    "MarTech",
+    "Search & AI",
+    "Chip Litho",
+    "Foundry",
+    "Nuclear Power"
+  ]
+}

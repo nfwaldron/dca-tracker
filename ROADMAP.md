@@ -23,7 +23,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 *Goal: Make the app usable for someone who has never heard of DCA. No infrastructure changes required.*
 
-### 1.1 Onboarding Flow
+### ~~1.1 Onboarding Flow~~
 
 **Problem:** New users land on DCA Planner and see an empty blue banner with text instructions. There is no clickable path to take action.
 
@@ -36,7 +36,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 ---
 
-### 1.2 Save Confirmations & Feedback
+### ~~1.2 Save Confirmations & Feedback~~
 
 **Problem:** Adding or editing a holding closes the modal silently. Users don't know if their data was saved.
 
@@ -50,7 +50,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 ---
 
-### 1.3 Input Validation
+### ~~1.3 Input Validation~~
 
 **Problem:** The app accepts invalid tickers, zero shares, and negative budgets without warning.
 
@@ -64,7 +64,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 ---
 
-### 1.4 Glossary & Plain-English Labels
+### ~~1.4 Glossary & Plain-English Labels~~
 
 **Problem:** Terms like "slot," "bucket," "trigger," "core," and "ATH" assume financial literacy that casual investors don't have.
 
@@ -91,7 +91,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 ---
 
-### 1.5 Import / Export Improvements
+### ~~1.5 Import / Export Improvements~~
 
 **Problem:** The destructive Import warning is buried in a `title` attribute. Users can accidentally wipe their data.
 
@@ -104,7 +104,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 ---
 
-### 1.6 Double Down Terminology Consistency
+### ~~1.6 Double Down Terminology Consistency~~
 
 **Problem:** CoreTable says "Double Down" / "2× Active" but BucketManager says "2×?" — different labels for the same concept.
 
@@ -118,7 +118,7 @@ The app is a **single-user, localStorage-only** React SPA. It runs entirely in t
 
 *Goal: Anyone can open a URL and use the app. Data still lives locally in their browser. No accounts required.*
 
-### 2.1 Hosting
+### ~~2.1 Hosting~~
 
 The app is a static SPA — it requires no server to run. Best options:
 
@@ -131,7 +131,7 @@ The app is a static SPA — it requires no server to run. Best options:
 
 **Recommendation: Vercel.** Connect the GitHub repo, set build command to `npm run build`, output dir to `dist`. Every push to `main` deploys automatically. Preview URLs for every pull request.
 
-### 2.2 CORS Proxy for Yahoo Finance
+### ~~2.2 CORS Proxy for Yahoo Finance~~
 
 **Problem:** Yahoo Finance doesn't allow direct browser requests (CORS). Today the app presumably relies on a proxy or workaround that may break.
 
@@ -142,7 +142,7 @@ The app is a static SPA — it requires no server to run. Best options:
 
 **Recommendation: Vercel Edge Function proxying Yahoo.** Keeps the existing Yahoo data format, costs nothing, and runs close to the user.
 
-### 2.3 Environment Configuration
+### ~~2.3 Environment Configuration~~
 
 Add a `.env` file pattern:
 ```
@@ -156,7 +156,7 @@ VITE_APP_VERSION=1.0.0
 
 *Goal: Users can log in, access their data from any device, and optionally share portfolios.*
 
-### 3.1 Authentication Options
+### ~~3.1 Authentication Options~~
 
 | Option | Cost | Complexity | Features |
 |---|---|---|---|
@@ -168,7 +168,7 @@ VITE_APP_VERSION=1.0.0
 
 **Recommendation: Clerk + Supabase.** Clerk handles auth (login UI, sessions, tokens) and Supabase handles the database. Both have generous free tiers that easily cover hundreds of users. Clerk's React SDK is ~5 lines to integrate.
 
-### 3.2 Database Design
+### ~~3.2 Database Design~~
 
 When moving from localStorage to a real database, the data model maps cleanly:
 
@@ -294,7 +294,24 @@ Currently the app only shows current prices vs. cost basis. Add a "DCA Log" wher
 
 In Portfolio, show holdings grouped by sector (tech, energy, healthcare) with allocation percentages. Requires adding a sector field to holdings (auto-populated from Yahoo's sector data).
 
-### 4.6 Shared / Read-Only Portfolio Links
+### 4.6 Starter Portfolio Template
+
+Add a **"Load Starter Portfolio"** button in the Manage page that imports a curated example portfolio in one click — no download/upload needed.
+
+**How it would work:**
+- Maintain a `public/template.json` file (same format as the existing JSON export) containing a sample set of holdings
+- The button fetches `/template.json` at runtime and dispatches the same `IMPORT_JSON` action the existing Import button uses
+- Show a confirm modal first: "This will replace your current holdings with the starter portfolio. Continue?"
+- A user who wants to start from the template but then customize it just loads it and edits from there
+
+**Why this matters:** New users arrive to a blank Manage page with no holdings and no context for what the app does. A pre-populated template with realistic holdings and allocations shows the full UI immediately and gives a concrete starting point.
+
+**Notes:**
+- The template file is maintained by the app owner and updated via deployment (no DB required)
+- Keep the existing Import (from file) and Export buttons — this is an additional convenience shortcut
+- Could be extended to support multiple named templates (e.g., "Tech-heavy", "Balanced")
+
+### 4.7 Shared / Read-Only Portfolio Links
 
 Generate a read-only URL (`/p/abc123`) that shows a portfolio without login, like Notion's share links. Useful for:
 - Showing a spouse or partner your allocation

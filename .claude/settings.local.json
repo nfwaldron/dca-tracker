@@ -23,7 +23,9 @@
       "Bash(npm run test)",
       "Bash(npm run test -- --reporter=verbose src/__tests__/selectors.test.ts)",
       "Bash(npm run test -- src/__tests__/selectors.test.ts)",
-      "Bash(npm install @clerk/clerk-react)"
+      "Bash(npm install @clerk/clerk-react)",
+      "Bash(npm install @supabase/supabase-js)",
+      "Bash(npm uninstall dexie)"
     ]
   }
 }
