@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"import\\(''yahoo-finance2''\\).then\\(m => console.log\\(Object.keys\\(m\\)\\)\\)\")",
+      "Bash(node -e \"import\\(''yahoo-finance2''\\).then\\(m => { const d = m.default; console.log\\(typeof d, Object.keys\\(d\\).slice\\(0,10\\)\\) }\\)\")",
+      "Bash(node -e \"import\\(''yahoo-finance2''\\).then\\(m => m.default.quote\\(''AAPL''\\).then\\(r => console.log\\(r.regularMarketPrice, r.twoHundredDayAverage, r.fiftyTwoWeekHigh\\)\\).catch\\(e => console.error\\(e.message\\)\\)\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(npm install styled-components)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm install --save-dev prettier)",
+      "Bash(npx prettier --write \"src/**/*.{ts,tsx}\")",
+      "Bash(npm install --save-dev vitest @vitest/ui @testing-library/react @testing-library/user-event @testing-library/jest-dom jsdom)",
+      "Bash(npm run test:run)",
+      "Bash(python3 -c \":*)",
+      "Bash(pip3 install pypdf)",
+      "Bash(npm run build)",
+      "Bash(npm install react-icons)",
+      "Bash(npm install @mantine/core @mantine/hooks @mantine/modals @mantine/notifications)",
+      "Bash(npm install yahoo-finance2 --save-prod)"
+    ]
+  }
+}
