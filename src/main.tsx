@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
@@ -15,15 +16,17 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-      <MantineProvider theme={theme} defaultColorScheme="dark">
-        <ModalsProvider>
-          <Notifications position="top-right" />
-          <StoreProvider>
-            <App />
-          </StoreProvider>
-        </ModalsProvider>
-      </MantineProvider>
-    </ClerkProvider>
+    <BrowserRouter>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+        <MantineProvider theme={theme} defaultColorScheme="dark">
+          <ModalsProvider>
+            <Notifications position="top-right" />
+            <StoreProvider>
+              <App />
+            </StoreProvider>
+          </ModalsProvider>
+        </MantineProvider>
+      </ClerkProvider>
+    </BrowserRouter>
   </StrictMode>,
 );

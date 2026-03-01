@@ -75,7 +75,7 @@ export function AlertBanner({ children }: { children?: ReactNode }) {
 
 // Spacing wrapper around charts
 export function ChartSection({ children }: { children?: ReactNode }) {
-  return <Box mt="lg">{children}</Box>;
+  return <Box mt="lg" mb="xl">{children}</Box>;
 }
 
 // Inline muted text span

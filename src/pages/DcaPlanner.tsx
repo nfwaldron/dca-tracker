@@ -16,7 +16,6 @@ import { formatDollars, formatPercent } from '../utils/format';
 import { PERIOD_DAYS, FREQ_LABELS } from '../constants/periods';
 import { computeDcaAllocation } from '../services/dcaAllocation';
 import { SummaryCard } from '../components/SummaryCard';
-import { InfoTip } from '../components/ui/InfoTip';
 import { CoreTable } from '../components/dca-planner/CoreTable';
 import { WishlistChips } from '../components/dca-planner/WishlistChips';
 import { BucketManager } from '../components/dca-planner/BucketManager';
@@ -164,44 +163,29 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
         Live snapshot of your total portfolio value, cost basis, and unrealized gains. Prices
         refresh when you click <strong>Refresh Prices</strong> in the header.
       </SectionDesc>
-      <Group gap={0} pb="lg" wrap="wrap">
-        <Stack gap={2} pr="xl" style={{ whiteSpace: 'nowrap' }}>
-          <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
-            Portfolio Value
-          </Text>
-          <Text size="2rem" fw={700} lh={1}>
-            {formatDollars(totalValue)}
-          </Text>
-        </Stack>
-        <Divider orientation="vertical" h={36} style={{ alignSelf: 'center' }} mx="xl" />
-        <Stack gap={2} mr="xl" style={{ whiteSpace: 'nowrap' }}>
-          <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
-            Invested
-          </Text>
-          <Text size="sm" fw={600}>{formatDollars(totalInvested)}</Text>
-        </Stack>
-        <Divider orientation="vertical" h={36} style={{ alignSelf: 'center' }} mx="xl" />
-        <Stack gap={2} mr="xl" style={{ whiteSpace: 'nowrap' }}>
-          <Group gap={4}>
-            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
-              All-Time G/L
-            </Text>
-            <InfoTip text="Gain/Loss since your first purchase — market value minus total cost basis across all holdings." />
-          </Group>
-          <Text size="sm" fw={600} c={totalGL >= 0 ? 'green' : 'red'}>
-            {formatDollars(totalGL)} ({formatPercent(totalGLPct)})
-          </Text>
-        </Stack>
-        <Divider orientation="vertical" h={36} style={{ alignSelf: 'center' }} mx="xl" />
-        <Stack gap={2} style={{ whiteSpace: 'nowrap' }}>
-          <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
-            Today's Change
-          </Text>
-          <Text size="sm" fw={600} c={dailyChange$ >= 0 ? 'green' : 'red'}>
-            {formatDollars(dailyChange$)} ({formatPercent(dailyChangePct)})
-          </Text>
-        </Stack>
-      </Group>
+      <SimpleGrid cols={{ base: 2, sm: 4 }} mb="lg">
+        <SummaryCard
+          label="Portfolio Value"
+          value={formatDollars(totalValue)}
+          sub="total market value"
+        />
+        <SummaryCard
+          label="Invested"
+          value={formatDollars(totalInvested)}
+          sub="total cost basis"
+        />
+        <SummaryCard
+          label="All-Time G/L"
+          value={`${formatDollars(totalGL)} (${formatPercent(totalGLPct)})`}
+          sub="unrealized P&L"
+          color={totalGL >= 0 ? 'var(--green)' : 'var(--red)'}
+        />
+        <SummaryCard
+          label="Today's Change"
+          value={`${formatDollars(dailyChange$)} (${formatPercent(dailyChangePct)})`}
+          color={dailyChange$ >= 0 ? 'var(--green)' : 'var(--red)'}
+        />
+      </SimpleGrid>
 
       {/* Budget — full width */}
       <Paper withBorder p="lg" radius="md" mb="lg">
