@@ -52,8 +52,8 @@ export function HoldingsTable({
               Cat
               <InfoTip text="Category: core = actively DCA'd; extra = held but not DCA'd; wishlist = not yet owned." />
             </Th>
-            <Th $num>Total Shares</Th>
-            <Th $num>
+            <Th $num $hideBelow={768}>Total Shares</Th>
+            <Th $num $hideBelow={768}>
               Wtd Avg
               <InfoTip text="Weighted Average Cost — total cost basis ÷ total shares. Accounts for purchases at different prices across multiple brokers." />
             </Th>
@@ -66,7 +66,7 @@ export function HoldingsTable({
               Mkt Val
               <InfoTip text="Market Value — total shares × current price." />
             </Th>
-            <Th $num>
+            <Th $num $hideBelow={768}>
               Cost Basis
               <InfoTip text="Total amount invested — sum of (shares × average cost) across all broker positions." />
             </Th>
@@ -98,8 +98,8 @@ export function HoldingsTable({
                 <Td>
                   <CategoryBadge $hex={CAT_HEX[h.category]}>{h.category}</CategoryBadge>
                 </Td>
-                <Td $num>{formatShares(h.totalShares)}</Td>
-                <Td $num>{h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'}</Td>
+                <Td $num $hideBelow={768}>{formatShares(h.totalShares)}</Td>
+                <Td $num $hideBelow={768}>{h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'}</Td>
                 <Td $num>{h.price > 0 ? formatDollars(h.price) : <Muted>—</Muted>}</Td>
                 <Td $num>
                   {h.h52 > 0 ? (
@@ -129,7 +129,7 @@ export function HoldingsTable({
                 <Td $num $bold>
                   {h.mktVal > 0 ? formatDollars(h.mktVal) : <Muted>—</Muted>}
                 </Td>
-                <Td $num>{formatDollars(h.costBasis)}</Td>
+                <Td $num $hideBelow={768}>{formatDollars(h.costBasis)}</Td>
                 <Td $num $bold style={{ color: h.price > 0 ? glColor : undefined }}>
                   {h.price > 0 ? formatDollars(gl.dollar) : <Muted>—</Muted>}
                 </Td>

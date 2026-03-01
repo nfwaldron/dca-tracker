@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   AppShell,
+  Box,
   Group,
   Text,
   Tabs,
@@ -101,7 +102,7 @@ export default function App() {
               onClick={openGlossary}
               leftSection={<BsQuestionCircle />}
             >
-              Glossary
+              <Box visibleFrom="sm">Glossary</Box>
             </Button>
             <Button
               variant="subtle"
@@ -111,7 +112,7 @@ export default function App() {
               disabled={loading}
               leftSection={<IconRefresh spinning={loading} />}
             >
-              {loading ? 'Fetching…' : 'Refresh Prices'}
+              <Box visibleFrom="sm">{loading ? 'Fetching…' : 'Refresh Prices'}</Box>
             </Button>
             <UserButton />
           </Group>
@@ -128,7 +129,7 @@ export default function App() {
             paddingLeft: '1rem',
           }}
         >
-          <Tabs.List style={{ borderBottom: 'none', gap: '0.25rem' }}>
+          <Tabs.List style={{ borderBottom: 'none', gap: '0.25rem', overflowX: 'auto' }}>
             <Tabs.Tab value="planner">DCA Planner</Tabs.Tab>
             <Tabs.Tab value="portfolio">Portfolio</Tabs.Tab>
             <Tabs.Tab value="manage">Manage</Tabs.Tab>

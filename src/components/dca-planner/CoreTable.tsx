@@ -49,7 +49,7 @@ export function CoreTable({
           <tr>
             <Th style={{ width: 28 }} />
             <Th>Ticker</Th>
-            <Th>Role</Th>
+            <Th $hideBelow={768}>Role</Th>
             <Th $num>Shares</Th>
             <Th $num>Price</Th>
             <Th>
@@ -73,11 +73,11 @@ export function CoreTable({
                 <Th $num>Total/{PERIOD_COL_LABELS[p]}</Th>
               </React.Fragment>
             ))}
-            <Th $num>
+            <Th $num $hideBelow={768}>
               vs 200-MA
               <InfoTip text="How far the current price is above or below the 200-day moving average. Negative = below the long-term trend. One of the two Double Down trigger conditions." />
             </Th>
-            <Th $num>
+            <Th $num $hideBelow={768}>
               vs 52W High
               <InfoTip text="How far the current price is below the 52-week high (or ATH if set). A drop of 20% or more triggers the Double Down condition." />
             </Th>
@@ -113,7 +113,7 @@ export function CoreTable({
                     <TickerMain>{h.ticker}</TickerMain>
                     <TickerSub>{h.name}</TickerSub>
                   </Td>
-                  <Td $muted>{h.role}</Td>
+                  <Td $muted $hideBelow={768}>{h.role}</Td>
                   <Td $num>{h.totalShares > 0 ? formatShares(h.totalShares) : <Muted>—</Muted>}</Td>
                   <Td $num>{h.price > 0 ? formatDollars(h.price) : <Muted>—</Muted>}</Td>
                   <Td>
@@ -150,8 +150,8 @@ export function CoreTable({
                       </React.Fragment>
                     );
                   })}
-                  <PctCell value={h.vsMA} />
-                  <PctCell value={h.vsATH} />
+                  <PctCell value={h.vsMA} hideBelow={768} />
+                  <PctCell value={h.vsATH} hideBelow={768} />
                 </TbodyRow>
 
                 {isExpanded && (

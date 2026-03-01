@@ -10,6 +10,7 @@ import { formatDollars, formatPercent } from '../utils/format';
 import { SummaryCard } from '../components/SummaryCard';
 import { AllocationPie, PIE_COLORS } from '../components/portfolio/AllocationPie';
 import { HoldingsTable, type Period } from '../components/portfolio/HoldingsTable';
+import { SectorBreakdown } from '../components/portfolio/SectorBreakdown';
 import { TabContent, CardsGrid, SectionTitle } from '../components/ui/Layout';
 import { makeSupabase } from '../services/supabase';
 import { saveShare, revokeShare } from '../services/db';
@@ -138,6 +139,8 @@ export default function Portfolio() {
       </CardsGrid>
 
       {pieData.length > 0 && <AllocationPie data={pieData} />}
+
+      <SectorBreakdown holdings={active} totalValue={totalValue} />
 
       <SectionTitle>Holdings</SectionTitle>
       <HoldingsTable holdings={active} totalValue={totalValue} period={period} />

@@ -7,6 +7,7 @@ export interface QuoteResult {
   dailyChange: number;
   dailyChangePct: number;
   yearChangePct: number;
+  sector?: string;
 }
 
 /**
@@ -51,5 +52,6 @@ export async function fetchQuotes(tickers: string[]): Promise<QuoteResult[]> {
       dailyChange: item.regularMarketChange ?? 0,
       dailyChangePct: item.regularMarketChangePercent ?? 0,
       yearChangePct: (item.fiftyTwoWeekChange ?? 0) * 100,
+      sector: item.sector ?? undefined,
     }));
 }

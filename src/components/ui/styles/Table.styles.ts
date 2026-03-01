@@ -16,7 +16,7 @@ export const DataTable = styled.table`
   }
 `;
 
-export const Th = styled.th<{ $num?: boolean }>`
+export const Th = styled.th<{ $num?: boolean; $hideBelow?: number }>`
   background: #253347;
   color: var(--muted);
   text-align: ${({ $num }) => ($num ? 'right' : 'left')};
@@ -27,15 +27,17 @@ export const Th = styled.th<{ $num?: boolean }>`
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  ${({ $hideBelow }) => $hideBelow && `@media (max-width: ${$hideBelow}px) { display: none; }`}
 `;
 
-export const Td = styled.td<{ $num?: boolean; $bold?: boolean; $muted?: boolean }>`
+export const Td = styled.td<{ $num?: boolean; $bold?: boolean; $muted?: boolean; $hideBelow?: number }>`
   padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
   ${({ $num }) => $num && 'text-align: right; white-space: nowrap;'}
   ${({ $bold }) => $bold && 'font-weight: 600;'}
   ${({ $muted }) => $muted && 'color: var(--muted);'}
+  ${({ $hideBelow }) => $hideBelow && `@media (max-width: ${$hideBelow}px) { display: none; }`}
 `;
 
 export const TbodyRow = styled.tr<{ $triggered?: boolean }>`

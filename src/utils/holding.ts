@@ -19,7 +19,7 @@ export function enrichHolding(
     dailyChangePct: 0,
     yearChangePct: 0,
   };
-  const { price, ma200, h52, dailyChange, dailyChangePct, yearChangePct } = priceRow;
+  const { price, ma200, h52, dailyChange, dailyChangePct, yearChangePct, sector } = priceRow;
 
   // Best known high: explicit ATH if set, otherwise h52 — take whichever is higher
   const highRef = Math.max(holding.ath ?? 0, h52);
@@ -61,5 +61,6 @@ export function enrichHolding(
     dailyChange,
     dailyChangePct,
     yearChangePct,
+    sector,
   };
 }

@@ -25,6 +25,7 @@ export interface PriceRow {
   dailyChange: number; // $ change today per share
   dailyChangePct: number; // % change today (e.g. 1.5 = +1.5%)
   yearChangePct: number; // % change over past 52 weeks (e.g. 25 = +25%)
+  sector?: string; // e.g. "Technology" — runtime only, not persisted to Supabase
 }
 
 export interface DcaBucket {
@@ -65,6 +66,7 @@ export interface EnrichedHolding extends Holding {
   dailyChange: number;
   dailyChangePct: number;
   yearChangePct: number;
+  sector?: string;
 }
 
 export type Action =
