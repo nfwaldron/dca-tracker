@@ -11,6 +11,7 @@ import {
   Stack,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react';
 import { BsQuestionCircle } from 'react-icons/bs';
 import { useStore } from './store';
 import { usePrices } from './hooks/usePrices';
@@ -43,18 +44,22 @@ export default function App() {
   const fmtTime = (d: Date | null) =>
     d ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
 
-  if (!loaded) {
-    return (
-      <Center h="100vh">
-        <Stack align="center" gap="sm">
-          <Loader size="md" />
-          <Text size="sm" c="dimmed">Loading portfolio…</Text>
-        </Stack>
-      </Center>
-    );
-  }
-
   return (
+    <>
+      <SignedOut>
+        <Center h="100vh">
+          <SignIn routing="hash" />
+        </Center>
+      </SignedOut>
+      <SignedIn>
+        {!loaded ? (
+          <Center h="100vh">
+            <Stack align="center" gap="sm">
+              <Loader size="md" />
+              <Text size="sm" c="dimmed">Loading portfolio…</Text>
+            </Stack>
+          </Center>
+        ) : (
     <AppShell
       header={{ height: 56 }}
       footer={{ height: 32 }}
@@ -101,6 +106,7 @@ export default function App() {
             >
               {loading ? 'Fetching…' : 'Refresh Prices'}
             </Button>
+            <UserButton />
           </Group>
         </Group>
       </AppShell.Header>
@@ -147,5 +153,8 @@ export default function App() {
 
       <GlossaryModal opened={glossaryOpened} onClose={closeGlossary} />
     </AppShell>
+        )}
+      </SignedIn>
+    </>
   );
 }
