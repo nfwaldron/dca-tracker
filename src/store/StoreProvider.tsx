@@ -9,6 +9,7 @@ import React, {
   type Dispatch,
 } from 'react';
 import { useAuth } from '@clerk/clerk-react';
+import { notifications } from '@mantine/notifications';
 import type { DBState, Action } from '../types';
 import { makeSupabase } from '../services/supabase';
 import { loadPortfolio, savePortfolio } from '../services/db';
@@ -53,8 +54,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (!loaded || !userId) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
-      const sb = await getSupabase();
-      await savePortfolio(sb, userId, state);
+      try {
+        const sb = await getSupabase();
+        await savePortfolio(sb, userId, state);
+      } catch (err) {
+        console.error('[StoreProvider] save failed:', err);
+        notifications.show({
+          color: 'red',
+          title: 'Save failed',
+          message: err instanceof Error ? err.message : 'Could not save to database.',
+          autoClose: false,
+        });
+      }
     }, 500);
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);

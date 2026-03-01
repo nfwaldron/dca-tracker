@@ -119,14 +119,18 @@ export async function savePortfolio(
   }));
 
   // Upsert all data in parallel
-  await Promise.all([
+  const [holdingsResult, bucketsResult, settingsResult, pricesResult] = await Promise.all([
     sb.from('holdings').upsert(holdingRows),
     sb.from('buckets').upsert(bucketRows),
     sb.from('settings').upsert(settingRows),
     priceRows.length > 0
       ? sb.from('prices').upsert(priceRows, { onConflict: 'ticker' })
-      : Promise.resolve(),
+      : Promise.resolve({ error: null }),
   ]);
+
+  const saveError = [holdingsResult, bucketsResult, settingsResult, pricesResult]
+    .find(r => r && 'error' in r && r.error)?.error as { message: string } | undefined;
+  if (saveError) throw new Error(saveError.message);
 
   // Delete holdings no longer in state
   if (state.holdings.length > 0) {
