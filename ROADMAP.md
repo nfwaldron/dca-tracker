@@ -275,7 +275,7 @@ Allow users to upload a CSV from Fidelity, Schwab, Robinhood, or E*Trade and aut
 
 Priority brokers: Fidelity, Schwab, Robinhood (largest US user bases).
 
-### 4.2 Auto Company Name from Ticker
+### ~~4.2 Auto Company Name from Ticker~~
 
 When a user types a ticker in `EditRow`, auto-fetch the company name from the price API and pre-fill the name field. Yahoo Finance returns the company name alongside price data — this is a free win.
 
@@ -294,7 +294,7 @@ Currently the app only shows current prices vs. cost basis. Add a "DCA Log" wher
 
 In Portfolio, show holdings grouped by sector (tech, energy, healthcare) with allocation percentages. Requires adding a sector field to holdings (auto-populated from Yahoo's sector data).
 
-### 4.6 Starter Portfolio Template
+### ~~4.6 Starter Portfolio Template~~
 
 Add a **"Load Starter Portfolio"** button in the Manage page that imports a curated example portfolio in one click — no download/upload needed.
 
@@ -311,7 +311,7 @@ Add a **"Load Starter Portfolio"** button in the Manage page that imports a cura
 - Keep the existing Import (from file) and Export buttons — this is an additional convenience shortcut
 - Could be extended to support multiple named templates (e.g., "Tech-heavy", "Balanced")
 
-### 4.7 Shared / Read-Only Portfolio Links
+### ~~4.7 Shared / Read-Only Portfolio Links~~
 
 Generate a read-only URL (`/p/abc123`) that shows a portfolio without login, like Notion's share links. Useful for:
 - Showing a spouse or partner your allocation

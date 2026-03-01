@@ -25,7 +25,8 @@
       "Bash(npm run test -- src/__tests__/selectors.test.ts)",
       "Bash(npm install @clerk/clerk-react)",
       "Bash(npm install @supabase/supabase-js)",
-      "Bash(npm uninstall dexie)"
+      "Bash(npm uninstall dexie)",
+      "Bash(ls /Users/shepherdsgatechristianministries/Desktop/claude/dca-tracker/*.md)"
     ]
   }
 }
