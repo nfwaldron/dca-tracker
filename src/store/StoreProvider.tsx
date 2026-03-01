@@ -29,9 +29,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /** Get an authenticated Supabase client using the Clerk "supabase" JWT template. */
+  /** Get an authenticated Supabase client using the active Clerk session JWT. */
   const getSupabase = useCallback(async () => {
-    const token = await getToken({ template: 'supabase' });
+    const token = await getToken();
     return makeSupabase(token);
   }, [getToken]);
 
