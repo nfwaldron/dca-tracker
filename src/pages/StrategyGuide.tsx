@@ -65,7 +65,7 @@ export default function StrategyGuide() {
         </Text>
         <Group gap="xl">
           <Anchor
-            href="https://www.youtube.com/watch?v=GzTpIeT3prY"
+            href="https://www.youtube.com/@TomNashTV"
             target="_blank"
             rel="noopener noreferrer"
             size="sm"
@@ -73,7 +73,7 @@ export default function StrategyGuide() {
           >
             <Group gap={6} align="center">
               <BsYoutube size={16} color="#FF0000" />
-              Watch the strategy announcement
+              Tom Nash on YouTube
             </Group>
           </Anchor>
           <Anchor
