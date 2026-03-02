@@ -10,6 +10,7 @@ import {
   Group,
   Stack,
   ThemeIcon,
+  Alert,
   Box,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -175,10 +176,17 @@ export function WelcomeModal() {
               Opt stocks in from the DCA Planner — they'll automatically receive extra
               allocation whenever they trigger
             </List.Item>
-            <List.Item>
-              The <strong>Strategy Guide</strong> tab covers the full methodology in detail
-            </List.Item>
           </List>
+
+          <Alert variant="light" color="blue" mt="sm">
+            <Text size="sm" fw={600} mb={2}>Want the full picture?</Text>
+            <Text size="sm" c="dimmed">
+              The <strong>Strategy Guide</strong> tab covers Tom Nash's Enhanced DCA Strategy —
+              why DCA works historically, how the double-down approach turns dips into
+              opportunities, staying disciplined during volatility, and when to review and
+              adjust your plan. Worth reading before your first purchase.
+            </Text>
+          </Alert>
         </Stack>
       )}
 
