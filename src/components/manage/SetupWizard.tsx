@@ -127,7 +127,19 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
   const coreCount = state.holdings.filter(h => h.category === 'core').length;
 
   return (
-    <Stack gap="xl" style={{ maxWidth: 600, margin: '0 auto', paddingTop: '1rem' }}>
+    <Stack gap="xl" style={{ maxWidth: 600, margin: '0 auto', paddingTop: '1rem', position: 'relative' }}>
+      <ActionIcon
+        variant="subtle"
+        color="gray"
+        size="sm"
+        title="Skip setup — open full Manage page"
+        onClick={onSkip}
+        style={{ position: 'absolute', top: 0, right: 0 }}
+        aria-label="Skip setup"
+      >
+        <IconX />
+      </ActionIcon>
+
       <Stepper active={step} size="sm" styles={{ stepLabel: { fontSize: '0.78rem' } }}>
         <Stepper.Step label="Set budget" />
         <Stepper.Step label="Add stocks" />
@@ -217,7 +229,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
           <Stack gap={4}>
             <Text fw={700} size="lg">Add your stocks</Text>
             <Text size="sm" c="dimmed">
-              Enter tickers you own or plan to DCA. Positions (shares + cost) are optional — fill them in later if needed.
+              Fill in a ticker and click <strong style={{ color: 'inherit' }}>Add Stock</strong> — repeat for each holding you want to DCA. Positions (shares + cost) are optional.
             </Text>
           </Stack>
 
@@ -355,7 +367,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
           )}
 
           <Text size="xs" c="dimmed">
-            You can add more stocks, broker positions, and roles anytime from Manage → Holdings.
+            You can add more stocks and broker positions anytime from Manage → Holdings.
           </Text>
         </Stack>
       )}
@@ -396,19 +408,29 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
 
       {/* ── Navigation ───────────────────────────────────────────────────── */}
       {step < TOTAL_STEPS - 1 && (
-        <Group justify="space-between" mt="sm">
-          <Button
-            variant="subtle"
-            color="gray"
-            disabled={step === 0}
-            onClick={() => setStep(s => s - 1)}
-          >
-            Back
-          </Button>
-          <Button onClick={() => setStep(s => s + 1)}>
-            {step === TOTAL_STEPS - 2 ? 'Continue →' : 'Next →'}
-          </Button>
-        </Group>
+        <Stack gap={4} mt="sm">
+          <Group justify="space-between">
+            <Button
+              variant="subtle"
+              color="gray"
+              disabled={step === 0}
+              onClick={() => setStep(s => s - 1)}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={() => setStep(s => s + 1)}
+              disabled={step === 1 && state.holdings.length === 0}
+            >
+              {step === TOTAL_STEPS - 2 ? 'Continue →' : 'Next →'}
+            </Button>
+          </Group>
+          {step === 1 && state.holdings.length === 0 && (
+            <Text size="xs" c="dimmed" ta="right">
+              Add at least one stock above to continue
+            </Text>
+          )}
+        </Stack>
       )}
 
       <Text size="xs" c="dimmed" ta="center" mt="xs">

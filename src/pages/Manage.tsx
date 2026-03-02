@@ -278,10 +278,15 @@ export default function Manage() {
           <Accordion variant="default" styles={{ content: { paddingLeft: 0, paddingRight: 0 } }}>
             <Accordion.Item value="roles">
               <Accordion.Control>
-                <Text size="sm" fw={600}>
-                  Role labels{' '}
-                  <Text component="span" size="xs" c="dimmed" fw={400}>(optional)</Text>
-                </Text>
+                <Stack gap={2}>
+                  <Text size="sm" fw={600}>
+                    Role labels{' '}
+                    <Text component="span" size="xs" c="dimmed" fw={400}>(optional)</Text>
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Thematic tags for each holding — e.g. "AI Infrastructure", "Landlord REIT"
+                  </Text>
+                </Stack>
               </Accordion.Control>
               <Accordion.Panel>
                 <RolesManager roles={state.roles} dispatch={dispatch} />
