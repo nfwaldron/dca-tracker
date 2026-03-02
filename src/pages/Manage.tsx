@@ -6,6 +6,7 @@ import {
   Stack,
   Text,
   Button,
+  Accordion,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
@@ -206,18 +207,28 @@ export default function Manage() {
 
       <Tabs defaultValue="holdings">
         <Tabs.List mb="lg">
-          <Tabs.Tab value="settings">Settings</Tabs.Tab>
           <Tabs.Tab value="holdings">Holdings</Tabs.Tab>
+          <Tabs.Tab value="settings">Settings</Tabs.Tab>
           <Tabs.Tab value="prices">Price Data</Tabs.Tab>
-          <Tabs.Tab value="roles">Roles</Tabs.Tab>
         </Tabs.List>
+
+        <Tabs.Panel value="holdings">
+          <SectionTitle>All holdings</SectionTitle>
+          <SectionDesc>
+            Every stock you own or are tracking. <strong>Core</strong> holdings receive DCA
+            allocations each pay period — <strong>extra</strong> = held but not DCA'd,{' '}
+            <strong>wishlist</strong> = not yet owned, tracked but excluded from allocation math.
+            Click the chevron on any row to see per-broker positions.
+          </SectionDesc>
+          <ManageHoldingsTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} roles={state.roles} />
+        </Tabs.Panel>
 
         <Tabs.Panel value="settings">
           <SectionDesc>
             These settings affect all calculations across the app — change them whenever your
             situation changes.
           </SectionDesc>
-          <Paper withBorder p="lg" radius="md">
+          <Paper withBorder p="lg" radius="md" mb="xl">
             <Stack gap="xl">
               <Stack gap="xs">
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.06em' }}>
@@ -225,7 +236,7 @@ export default function Manage() {
                   <InfoTip text="How often you get paid. Controls the pay-period length used for all DCA allocation math — changes here immediately update every $/period column in the DCA Planner." />
                 </Text>
                 <Text size="xs" c="dimmed">How often you invest (your pay cycle)</Text>
-                <Group gap="xs">
+                <Group gap="xs" wrap="wrap">
                   {PAY_OPTIONS.map(opt => (
                     <Button
                       key={opt.value}
@@ -248,7 +259,7 @@ export default function Manage() {
                   <InfoTip text="Which time-horizon columns to show in the Core Holdings table on the DCA Planner tab. Toggle multiple on to compare daily vs. bi-weekly vs. monthly amounts side by side." />
                 </Text>
                 <Text size="xs" c="dimmed">Time horizons shown in the DCA Planner table</Text>
-                <Group gap="xs">
+                <Group gap="xs" wrap="wrap">
                   {DISPLAY_OPTIONS.map(opt => (
                     <Button
                       key={opt.value}
@@ -263,17 +274,20 @@ export default function Manage() {
               </Stack>
             </Stack>
           </Paper>
-        </Tabs.Panel>
 
-        <Tabs.Panel value="holdings">
-          <SectionTitle>All holdings</SectionTitle>
-          <SectionDesc>
-            Every stock you own or are tracking. <strong>Core</strong> holdings receive DCA
-            allocations each pay period — <strong>extra</strong> = held but not DCA'd,{' '}
-            <strong>wishlist</strong> = not yet owned, tracked but excluded from allocation math.
-            Click the chevron on any row to see per-broker positions.
-          </SectionDesc>
-          <ManageHoldingsTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} roles={state.roles} />
+          <Accordion variant="default" styles={{ content: { paddingLeft: 0, paddingRight: 0 } }}>
+            <Accordion.Item value="roles">
+              <Accordion.Control>
+                <Text size="sm" fw={600}>
+                  Role labels{' '}
+                  <Text component="span" size="xs" c="dimmed" fw={400}>(optional)</Text>
+                </Text>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <RolesManager roles={state.roles} dispatch={dispatch} />
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
         </Tabs.Panel>
 
         <Tabs.Panel value="prices">
@@ -283,10 +297,6 @@ export default function Manage() {
             any field here — overrides persist until the next successful refresh.
           </SectionDesc>
           <PriceTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} />
-        </Tabs.Panel>
-
-        <Tabs.Panel value="roles">
-          <RolesManager roles={state.roles} dispatch={dispatch} />
         </Tabs.Panel>
       </Tabs>
     </TabContent>

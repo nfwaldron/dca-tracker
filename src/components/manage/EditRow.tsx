@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Group, Stack, SimpleGrid, Text, Checkbox, ActionIcon, Alert, Input, Loader } from '@mantine/core';
+import { Group, Stack, SimpleGrid, Text, Checkbox, ActionIcon, Alert, Input, Loader, Autocomplete } from '@mantine/core';
 import { BsTrash, BsPlus } from 'react-icons/bs';
 import { InfoTip } from '../ui/InfoTip';
 import { InputCell, SelectCell } from '../ui/Input';
@@ -77,6 +77,7 @@ export function EditRow({
   onCancel,
   isNew,
   roles = [],
+  onCreateRole,
 }: {
   init: EditState;
   onSave: (h: Holding) => void;
@@ -84,6 +85,7 @@ export function EditRow({
   isNew?: boolean;
   colSpan?: number; // kept for backwards compat, unused
   roles?: string[];
+  onCreateRole?: (role: string) => void;
 }) {
   const [form, setForm] = useState<EditState>(init);
   const [errors, setErrors] = useState<string[]>([]);
@@ -103,6 +105,10 @@ export function EditRow({
     if (!form.name.trim()) errs.push('Company name is required.');
     if (errs.length > 0) { setErrors(errs); return; }
     setErrors([]);
+    const trimmedRole = form.role.trim();
+    if (trimmedRole && !roles.includes(trimmedRole) && onCreateRole) {
+      onCreateRole(trimmedRole);
+    }
     onSave(editToHolding(form));
   }
 
@@ -163,27 +169,15 @@ export function EditRow({
           <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
             Role
           </Text>
-          {roles.length > 0 ? (
-            <SelectCell
-              value={roles.includes(form.role) ? form.role : '__custom__'}
-              onChange={e => {
-                if (e.target.value !== '__custom__') setField('role', e.target.value);
-              }}
-            >
-              {roles.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-              {!roles.includes(form.role) && form.role && (
-                <option value="__custom__">{form.role} (custom)</option>
-              )}
-            </SelectCell>
-          ) : (
-            <InputCell
-              placeholder="e.g. Landlord"
-              value={form.role}
-              onChange={e => setField('role', e.target.value)}
-            />
-          )}
+          <Autocomplete
+            placeholder="e.g. Landlord"
+            data={roles}
+            value={form.role}
+            onChange={v => setField('role', v)}
+            size="xs"
+            maxDropdownHeight={200}
+            styles={{ input: { fontSize: '0.83rem' } }}
+          />
         </Stack>
 
         <Stack gap={4}>

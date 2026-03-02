@@ -117,6 +117,7 @@ export function ManageHoldingsTable({
           roles={roles}
           onSave={handleSave}
           onCancel={close}
+          onCreateRole={role => dispatch({ type: 'ADD_ROLE', payload: role })}
         />
       </Modal>
 
