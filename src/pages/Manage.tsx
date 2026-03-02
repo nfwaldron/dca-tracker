@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Tabs,
   Group,
@@ -13,6 +13,7 @@ import { useStore } from '../store';
 import { ManageHoldingsTable } from '../components/manage/ManageHoldingsTable';
 import { PriceTable } from '../components/manage/PriceTable';
 import { RolesManager } from '../components/manage/RolesManager';
+import { SetupWizard } from '../components/manage/SetupWizard';
 import { TabContent, SectionTitle, SectionDesc } from '../components/ui/Layout';
 import { InfoTip } from '../components/ui/InfoTip';
 import { BsDownload, BsUpload, BsLayoutTextWindow, BsTrash } from 'react-icons/bs';
@@ -34,6 +35,9 @@ const DISPLAY_OPTIONS: { value: DisplayPeriod; label: string }[] = [
 export default function Manage() {
   const { state, dispatch } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [wasInitiallyEmpty] = useState(() => state.holdings.length === 0);
+  const [skipWizard, setSkipWizard] = useState(false);
+  const showWizard = wasInitiallyEmpty && !skipWizard;
 
   function exportData() {
     const json = JSON.stringify(state, null, 2);
@@ -141,6 +145,14 @@ export default function Manage() {
     if (next.length === 0) return;
     dispatch({ type: 'SET_DISPLAY_PERIODS', payload: next });
     notifications.show({ color: 'blue', title: 'Settings saved', message: 'Display columns updated.', autoClose: 2000 });
+  }
+
+  if (showWizard) {
+    return (
+      <TabContent>
+        <SetupWizard onSkip={() => setSkipWizard(true)} />
+      </TabContent>
+    );
   }
 
   return (

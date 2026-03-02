@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import {
   Modal,
@@ -29,6 +30,7 @@ export function WelcomeModal() {
   const { state, dispatch, loaded } = useStore();
   const [opened, { open, close }] = useDisclosure(false);
   const [step, setStep] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!loaded || !userId) return;
@@ -40,6 +42,11 @@ export function WelcomeModal() {
   function dismiss() {
     if (userId) localStorage.setItem(welcomeKey(userId), 'true');
     close();
+  }
+
+  function handleStartFresh() {
+    navigate('/manage');
+    dismiss();
   }
 
   function loadTemplate() {
@@ -205,7 +212,7 @@ export function WelcomeModal() {
           <Button onClick={() => setStep(s => s + 1)}>Next</Button>
         ) : (
           <Group gap="sm">
-            <Button variant="default" onClick={dismiss}>
+            <Button variant="default" onClick={handleStartFresh}>
               Start fresh
             </Button>
             <Button onClick={loadTemplate}>
