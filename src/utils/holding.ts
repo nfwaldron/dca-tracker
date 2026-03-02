@@ -24,8 +24,7 @@ export function enrichHolding(
   // Best known high: explicit ATH if set, otherwise h52 — take whichever is higher
   const highRef = Math.max(holding.ath ?? 0, h52);
 
-  const belowATH = highRef > 0 && price > 0 && (highRef - price) / highRef >= 0.2;
-  const triggered = belowATH;
+  const triggered = highRef > 0 && price > 0 && (highRef - price) / highRef >= 0.2;
 
   const baseDaily = holding.category === 'core' ? baseDailyAmt : 0;
   const extraDaily = triggered && holding.doubleDown ? extraDailyAmt : 0;

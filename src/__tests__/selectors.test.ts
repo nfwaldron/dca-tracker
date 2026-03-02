@@ -165,7 +165,7 @@ describe('enrich', () => {
       expect(result.triggered).toBe(true);
     });
 
-    it('does not trigger when price is above 200-MA and within 20% of ATH', () => {
+    it('does not trigger when price is within 20% of the high reference', () => {
       const holding = makeHolding({ ath: 100 });
       const prices = { TEST: makePriceRow({ price: 90, ma200: 80, h52: 100 }) };
       const result = enrichHolding(holding, prices, 0, 0);

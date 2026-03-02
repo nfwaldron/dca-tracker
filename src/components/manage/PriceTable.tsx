@@ -78,7 +78,7 @@ export function PriceTable({
               <Th $num>Price</Th>
               <Th $num>
                 200-MA
-                <InfoTip text="200-day Moving Average — the average closing price over the past 200 trading days. Used as one of the two Double Down trigger conditions (price below this = triggered)." />
+                <InfoTip text="200-day Moving Average — the average closing price over the past 200 trading days. Displayed for reference in the DCA Planner." />
               </Th>
               <Th $num>
                 52W High

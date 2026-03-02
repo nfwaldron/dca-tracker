@@ -24,9 +24,9 @@ import type { EnrichedHolding, Action, DisplayPeriod } from '../../types';
 
 // Fixed columns: chevron + ticker + role + shares + price + trigger + double-down = 7
 // Per period: $/period [+ extra/period + total/period when any DD opted in] = 1 or 3 each
-// Trailing: vsMA + vsATH = 2
+// Trailing: vsATH = 1
 const FIXED_COLS = 7;
-const TRAIL_COLS = 2;
+const TRAIL_COLS = 1;
 
 export function CoreTable({
   holdings,
@@ -82,10 +82,6 @@ export function CoreTable({
                 )}
               </React.Fragment>
             ))}
-            <Th $num $hideBelow={768}>
-              vs 200-MA
-              <InfoTip text="How far the current price is above or below the 200-day moving average. Negative = below the long-term trend. One of the two Double Down trigger conditions." />
-            </Th>
             <Th $num $hideBelow={768}>
               vs 52W High
               <InfoTip text="How far the current price is below the 52-week high (or ATH if set). A drop of 20% or more triggers the Double Down condition." />
@@ -184,7 +180,6 @@ export function CoreTable({
                       </React.Fragment>
                     );
                   })}
-                  <PctCell value={h.vsMA} hideBelow={768} />
                   <PctCell value={h.vsATH} hideBelow={768} />
                 </TbodyRow>
 
@@ -281,6 +276,14 @@ export function CoreTable({
                             <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>200-MA</Text>
                             <Text size="sm" fw={600}>{h.ma200 > 0 ? formatDollars(h.ma200) : '—'}</Text>
                           </Stack>
+                          {h.vsMA !== null && (
+                            <Stack gap={2}>
+                              <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>vs 200-MA</Text>
+                              <Text size="sm" fw={600} style={{ color: h.vsMA >= 0 ? COLOR_GAIN : COLOR_LOSS }}>
+                                {formatPercent(h.vsMA)}
+                              </Text>
+                            </Stack>
+                          )}
                         </Group>
                       </Group>
                     </td>

@@ -79,7 +79,7 @@ export function makeDBState(overrides: Partial<DBState> = {}): DBState {
 
 // ── Scenario helpers ────────────────────────────────────────────────────────
 
-/** A core holding whose price is below the 200-MA → triggers double-down */
+/** A core holding whose price is ≥20% below its 52-week high → triggers double-down */
 export const triggeredHolding = makeHolding({
   id: 'AMZN',
   ticker: 'AMZN',

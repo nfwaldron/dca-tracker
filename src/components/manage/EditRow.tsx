@@ -60,6 +60,21 @@ export function editToHolding(e: EditState): Holding {
   };
 }
 
+const BROKER_SUGGESTIONS = [
+  'Fidelity',
+  'Charles Schwab',
+  'Vanguard',
+  'E*TRADE',
+  'Robinhood',
+  'TD Ameritrade',
+  'Webull',
+  'Interactive Brokers',
+  'Merrill Edge',
+  'SoFi',
+  'Public',
+  'M1 Finance',
+];
+
 export const BLANK_EDIT: EditState = {
   id: '',
   ticker: '',
@@ -234,11 +249,15 @@ export function EditRow({
         </Group>
         {form.positions.map((p, i) => (
           <Group key={i} gap="xs" align="center">
-            <InputCell
+            <Autocomplete
               style={{ width: 140 }}
               placeholder="e.g. Fidelity"
+              data={BROKER_SUGGESTIONS}
               value={p.broker}
-              onChange={e => setPosition(i, 'broker', e.target.value)}
+              onChange={v => setPosition(i, 'broker', v)}
+              size="xs"
+              maxDropdownHeight={200}
+              styles={{ input: { fontSize: '0.83rem' } }}
             />
             <InputCell
               style={{ width: 90 }}

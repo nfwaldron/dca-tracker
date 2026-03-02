@@ -9,6 +9,7 @@ import {
   Anchor,
   Badge,
   Button,
+  CloseButton,
   Burger,
   Drawer,
   Stack,
@@ -91,6 +92,8 @@ function ClerkHeaderControls({ isGuest }: { isGuest: boolean }) {
 
 function ClerkGuestBanner() {
   const { openSignIn } = useClerk();
+  const [dismissed, setDismissed] = useState(false);
+  if (dismissed) return null;
   return (
     <Box
       style={{
@@ -100,10 +103,12 @@ function ClerkGuestBanner() {
         background: MC_BLUE_LIGHT,
         borderBottom: `1px solid ${COLOR_BORDER}`,
         padding: '7px 1rem',
-        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      <Text size="xs">
+      <Text size="xs" style={{ flex: 1, textAlign: 'center' }}>
         You&apos;re in guest mode — data saves to this browser only.{' '}
         <Anchor
           component="button"
@@ -114,6 +119,12 @@ function ClerkGuestBanner() {
           Sign in to sync across devices →
         </Anchor>
       </Text>
+      <CloseButton
+        size="xs"
+        onClick={() => setDismissed(true)}
+        title="Dismiss"
+        style={{ flexShrink: 0 }}
+      />
     </Box>
   );
 }
