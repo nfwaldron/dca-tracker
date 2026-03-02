@@ -28,10 +28,17 @@ describe('TriggerBadge', () => {
     expect(screen.getByTitle(/< 200-MA/)).toBeInTheDocument();
   });
 
-  it('includes "≥20% off ATH" in the title when applicable', () => {
-    // price = 70, ath = 100 → 30% off ATH
-    const h = makeEnrichedHolding({ price: 70, triggered: true, ma200: 60, ath: 100 });
+  it('includes "≥20% off ATH" in the title when ath exceeds h52', () => {
+    // price = 70, ath = 100, h52 = 80 → high-water = 100, 30% off ATH
+    const h = makeEnrichedHolding({ price: 70, triggered: true, ma200: 60, ath: 100, h52: 80 });
     render(<TriggerBadge h={h} />);
     expect(screen.getByTitle(/≥20% off ATH/)).toBeInTheDocument();
+  });
+
+  it('includes "≥20% off 52W High" in the title when h52 exceeds ath', () => {
+    // price = 70, ath = 80, h52 = 100 → high-water = 100 (52W), 30% off 52W High
+    const h = makeEnrichedHolding({ price: 70, triggered: true, ma200: 60, ath: 80, h52: 100 });
+    render(<TriggerBadge h={h} />);
+    expect(screen.getByTitle(/≥20% off 52W High/)).toBeInTheDocument();
   });
 });
