@@ -127,6 +127,14 @@ export function BucketManager({
         <Group gap="sm" mb="sm" wrap="wrap">
           {buckets.map(b => {
             const perStock = perSlotDailyAmt / b.tickers.length;
+
+            // Sum actual totals from enriched data so double-down extras are reflected
+            const totalBucketDaily = b.tickers.reduce((s, t) => s + (enrichedMap[t]?.totalDaily ?? 0), 0);
+            const hasExtra = b.tickers.some(t => (enrichedMap[t]?.extraDaily ?? 0) > 0);
+            // Fall back to base amounts if prices haven't loaded yet
+            const displayPeriodAmt = (totalBucketDaily > 0 ? totalBucketDaily : perSlotDailyAmt) * daysInPeriod;
+            const displayPerStock = totalBucketDaily > 0 ? totalBucketDaily / b.tickers.length : perStock;
+
             return (
               <Paper
                 key={b.id}
@@ -136,9 +144,15 @@ export function BucketManager({
                 style={{ borderLeft: '3px solid var(--mantine-color-blue-5)', minWidth: 260 }}
               >
                 <Text fw={700} size="sm" mb={2}>{b.name}</Text>
-                <Text size="xs" c="dimmed" mb="xs">
-                  1 slot · {formatDollars(perSlotDailyAmt * daysInPeriod)}/{freqLabel.toLowerCase()} ·{' '}
-                  {formatDollars(perStock)}/stock/day
+                <Text size="xs" mb="xs">
+                  <span style={{ color: 'var(--mantine-color-dimmed)' }}>1 slot · </span>
+                  <span style={{ color: hasExtra ? 'var(--amber)' : 'var(--mantine-color-dimmed)' }}>
+                    {formatDollars(displayPeriodAmt)}/{freqLabel.toLowerCase()}
+                  </span>
+                  <span style={{ color: 'var(--mantine-color-dimmed)' }}> · </span>
+                  <span style={{ color: hasExtra ? 'var(--amber)' : 'var(--mantine-color-dimmed)' }}>
+                    {formatDollars(displayPerStock)}/stock/day
+                  </span>
                 </Text>
 
                 <Stack gap={6} mb="sm">
@@ -159,7 +173,22 @@ export function BucketManager({
                           title={h?.triggered ? 'Triggered' : 'Clear'}
                         />
                         <Text size="xs" fw={700} style={{ minWidth: 44 }}>{ticker}</Text>
-                        <Text size="xs" c="dimmed" style={{ flex: 1 }}>{formatDollars(perStock)}/day</Text>
+                        <Text
+                          size="xs"
+                          style={{
+                            flex: 1,
+                            color: h?.extraDaily > 0
+                              ? 'var(--amber)'
+                              : 'var(--mantine-color-dimmed)',
+                          }}
+                        >
+                          {formatDollars(h ? h.totalDaily : perStock)}/day
+                          {h?.extraDaily > 0 && (
+                            <span style={{ color: 'var(--mantine-color-dimmed)', marginLeft: 4 }}>
+                              ({formatDollars(h.baseDaily)} + {formatDollars(h.extraDaily)})
+                            </span>
+                          )}
+                        </Text>
                         {h && (
                           <Button
                             size="compact-xs"

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo } from 'react';
-import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, NavLink, Navigate, Link, useNavigate } from 'react-router-dom';
 import {
   AppShell,
   Box,
@@ -24,6 +24,7 @@ import Portfolio from './pages/Portfolio';
 import Manage from './pages/Manage';
 import StrategyGuide from './pages/StrategyGuide';
 import { GlossaryModal } from './components/GlossaryModal';
+import { Logo } from './components/ui/Logo';
 import { ShareView } from './pages/ShareView';
 
 // Read once — share token is stable for the lifetime of the page load
@@ -124,9 +125,9 @@ function AppContent() {
                 />
               </Box>
 
-              <Text fw={700} size="lg" style={{ letterSpacing: '-0.02em', paddingRight: '1.25rem', whiteSpace: 'nowrap' }}>
-                DCA Tracker
-              </Text>
+              <Link to="/planner" style={{ textDecoration: 'none' }}>
+                <Logo />
+              </Link>
 
               {/* Horizontal nav — desktop only */}
               <Box visibleFrom="sm" style={{ height: '100%' }}>
@@ -213,9 +214,9 @@ function AppContent() {
         size="xs"
         padding="md"
         title={
-          <Text fw={700} size="lg" style={{ letterSpacing: '-0.02em' }}>
-            DCA Tracker
-          </Text>
+          <Link to="/planner" style={{ textDecoration: 'none' }} onClick={closeDrawer}>
+            <Logo size={24} />
+          </Link>
         }
         styles={{
           content: { background: 'var(--card)' },

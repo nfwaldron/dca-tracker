@@ -46,8 +46,9 @@ function BudgetInput({
         onChange={v => setStr(String(v))}
         onBlur={() => {
           const n = parseFloat(str);
-          if (!isNaN(n) && n >= 0) onCommit(n);
-          else setStr(String(value));
+          const committed = !isNaN(n) && n >= 0 ? n : 0;
+          onCommit(committed);
+          setStr(String(committed));
         }}
         min={0}
         step={10}
