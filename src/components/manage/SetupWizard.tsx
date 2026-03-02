@@ -157,7 +157,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
           </Stack>
 
           <Stack gap="xs">
-            <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
               Pay frequency
             </Text>
             <Group gap="xs" wrap="wrap">
@@ -175,7 +175,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
           </Stack>
 
           <Stack gap="xs">
-            <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
               {FREQ_LABELS[state.payFrequency]} DCA budget
             </Text>
             <NumberInput
@@ -235,7 +235,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
 
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
             <Stack gap={4}>
-              <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Ticker
               </Text>
               <TextInput
@@ -249,7 +249,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             </Stack>
 
             <Stack gap={4}>
-              <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Company name
               </Text>
               <TextInput
@@ -263,7 +263,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             </Stack>
 
             <Stack gap={4}>
-              <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Category
               </Text>
               <NativeSelect
@@ -280,7 +280,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             </Stack>
 
             <Stack gap={4}>
-              <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Broker (optional)
               </Text>
               <TextInput
@@ -293,7 +293,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             </Stack>
 
             <Stack gap={4}>
-              <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Shares (optional)
               </Text>
               <TextInput
@@ -308,7 +308,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             </Stack>
 
             <Stack gap={4}>
-              <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Avg cost / share (optional)
               </Text>
               <TextInput
@@ -338,7 +338,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
 
           {state.holdings.length > 0 && (
             <Stack gap="xs">
-              <Text size="xs" c="dimmed" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
+              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
                 Added ({state.holdings.length})
               </Text>
               <Group gap="xs">

@@ -39,7 +39,7 @@ function BudgetInput({
 
   return (
     <Stack gap={4}>
-      <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
+      <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
         {label}
       </Text>
       <NumberInput
@@ -287,7 +287,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
       <Accordion variant="default" mb="sm" styles={{ content: { paddingLeft: 0, paddingRight: 0 } }}>
         <Accordion.Item value="guide">
           <Accordion.Control>
-            <Text size="xs" c="dimmed">How do triggers and Double Down work?</Text>
+            <Text size="xs">How do triggers and Double Down work?</Text>
           </Accordion.Control>
           <Accordion.Panel>
             <Box fz="sm" c="dimmed" style={{ lineHeight: 1.6 }}>

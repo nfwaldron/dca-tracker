@@ -14,7 +14,7 @@ export function SummaryCard({
   return (
     <Paper withBorder p="md" radius="md">
       <Stack gap={4}>
-        <Text size="xs" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.06em' }}>
+        <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.06em' }}>
           {label}
         </Text>
         <Text size="xl" fw={700} lh={1.2} style={color ? { color } : undefined}>

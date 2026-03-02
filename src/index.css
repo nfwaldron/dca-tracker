@@ -25,33 +25,34 @@
   --chart-tooltip-item:   #94a3b8;
 }
 
-/* ── Light-mode overrides ───────────────────────────────────────────────────── */
+/* ── Light-mode overrides (Google Material palette) ─────────────────────────── */
 [data-mantine-color-scheme="light"] {
-  --bg:     #eef2f7;    /* slightly deeper than pure slate-100 → more contrast vs white */
+  --bg:     #f8f9fa;    /* Google exact page background */
   --card:   #ffffff;
-  --border: #b8c5d6;    /* was #e2e8f0 — much more visible against white cards */
-  --accent: #1d4ed8;
-  --green:  #15803d;
-  --red:    #b91c1c;
-  --amber:  #b45309;
-  --text:   #0f172a;
-  --muted:  #475569;    /* was #64748b — darker → passes WCAG AA on light blue headers */
+  --border: #dadce0;    /* Google exact border / divider */
+  --accent: #1a73e8;    /* Google Blue exact */
+  --green:  #188038;    /* Google Green */
+  --red:    #d93025;    /* Google Red */
+  --amber:  #e37400;    /* Google Amber */
+  --text:   #202124;    /* Google exact primary text */
+  --muted:  #4d5156;    /* Google secondary text — matches Search snippet/description */
 
   /* Table */
-  --table-header-bg:       #bfdbfe;    /* blue-200 — more visible than blue-100 */
-  --table-total-bg:        #dbeafe;    /* blue-100 — distinct from both bg and header */
-  --table-triggered-row:   rgba(185, 28, 28, 0.05);
-  --table-triggered-hover: rgba(185, 28, 28, 0.10);
+  --table-header-bg:       #e8f0fe;    /* Google blue surface */
+  --table-total-bg:        #f1f3f4;    /* Google grey surface */
+  --table-triggered-row:   rgba(217, 48, 37, 0.05);
+  --table-triggered-hover: rgba(217, 48, 37, 0.10);
   --table-row-hover:       rgba(0, 0, 0, 0.025);
 
   /* Chart tooltips */
   --chart-tooltip-bg:     #ffffff;
-  --chart-tooltip-border: #b8c5d6;
-  --chart-tooltip-label:  #0f172a;
-  --chart-tooltip-item:   #475569;
+  --chart-tooltip-border: #dadce0;
+  --chart-tooltip-label:  #202124;
+  --chart-tooltip-item:   #4d5156;
 
-  /* ── Override Mantine component borders (Paper, Input, Card, etc.) ────────── */
-  --mantine-color-default-border: #b8c5d6;
+  /* ── Override Mantine internal tokens ────────────────────────────────────── */
+  --mantine-color-default-border: #dadce0;   /* Paper, Input, Card borders    */
+  --mantine-color-dimmed:         #4d5156;   /* c="dimmed" — matches --muted / Google secondary text */
 }
 
 /* ── Reset ─────────────────────────────────────────────────────────────────── */

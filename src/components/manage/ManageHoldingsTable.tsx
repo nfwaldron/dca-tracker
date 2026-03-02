@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Dispatch } from 'react';
-import { Modal, Group, ActionIcon } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useMediaQuery, useDisclosure } from '@mantine/hooks';
+import { Modal, Group, ActionIcon, Accordion, Text, SimpleGrid, Box, Button } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { IconEdit, IconTrash, IconPlus, IconChevron } from '../icons';
@@ -13,6 +13,7 @@ import { CAT_HEX, CAT_ORDER } from '../../constants/categories';
 import { TableWrap, DataTable, Th, Td, TbodyRow, TickerMain } from '../ui/Table';
 import { CategoryBadge, BadgeGreen, BadgeGray } from '../ui/Badge';
 import { BtnPrimary, BtnGhost, BtnDanger } from '../ui/Button';
+import { LabelVal } from '../ui/LabelVal';
 import { EditRow, holdingToEdit, BLANK_EDIT } from './EditRow';
 import type { Holding, Action, PriceRow } from '../../types';
 import type { EditState } from './EditRow';
@@ -48,6 +49,7 @@ export function ManageHoldingsTable({
   const [editTarget, setEditTarget] = useState<{ holding: Holding | null; isNew: boolean } | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const isMobile = useMediaQuery('(max-width: 767px)') === true;
 
   const sorted = [...holdings].sort(
     (a, b) => CAT_ORDER.indexOf(a.category) - CAT_ORDER.indexOf(b.category),
@@ -96,6 +98,95 @@ export function ManageHoldingsTable({
     ? holdingToEdit(editTarget.holding)
     : BLANK_EDIT;
 
+  const modal = (
+    <Modal
+      opened={opened}
+      onClose={close}
+      title={editTarget?.isNew ? 'Add Holding' : 'Edit Holding'}
+      size="lg"
+    >
+      <EditRow
+        key={editTarget?.holding?.id ?? 'new'}
+        isNew={editTarget?.isNew}
+        init={initState}
+        roles={roles}
+        onSave={handleSave}
+        onCancel={close}
+        onCreateRole={role => dispatch({ type: 'ADD_ROLE', payload: role })}
+      />
+    </Modal>
+  );
+
+  // ── Mobile accordion view ──────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <>
+        {modal}
+        <Group justify="flex-end" mb="sm">
+          <BtnPrimary onClick={openAdd} {...{ leftSection: <IconPlus /> }}>
+            Add Holding
+          </BtnPrimary>
+        </Group>
+
+        <Accordion variant="separated" radius="md">
+          {sorted.map(h => {
+            const { totalShares, weightedAvg } = enrichHolding(h, {}, 0, 0);
+            const h52 = prices[h.ticker]?.h52 ?? 0;
+
+            return (
+              <Accordion.Item key={h.id} value={h.id}>
+                <Accordion.Control>
+                  <Group justify="space-between" wrap="nowrap" pr="xs">
+                    <div>
+                      <Text fw={700} size="sm">{h.ticker}</Text>
+                      <Text size="xs" c="dimmed">{h.name}</Text>
+                    </div>
+                    <CategoryBadge $hex={CAT_HEX[h.category]}>{h.category}</CategoryBadge>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <SimpleGrid cols={2} spacing="xs" mb="sm">
+                    <LabelVal label="Role"          value={h.role || '—'} muted />
+                    <LabelVal label="Total shares"  value={formatShares(totalShares)} />
+                    <LabelVal label="Wtd avg"       value={weightedAvg > 0 ? formatDollars(weightedAvg) : '—'} />
+                    <LabelVal label="52W High"      value={h52 > 0 ? formatDollars(h52) : '—'} />
+                    <LabelVal label="Double Down"   value={h.doubleDown ? <BadgeGreen>Yes</BadgeGreen> : <BadgeGray>No</BadgeGray>} />
+                    <LabelVal label="Positions"     value={`${h.positions.length} broker${h.positions.length !== 1 ? 's' : ''}`} muted />
+                  </SimpleGrid>
+
+                  {/* Broker breakdown */}
+                  {h.positions.length > 0 && (
+                    <Box mb="sm" style={{ borderTop: `1px solid ${COLOR_BORDER}`, paddingTop: '0.5rem' }}>
+                      {h.positions.map((p, i) => (
+                        <Group key={i} justify="space-between" mb={4}>
+                          <Text size="xs" fw={600}>{p.broker || '—'}</Text>
+                          <Text size="xs" c="dimmed">
+                            {formatShares(p.shares)} @ {formatDollars(p.avgCost)}
+                          </Text>
+                        </Group>
+                      ))}
+                    </Box>
+                  )}
+
+                  {/* Actions */}
+                  <Group gap="xs">
+                    <Button size="compact-sm" variant="default" leftSection={<IconEdit />} onClick={() => openEdit(h)}>
+                      Edit
+                    </Button>
+                    <Button size="compact-sm" variant="light" color="red" leftSection={<IconTrash />} onClick={() => handleDelete(h.id, h.ticker)}>
+                      Delete
+                    </Button>
+                  </Group>
+                </Accordion.Panel>
+              </Accordion.Item>
+            );
+          })}
+        </Accordion>
+      </>
+    );
+  }
+
+  // ── Desktop table (unchanged) ──────────────────────────────────────────────
   return (
     <>
       <Group justify="flex-end" mb="sm">
@@ -104,22 +195,7 @@ export function ManageHoldingsTable({
         </BtnPrimary>
       </Group>
 
-      <Modal
-        opened={opened}
-        onClose={close}
-        title={editTarget?.isNew ? 'Add Holding' : 'Edit Holding'}
-        size="lg"
-      >
-        <EditRow
-          key={editTarget?.holding?.id ?? 'new'}
-          isNew={editTarget?.isNew}
-          init={initState}
-          roles={roles}
-          onSave={handleSave}
-          onCancel={close}
-          onCreateRole={role => dispatch({ type: 'ADD_ROLE', payload: role })}
-        />
-      </Modal>
+      {modal}
 
       <TableWrap>
         <DataTable>

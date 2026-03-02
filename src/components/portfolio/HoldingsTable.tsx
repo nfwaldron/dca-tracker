@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
+import { Accordion, Group, Stack, Text, Box, Select, ActionIcon, SimpleGrid } from '@mantine/core';
 import { formatDollars, formatPercent, formatShares } from '../../utils/format';
-import { COLOR_GAIN, COLOR_LOSS } from '../ui/colors';
+import { COLOR_GAIN, COLOR_LOSS, COLOR_BORDER } from '../ui/colors';
 import { InfoTip } from '../ui/InfoTip';
 import { CAT_HEX } from '../../constants/categories';
 import {
@@ -15,6 +17,7 @@ import {
 } from '../ui/Table';
 import { CategoryBadge } from '../ui/Badge';
 import { Muted } from '../ui/Layout';
+import { LabelVal } from '../ui/LabelVal';
 import type { EnrichedHolding } from '../../types';
 
 export type Period = 'daily' | 'year' | 'alltime';
@@ -54,6 +57,7 @@ export function HoldingsTable({
   period: Period;
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir } | null>(null);
+  const isMobile = useMediaQuery('(max-width: 767px)') === true;
 
   function handleSort(key: SortKey) {
     setSort(prev => {
@@ -94,6 +98,109 @@ export function HoldingsTable({
     style: { cursor: 'pointer', userSelect: 'none' as const },
   });
 
+  // ── Mobile accordion view ──────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <>
+        {/* Sort bar */}
+        <Group mb="sm" gap="xs">
+          <Select
+            size="xs"
+            style={{ flex: 1 }}
+            placeholder="Sort by…"
+            clearable
+            value={sort?.key ?? null}
+            onChange={v => {
+              if (!v) setSort(null);
+              else setSort({ key: v as SortKey, dir: sort?.dir ?? 'desc' });
+            }}
+            data={[
+              { value: 'ticker',  label: 'Ticker' },
+              { value: 'price',   label: 'Price' },
+              { value: 'mktVal',  label: 'Market value' },
+              { value: 'gl',      label: 'G/L $' },
+              { value: 'glPct',   label: 'G/L %' },
+              { value: 'alloc',   label: 'Allocation' },
+            ]}
+          />
+          {sort && (
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              onClick={() => setSort(s => s ? { ...s, dir: s.dir === 'asc' ? 'desc' : 'asc' } : s)}
+              aria-label="Toggle sort direction"
+            >
+              {sort.dir === 'asc' ? '▲' : '▼'}
+            </ActionIcon>
+          )}
+        </Group>
+
+        <Accordion variant="separated" radius="md">
+          {sorted.map(h => {
+            const alloc = totalValue > 0 ? (h.mktVal / totalValue) * 100 : 0;
+            const gl = periodGL(h, period);
+            const glColor = gl.dollar >= 0 ? COLOR_GAIN : COLOR_LOSS;
+            const h52Pct = h.h52 > 0 && h.price > 0
+              ? ((h.price - h.h52) / h.h52) * 100
+              : null;
+
+            return (
+              <Accordion.Item key={h.id} value={h.id}>
+                <Accordion.Control>
+                  <Group justify="space-between" wrap="nowrap" pr="xs">
+                    <div>
+                      <Text fw={700} size="sm">{h.ticker}</Text>
+                      <Text size="xs" c="dimmed">{h.name}</Text>
+                    </div>
+                    <Stack gap={2} align="flex-end">
+                      <Text size="sm">{h.price > 0 ? formatDollars(h.price) : '—'}</Text>
+                      <Text size="xs" fw={600} style={{ color: h.price > 0 ? glColor : undefined }}>
+                        {h.price > 0 ? formatPercent(gl.pct) : '—'}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <SimpleGrid cols={2} spacing="xs" mb="xs">
+                    <LabelVal label="Mkt val"    value={h.mktVal > 0 ? formatDollars(h.mktVal) : '—'} bold />
+                    <LabelVal label="G/L $"      value={h.price > 0 ? formatDollars(gl.dollar) : '—'} bold color={h.price > 0 ? glColor : undefined} />
+                    <LabelVal label="Cost basis" value={formatDollars(h.costBasis)} />
+                    <LabelVal label="Alloc %"    value={h.mktVal > 0 ? alloc.toFixed(1) + '%' : '—'} muted />
+                    <LabelVal label="Shares"     value={formatShares(h.totalShares)} />
+                    <LabelVal label="Wtd avg"    value={h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'} />
+                    <LabelVal label="52W High"   value={h.h52 > 0 ? formatDollars(h.h52) : '—'} />
+                    <LabelVal
+                      label="vs High"
+                      value={h52Pct !== null ? `${h52Pct >= 0 ? '+' : ''}${h52Pct.toFixed(1)}%` : '—'}
+                      color={h52Pct !== null ? (h52Pct >= 0 ? COLOR_GAIN : COLOR_LOSS) : undefined}
+                    />
+                  </SimpleGrid>
+                  <Box mt="xs">
+                    <CategoryBadge $hex={CAT_HEX[h.category]}>{h.category}</CategoryBadge>
+                  </Box>
+                </Accordion.Panel>
+              </Accordion.Item>
+            );
+          })}
+        </Accordion>
+
+        {/* Totals bar */}
+        <Box mt="sm" style={{ borderTop: `1px solid ${COLOR_BORDER}`, padding: '0.5rem 0' }}>
+          <Group justify="space-between">
+            <Text size="sm" fw={700}>Total</Text>
+            <Group gap="md">
+              <Text size="sm" fw={700}>{formatDollars(totalValue)}</Text>
+              <Text size="sm" fw={700} style={{ color: totalGL >= 0 ? COLOR_GAIN : COLOR_LOSS }}>
+                {formatDollars(totalGL)}
+              </Text>
+            </Group>
+          </Group>
+        </Box>
+      </>
+    );
+  }
+
+  // ── Desktop table (unchanged) ──────────────────────────────────────────────
   return (
     <TableWrap>
       <DataTable>

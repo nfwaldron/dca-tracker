@@ -261,7 +261,7 @@ export function BucketManager({
           />
 
           <Stack gap={6}>
-            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>
+            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
               Stocks (select 2+)
             </Text>
             <Group gap={6} wrap="wrap">

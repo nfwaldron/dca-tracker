@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Dispatch } from 'react';
-import { Group, Stack, Text, Button, Box } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { Accordion, Group, Stack, Text, Box, Button, SimpleGrid, Divider } from '@mantine/core';
 import { IconCheck, IconChevron } from '../icons';
 import { InfoTip } from '../ui/InfoTip';
 import { PctCell } from '../PctCell';
@@ -20,6 +21,7 @@ import {
   TickerSub,
 } from '../ui/Table';
 import { Muted } from '../ui/Layout';
+import { LabelVal } from '../ui/LabelVal';
 import type { EnrichedHolding, Action, DisplayPeriod } from '../../types';
 
 // Fixed columns: chevron + ticker + role + shares + price + trigger + double-down = 7
@@ -38,6 +40,7 @@ export function CoreTable({
   dispatch: Dispatch<Action>;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const isMobile = useMediaQuery('(max-width: 767px)') === true;
 
   const periods = displayPeriods.length > 0 ? displayPeriods : ['biweekly' as DisplayPeriod];
   // Only show Extra/Total columns when at least one holding has double-down opted in
@@ -47,6 +50,120 @@ export function CoreTable({
 
   const totalMktVal = holdings.reduce((s, h) => s + h.mktVal, 0);
 
+  // ── Mobile accordion view ──────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <>
+        <Accordion variant="separated" radius="md">
+          {holdings.map(h => {
+            const glColor = h.gl >= 0 ? COLOR_GAIN : COLOR_LOSS;
+            const alloc = totalMktVal > 0 ? (h.mktVal / totalMktVal) * 100 : 0;
+            const ddState = getDdState(h);
+            const optedIn = h.doubleDown && !h.triggered;
+            const active  = h.doubleDown && h.triggered;
+            const ddLabel = active ? '2× Active' : optedIn ? 'Opted In' : 'Double Down';
+
+            return (
+              <Accordion.Item key={h.id} value={h.id}>
+                <Accordion.Control>
+                  <Group justify="space-between" wrap="nowrap" pr="xs">
+                    <div>
+                      <Text fw={700} size="sm">{h.ticker}</Text>
+                      <Text size="xs" c="dimmed">{h.name}</Text>
+                    </div>
+                    <Group gap="xs" wrap="nowrap">
+                      <TriggerBadge h={h} />
+                      <Text size="sm">{h.price > 0 ? formatDollars(h.price) : '—'}</Text>
+                    </Group>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  {/* DCA allocations */}
+                  <SimpleGrid cols={showDdCols ? 3 : 2} spacing="xs" mb="sm">
+                    {periods.map(p => {
+                      const days = PERIOD_DAYS[p];
+                      const extraDisplay = ddState === 'funded'   ? h.extraDaily * days
+                                         : ddState === 'unfunded' ? h.baseDaily  * days
+                                         : 0;
+                      const extraColor = ddState !== 'inactive' ? DD_COLOR[ddState] : COLOR_MUTED;
+                      const totalDisplay = ddState === 'unfunded' ? h.baseDaily * 2 * days : h.totalDaily * days;
+                      const totalColor   = ddState === 'unfunded' ? DD_COLOR.unfunded : undefined;
+                      return (
+                        <React.Fragment key={p}>
+                          <LabelVal label={`$/${PERIOD_COL_LABELS[p]}`} value={formatDollars(h.baseDaily * days)} />
+                          {showDdCols && (
+                            <>
+                              <LabelVal label={`Extra/${PERIOD_COL_LABELS[p]}`} value={formatDollars(extraDisplay)} color={extraColor} />
+                              <LabelVal label={`Total/${PERIOD_COL_LABELS[p]}`} value={formatDollars(totalDisplay)} color={totalColor} bold />
+                            </>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </SimpleGrid>
+
+                  <Divider mb="sm" />
+
+                  {/* Financial detail */}
+                  <SimpleGrid cols={2} spacing="xs" mb="sm">
+                    <LabelVal label="Shares"     value={h.totalShares > 0 ? formatShares(h.totalShares) : '—'} />
+                    <LabelVal label="Wtd avg"    value={h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'} />
+                    <LabelVal label="Cost basis" value={formatDollars(h.costBasis)} />
+                    <LabelVal label="Mkt value"  value={h.mktVal > 0 ? formatDollars(h.mktVal) : '—'} />
+                    <LabelVal label="G/L $"      value={h.price > 0 ? formatDollars(h.gl) : '—'} color={h.price > 0 ? glColor : undefined} />
+                    <LabelVal label="G/L %"      value={h.price > 0 ? formatPercent(h.glPct) : '—'} color={h.price > 0 ? glColor : undefined} />
+                    <LabelVal label="52W High"   value={h.h52 > 0 ? formatDollars(h.h52) : '—'} />
+                    {h.ma200 > 0 && <LabelVal label="200-MA" value={formatDollars(h.ma200)} />}
+                    {h.vsMA !== null && (
+                      <LabelVal label="vs 200-MA" value={formatPercent(h.vsMA)} color={h.vsMA >= 0 ? COLOR_GAIN : COLOR_LOSS} />
+                    )}
+                    {totalMktVal > 0 && h.mktVal > 0 && (
+                      <LabelVal label="Alloc" value={alloc.toFixed(1) + '%'} muted />
+                    )}
+                    {h.role ? <LabelVal label="Role" value={h.role} muted /> : null}
+                  </SimpleGrid>
+
+                  {/* Double Down toggle */}
+                  <Button
+                    size="compact-sm"
+                    variant={h.doubleDown ? 'light' : 'default'}
+                    color={h.doubleDown ? 'green' : 'gray'}
+                    leftSection={h.doubleDown ? <IconCheck /> : null}
+                    style={optedIn ? { opacity: 0.65 } : !h.triggered ? { opacity: 0.45 } : undefined}
+                    onClick={() => dispatch({ type: 'TOGGLE_DOUBLE_DOWN', payload: h.id })}
+                  >
+                    {ddLabel}
+                  </Button>
+                </Accordion.Panel>
+              </Accordion.Item>
+            );
+          })}
+        </Accordion>
+
+        {/* Totals bar — one line per period */}
+        {periods.map(p => {
+          const days = PERIOD_DAYS[p];
+          const baseTotal  = holdings.reduce((s, h) => s + h.baseDaily * days, 0);
+          const grandTotal = holdings.reduce((s, h) => s + h.totalDaily * days, 0);
+          return (
+            <Box key={p} mt="sm" style={{ borderTop: `1px solid ${COLOR_BORDER}`, padding: '0.5rem 0' }}>
+              <Group justify="space-between">
+                <Text size="sm" fw={700}>{PERIOD_COL_LABELS[p]} Totals</Text>
+                <Group gap="md">
+                  {showDdCols
+                    ? <Text size="sm">Total: {formatDollars(grandTotal)}</Text>
+                    : <Text size="sm">{formatDollars(baseTotal)}</Text>
+                  }
+                </Group>
+              </Group>
+            </Box>
+          );
+        })}
+      </>
+    );
+  }
+
+  // ── Desktop table (unchanged) ──────────────────────────────────────────────
   return (
     <TableWrap>
       <DataTable>
@@ -209,15 +326,15 @@ export function CoreTable({
                           }}
                         >
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Current price</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>Current price</Text>
                             <Text size="sm" fw={600}>{h.price > 0 ? formatDollars(h.price) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Wtd avg cost</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>Wtd avg cost</Text>
                             <Text size="sm" fw={600}>{h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Cost basis</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>Cost basis</Text>
                             <Text size="sm" fw={600}>{formatDollars(h.costBasis)}</Text>
                           </Stack>
                         </Group>
@@ -233,11 +350,11 @@ export function CoreTable({
                           }}
                         >
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Mkt value</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>Mkt value</Text>
                             <Text size="sm" fw={600}>{h.mktVal > 0 ? formatDollars(h.mktVal) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>G/L $</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>G/L $</Text>
                             <Text
                               size="sm"
                               fw={600}
@@ -247,7 +364,7 @@ export function CoreTable({
                             </Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>G/L %</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>G/L %</Text>
                             <Text
                               size="sm"
                               fw={600}
@@ -258,7 +375,7 @@ export function CoreTable({
                           </Stack>
                           {totalMktVal > 0 && h.mktVal > 0 && (
                             <Stack gap={2}>
-                              <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Alloc</Text>
+                              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>Alloc</Text>
                               <Text size="sm" fw={600} c="dimmed">{alloc.toFixed(1)}%</Text>
                             </Stack>
                           )}
@@ -269,16 +386,16 @@ export function CoreTable({
                           style={{ paddingTop: '0.35rem', paddingBottom: '0.35rem' }}
                         >
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>52W High</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>52W High</Text>
                             <Text size="sm" fw={600}>{h.h52 > 0 ? formatDollars(h.h52) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>200-MA</Text>
+                            <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>200-MA</Text>
                             <Text size="sm" fw={600}>{h.ma200 > 0 ? formatDollars(h.ma200) : '—'}</Text>
                           </Stack>
                           {h.vsMA !== null && (
                             <Stack gap={2}>
-                              <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>vs 200-MA</Text>
+                              <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>vs 200-MA</Text>
                               <Text size="sm" fw={600} style={{ color: h.vsMA >= 0 ? COLOR_GAIN : COLOR_LOSS }}>
                                 {formatPercent(h.vsMA)}
                               </Text>

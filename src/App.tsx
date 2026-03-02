@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
-import { COLOR_CARD, COLOR_BORDER, MC_BLUE_4, MC_DIMMED } from './components/ui/colors';
+import { COLOR_CARD, COLOR_BORDER } from './components/ui/colors';
 import { Routes, Route, NavLink, Navigate, Link, useNavigate } from 'react-router-dom';
 import {
   AppShell,
@@ -56,7 +56,7 @@ const NAV_LINKS = [
 
 // Desktop: horizontal nav link with underline indicator
 const desktopNavStyle = ({ isActive }: { isActive: boolean }) => ({
-  color: isActive ? MC_BLUE_4 : MC_DIMMED,
+  color: isActive ? 'var(--accent)' : 'var(--muted)',
   textDecoration: 'none',
   fontWeight: isActive ? 600 : 400,
   fontSize: '0.875rem',
@@ -65,7 +65,7 @@ const desktopNavStyle = ({ isActive }: { isActive: boolean }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   whiteSpace: 'nowrap' as const,
-  borderBottom: isActive ? `2px solid ${MC_BLUE_4}` : '2px solid transparent',
+  borderBottom: isActive ? '2px solid var(--accent)' : '2px solid transparent',
   transition: 'color 0.15s, border-color 0.15s',
 });
 
@@ -274,7 +274,7 @@ function AppContent() {
                   justifyContent: 'center',
                   gap: 3,
                   textDecoration: 'none',
-                  color: isActive ? MC_BLUE_4 : MC_DIMMED,
+                  color: isActive ? 'var(--accent)' : 'var(--muted)',
                   fontSize: '0.62rem',
                   fontWeight: isActive ? 600 : 400,
                   padding: '6px 4px',

@@ -33,7 +33,6 @@ export function SectionTitle({
     <Title
       order={5}
       tt="uppercase"
-      c="dimmed"
       style={{ letterSpacing: '0.06em', marginBottom: '0.35rem', ...style }}
     >
       {children}
@@ -44,7 +43,7 @@ export function SectionTitle({
 // Secondary descriptive text under section titles
 export function SectionDesc({ children, style }: { children?: ReactNode; style?: CSSProperties }) {
   return (
-    <Text size="xs" c="dimmed" mb="sm" style={{ lineHeight: 1.5, opacity: 0.85, ...style }}>
+    <Text size="xs" c="dimmed" mb="sm" style={{ lineHeight: 1.5, ...style }}>
       {children}
     </Text>
   );

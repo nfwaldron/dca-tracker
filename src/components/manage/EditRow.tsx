@@ -149,7 +149,7 @@ export function EditRow({
     <Stack gap="md">
       <SimpleGrid cols={{ base: 2, sm: 3 }} spacing="sm">
         <Stack gap={4}>
-          <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
             Ticker
           </Text>
           <InputCell
@@ -167,7 +167,7 @@ export function EditRow({
         </Stack>
 
         <Stack gap={4}>
-          <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
             Name
           </Text>
           <Input
@@ -181,7 +181,7 @@ export function EditRow({
         </Stack>
 
         <Stack gap={4}>
-          <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
             Role
           </Text>
           <Autocomplete
@@ -196,7 +196,7 @@ export function EditRow({
         </Stack>
 
         <Stack gap={4}>
-          <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
             Category
             <InfoTip text="core = DCA'd every pay period (appears in DCA Planner); extra = held but excluded from DCA; wishlist = not yet owned, tracked for reference only." />
           </Text>
@@ -211,7 +211,7 @@ export function EditRow({
         </Stack>
 
         <Stack gap={4}>
-          <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
             ATH $
             <InfoTip text="Optional all-time high override. If the stock's true ATH was more than 52 weeks ago, enter it here so the Double Down trigger (20%-off condition) stays accurate. Leave blank to use only the 52-week high." />
           </Text>
@@ -223,7 +223,7 @@ export function EditRow({
         </Stack>
 
         <Stack gap={4}>
-          <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
             Double Down
             <InfoTip text="Pre-seeds the Double Down opt-in for this stock. When checked and the stock is triggered, it will receive extra allocation from your Double-Down Budget. You can also toggle this live from the DCA Planner." />
           </Text>
@@ -237,7 +237,7 @@ export function EditRow({
       </SimpleGrid>
 
       <Stack gap="xs">
-        <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
+        <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.05em' }}>
           Broker Positions
           <InfoTip text="Enter where you hold this stock and how many shares at what average cost. Add one row per broker. Leave blank for watchlist stocks you don't own yet — positions are optional." />
         </Text>

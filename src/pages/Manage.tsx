@@ -231,7 +231,7 @@ export default function Manage() {
           <Paper withBorder p="lg" radius="md" mb="xl">
             <Stack gap="xl">
               <Stack gap="xs">
-                <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.06em' }}>
+                <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.06em' }}>
                   Pay frequency
                   <InfoTip text="How often you get paid. Controls the pay-period length used for all DCA allocation math — changes here immediately update every $/period column in the DCA Planner." />
                 </Text>
@@ -254,7 +254,7 @@ export default function Manage() {
               </Stack>
 
               <Stack gap="xs">
-                <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.06em' }}>
+                <Text size="xs" tt="uppercase" fw={600} style={{ letterSpacing: '0.06em' }}>
                   DCA table — display columns
                   <InfoTip text="Which time-horizon columns to show in the Core Holdings table on the DCA Planner tab. Toggle multiple on to compare daily vs. bi-weekly vs. monthly amounts side by side." />
                 </Text>
