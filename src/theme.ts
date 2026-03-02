@@ -16,7 +16,7 @@ const darkSlate: MantineColorsTuple = [
 
 export const theme = createTheme({
   primaryColor: 'blue',
-  fontFamily: 'system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif',
+  fontFamily: '"Roboto", system-ui, -apple-system, sans-serif',
   colors: {
     dark: darkSlate,
   },
@@ -37,7 +37,7 @@ export const theme = createTheme({
     },
     Button: {
       defaultProps: {
-        radius: 'md',
+        radius: 'xl',
       },
     },
     TextInput: {

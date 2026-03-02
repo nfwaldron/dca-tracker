@@ -110,7 +110,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     if (!userId) {
       // Guest mode — save to localStorage immediately (no debounce needed)
-      localStorage.setItem(GUEST_STATE_KEY, JSON.stringify(state));
+      try {
+        localStorage.setItem(GUEST_STATE_KEY, JSON.stringify(state));
+      } catch {
+        // QuotaExceededError — silently swallow; will retry on next state change
+      }
       return;
     }
 

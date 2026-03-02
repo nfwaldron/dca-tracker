@@ -1,24 +1,31 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
-import { COLOR_CARD, COLOR_BORDER, MC_BLUE_4, MC_BLUE_LIGHT, MC_DIMMED, MC_TEXT } from './components/ui/colors';
+import { COLOR_CARD, COLOR_BORDER, MC_BLUE_4, MC_DIMMED } from './components/ui/colors';
 import { Routes, Route, NavLink, Navigate, Link, useNavigate } from 'react-router-dom';
 import {
   AppShell,
   Box,
   Group,
   Text,
-  Anchor,
   Badge,
   Button,
-  CloseButton,
-  Burger,
-  Drawer,
+  ActionIcon,
   Stack,
   Loader,
   Center,
+  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useClerk, UserButton } from '@clerk/clerk-react';
-import { BsQuestionCircle } from 'react-icons/bs';
+import {
+  BsQuestionCircle,
+  BsBarChartLine,
+  BsBriefcase,
+  BsSliders,
+  BsBook,
+  BsSun,
+  BsMoon,
+} from 'react-icons/bs';
 import { useStore } from './store';
 import { useAppAuth } from './store/AuthProvider';
 import { usePrices } from './hooks/usePrices';
@@ -32,6 +39,7 @@ import { WelcomeModal } from './components/WelcomeModal';
 import { Logo } from './components/ui/Logo';
 import { ShareView } from './pages/ShareView';
 import { LandingPage } from './components/LandingPage';
+import { ClerkGuestBanner } from './components/ClerkGuestBanner';
 
 // Read once — share token is stable for the lifetime of the page load
 const SHARE_TOKEN = new URLSearchParams(window.location.search).get('share');
@@ -61,18 +69,33 @@ const desktopNavStyle = ({ isActive }: { isActive: boolean }) => ({
   transition: 'color 0.15s, border-color 0.15s',
 });
 
-// Mobile drawer: full-width vertical link
-const drawerNavStyle = ({ isActive }: { isActive: boolean }) => ({
-  display: 'block',
-  padding: '0.75rem 1rem',
-  borderRadius: 8,
-  textDecoration: 'none',
-  fontWeight: isActive ? 600 : 400,
-  fontSize: '1rem',
-  color: isActive ? MC_BLUE_4 : MC_TEXT,
-  background: isActive ? MC_BLUE_LIGHT : 'transparent',
-  transition: 'background 0.15s, color 0.15s',
-});
+// Mobile bottom-tab nav links (icons + label, Google-style)
+const BOTTOM_NAV_LINKS = [
+  { to: '/planner',   label: 'Planner',   icon: BsBarChartLine },
+  { to: '/portfolio', label: 'Portfolio', icon: BsBriefcase    },
+  { to: '/manage',    label: 'Manage',    icon: BsSliders      },
+  { to: '/guide',     label: 'Guide',     icon: BsBook         },
+];
+
+// ── Theme toggle ───────────────────────────────────────────────────────────────
+
+function ThemeToggle() {
+  const { setColorScheme } = useMantineColorScheme();
+  const colorScheme = useComputedColorScheme('dark');
+  const isDark = colorScheme === 'dark';
+  return (
+    <ActionIcon
+      variant="subtle"
+      color="gray"
+      size="lg"
+      onClick={() => setColorScheme(isDark ? 'light' : 'dark')}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {isDark ? <BsSun size={16} /> : <BsMoon size={16} />}
+    </ActionIcon>
+  );
+}
 
 // ── Clerk-specific sub-components ─────────────────────────────────────────────
 // Only ever rendered when CLERK_ENABLED is true, so ClerkProvider is always
@@ -90,44 +113,18 @@ function ClerkHeaderControls({ isGuest }: { isGuest: boolean }) {
   return <UserButton />;
 }
 
-function ClerkGuestBanner() {
-  const { openSignIn } = useClerk();
-  const [dismissed, setDismissed] = useState(false);
-  if (dismissed) return null;
-  return (
-    <Box
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        background: MC_BLUE_LIGHT,
-        borderBottom: `1px solid ${COLOR_BORDER}`,
-        padding: '7px 1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Text size="xs" style={{ flex: 1, textAlign: 'center' }}>
-        You&apos;re in guest mode — data saves to this browser only.{' '}
-        <Anchor
-          component="button"
-          size="xs"
-          fw={600}
-          onClick={() => openSignIn()}
-        >
-          Sign in to sync across devices →
-        </Anchor>
-      </Text>
-      <CloseButton
-        size="xs"
-        onClick={() => setDismissed(true)}
-        title="Dismiss"
-        style={{ flexShrink: 0 }}
-      />
-    </Box>
-  );
-}
+// ── Pure helpers ───────────────────────────────────────────────────────────────
+
+const fmtTime = (d: Date | null) =>
+  d ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+
+const formatAgo = (d: Date | null): string => {
+  if (!d) return '—';
+  const mins = Math.floor((Date.now() - d.getTime()) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  return `${Math.floor(mins / 60)} hr ago`;
+};
 
 // ── Main app shell ─────────────────────────────────────────────────────────────
 
@@ -137,7 +134,6 @@ function AppContent() {
 
   const { state, dispatch, loaded } = useStore();
   const [glossaryOpened, { open: openGlossary, close: closeGlossary }] = useDisclosure(false);
-  const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
   const navigate = useNavigate();
 
   const tickers = useMemo(() => state.holdings.map(h => h.ticker), [state.holdings]);
@@ -151,22 +147,12 @@ function AppContent() {
     }
   }, [loaded, tickers.length, refresh]);
 
+  // Re-render every minute so the "X min ago" timestamp stays current
   const [, setTick] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setTick(t => t + 1), 60_000);
     return () => clearInterval(id);
   }, []);
-
-  const fmtTime = (d: Date | null) =>
-    d ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
-
-  const formatAgo = (d: Date | null): string => {
-    if (!d) return '—';
-    const mins = Math.floor((Date.now() - d.getTime()) / 60_000);
-    if (mins < 1) return 'just now';
-    if (mins < 60) return `${mins} min ago`;
-    return `${Math.floor(mins / 60)} hr ago`;
-  };
 
   if (!loaded) {
     return (
@@ -183,7 +169,7 @@ function AppContent() {
     <>
       <AppShell
         header={{ height: 56 }}
-        footer={{ height: 48 }}
+        footer={{ height: { base: 64, sm: 48 } }}
         padding={0}
       >
         <AppShell.Header
@@ -197,18 +183,8 @@ function AppContent() {
           }}
         >
           <Group justify="space-between" w="100%" wrap="nowrap" style={{ height: '100%' }}>
-            {/* Left: hamburger (mobile) + logo + nav links (desktop) */}
+            {/* Left: logo + desktop nav links */}
             <Group gap={0} style={{ height: '100%', overflow: 'hidden', flexShrink: 1, minWidth: 0 }}>
-              {/* Hamburger — mobile/tablet only */}
-              <Box hiddenFrom="sm" mr="sm">
-                <Burger
-                  opened={drawerOpened}
-                  onClick={drawerOpened ? closeDrawer : openDrawer}
-                  size="sm"
-                  color={MC_DIMMED}
-                />
-              </Box>
-
               <Link to="/planner" style={{ textDecoration: 'none' }}>
                 <Logo />
               </Link>
@@ -226,7 +202,7 @@ function AppContent() {
             </Group>
 
             {/* Right controls */}
-            <Group gap="sm" style={{ flexShrink: 0 }}>
+            <Group gap="xs" style={{ flexShrink: 0 }}>
               {error && (
                 <Badge color="red" variant="light" title={error}>
                   ⚠ Price fetch failed
@@ -258,6 +234,7 @@ function AppContent() {
               >
                 <Box visibleFrom="sm">{loading ? 'Fetching…' : 'Refresh prices'}</Box>
               </Button>
+              <ThemeToggle />
               {CLERK_ENABLED && <ClerkHeaderControls isGuest={isGuest} />}
             </Group>
           </Group>
@@ -278,59 +255,58 @@ function AppContent() {
         </AppShell.Main>
 
         <AppShell.Footer
-          style={{
-            background: COLOR_CARD,
-            borderTop: `1px solid ${COLOR_BORDER}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 1.5rem',
-          }}
+          style={{ background: COLOR_CARD, borderTop: `1px solid ${COLOR_BORDER}` }}
         >
-          <Text size="xs" c="dimmed">
-            For informational purposes only — not financial advice. Data via Yahoo Finance. Always do your own research.
-          </Text>
+          {/* Mobile: Google-style bottom tab bar */}
+          <Box
+            hiddenFrom="sm"
+            style={{ display: 'flex', height: '100%', alignItems: 'stretch' }}
+          >
+            {BOTTOM_NAV_LINKS.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                style={({ isActive }) => ({
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3,
+                  textDecoration: 'none',
+                  color: isActive ? MC_BLUE_4 : MC_DIMMED,
+                  fontSize: '0.62rem',
+                  fontWeight: isActive ? 600 : 400,
+                  padding: '6px 4px',
+                  transition: 'color 0.15s',
+                })}
+              >
+                <Icon size={22} aria-hidden="true" />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+          </Box>
+
+          {/* Desktop: disclaimer */}
+          <Box
+            visibleFrom="sm"
+            style={{
+              display: 'flex',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 1.5rem',
+            }}
+          >
+            <Text size="xs" c="dimmed">
+              For informational purposes only — not financial advice. Data via Yahoo Finance. Always do your own research.
+            </Text>
+          </Box>
         </AppShell.Footer>
 
         <GlossaryModal opened={glossaryOpened} onClose={closeGlossary} />
         <WelcomeModal />
       </AppShell>
-
-      {/* Mobile side-nav drawer */}
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        size="xs"
-        padding="md"
-        title={
-          <Link to="/planner" style={{ textDecoration: 'none' }} onClick={closeDrawer}>
-            <Logo size={24} />
-          </Link>
-        }
-        styles={{
-          content: { background: COLOR_CARD },
-          header: { background: COLOR_CARD, borderBottom: `1px solid ${COLOR_BORDER}` },
-        }}
-      >
-        <Stack gap={4} mt="sm">
-          {NAV_LINKS.map(({ to, label }) => (
-            <NavLink key={to} to={to} style={drawerNavStyle} onClick={closeDrawer}>
-              {label}
-            </NavLink>
-          ))}
-          <Button
-            variant="subtle"
-            color="gray"
-            justify="flex-start"
-            fullWidth
-            leftSection={<BsQuestionCircle />}
-            onClick={() => { closeDrawer(); openGlossary(); }}
-            style={{ marginTop: 4 }}
-          >
-            Glossary
-          </Button>
-        </Stack>
-      </Drawer>
     </>
   );
 }

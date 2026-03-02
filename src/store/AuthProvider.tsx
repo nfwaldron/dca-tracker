@@ -8,7 +8,7 @@ interface AppAuth {
 }
 
 // Default = permanently guest (used when no ClerkProvider in the tree)
-const AuthCtx = createContext<AppAuth>({
+export const AuthCtx = createContext<AppAuth>({
   userId: null,
   getToken: async () => null,
 });

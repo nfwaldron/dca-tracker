@@ -1,4 +1,4 @@
-/* ── Design Tokens ─────────────────────────────────────────────────────────── */
+/* ── Design Tokens (dark — default) ────────────────────────────────────────── */
 :root {
   --bg:      #0f172a;
   --card:    #1e293b;
@@ -9,7 +9,49 @@
   --amber:   #f59e0b;
   --text:    #f1f5f9;
   --muted:   #94a3b8;
-  --font:    system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font:    'Roboto', system-ui, -apple-system, sans-serif;
+
+  /* Table */
+  --table-header-bg:       #253347;
+  --table-total-bg:        #1a2740;
+  --table-triggered-row:   rgba(239, 68, 68, 0.03);
+  --table-triggered-hover: rgba(239, 68, 68, 0.06);
+  --table-row-hover:       rgba(255, 255, 255, 0.03);
+
+  /* Chart tooltips */
+  --chart-tooltip-bg:     #1e293b;
+  --chart-tooltip-border: #334155;
+  --chart-tooltip-label:  #f1f5f9;
+  --chart-tooltip-item:   #94a3b8;
+}
+
+/* ── Light-mode overrides ───────────────────────────────────────────────────── */
+[data-mantine-color-scheme="light"] {
+  --bg:     #eef2f7;    /* slightly deeper than pure slate-100 → more contrast vs white */
+  --card:   #ffffff;
+  --border: #b8c5d6;    /* was #e2e8f0 — much more visible against white cards */
+  --accent: #1d4ed8;
+  --green:  #15803d;
+  --red:    #b91c1c;
+  --amber:  #b45309;
+  --text:   #0f172a;
+  --muted:  #475569;    /* was #64748b — darker → passes WCAG AA on light blue headers */
+
+  /* Table */
+  --table-header-bg:       #bfdbfe;    /* blue-200 — more visible than blue-100 */
+  --table-total-bg:        #dbeafe;    /* blue-100 — distinct from both bg and header */
+  --table-triggered-row:   rgba(185, 28, 28, 0.05);
+  --table-triggered-hover: rgba(185, 28, 28, 0.10);
+  --table-row-hover:       rgba(0, 0, 0, 0.025);
+
+  /* Chart tooltips */
+  --chart-tooltip-bg:     #ffffff;
+  --chart-tooltip-border: #b8c5d6;
+  --chart-tooltip-label:  #0f172a;
+  --chart-tooltip-item:   #475569;
+
+  /* ── Override Mantine component borders (Paper, Input, Card, etc.) ────────── */
+  --mantine-color-default-border: #b8c5d6;
 }
 
 /* ── Reset ─────────────────────────────────────────────────────────────────── */
@@ -44,4 +86,4 @@ body {
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #475569; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }

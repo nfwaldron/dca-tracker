@@ -22,20 +22,20 @@ export const MC_DARK_4     = 'var(--mantine-color-dark-4)';     // neutral dot /
 export const MC_DIMMED     = 'var(--mantine-color-dimmed)';     // secondary text (Mantine)
 export const MC_TEXT       = 'var(--mantine-color-text)';       // primary text (Mantine)
 
-// ─── Table structure colors (Table.styles.ts) ─────────────────────────────────
-export const TABLE_HEADER_BG       = '#253347';   // thead background
-export const TABLE_TOTAL_BG        = '#1a2740';   // tfoot / total-row background
-export const TABLE_TRIGGERED_ROW   = '#ef444408'; // triggered row bg (red, low opacity)
-export const TABLE_TRIGGERED_HOVER = '#ef44440f'; // triggered row hover
-export const TABLE_ROW_HOVER       = '#ffffff08'; // normal row hover
+// ─── Table structure colors (Table.styles.ts) — theme-aware via CSS vars ─────
+export const TABLE_HEADER_BG       = 'var(--table-header-bg)';
+export const TABLE_TOTAL_BG        = 'var(--table-total-bg)';
+export const TABLE_TRIGGERED_ROW   = 'var(--table-triggered-row)';
+export const TABLE_TRIGGERED_HOVER = 'var(--table-triggered-hover)';
+export const TABLE_ROW_HOVER       = 'var(--table-row-hover)';
 
-// ─── Chart / tooltip colors (Recharts) ────────────────────────────────────────
-export const CHART_TOOLTIP_BG     = '#1e293b'; // tooltip container background
-export const CHART_TOOLTIP_BORDER = '#334155'; // tooltip container border
-export const CHART_TOOLTIP_LABEL  = '#f1f5f9'; // tooltip label text
-export const CHART_TOOLTIP_ITEM   = '#94a3b8'; // tooltip item value text
-export const CHART_LEGEND_TEXT    = '#94a3b8'; // legend ticker name
-export const CHART_LEGEND_PCT     = '#64748b'; // legend percentage text
+// ─── Chart / tooltip colors (Recharts) — theme-aware via CSS vars ────────────
+export const CHART_TOOLTIP_BG     = 'var(--chart-tooltip-bg)';
+export const CHART_TOOLTIP_BORDER = 'var(--chart-tooltip-border)';
+export const CHART_TOOLTIP_LABEL  = 'var(--chart-tooltip-label)';
+export const CHART_TOOLTIP_ITEM   = 'var(--chart-tooltip-item)';
+export const CHART_LEGEND_TEXT    = '#94a3b8'; // legend ticker name (static)
+export const CHART_LEGEND_PCT     = '#64748b'; // legend percentage text (static)
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 export const LOGO_BRAND_BLUE = '#1971c2'; // SVG tile background
