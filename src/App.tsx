@@ -25,6 +25,7 @@ import Portfolio from './pages/Portfolio';
 import Manage from './pages/Manage';
 import StrategyGuide from './pages/StrategyGuide';
 import { GlossaryModal } from './components/GlossaryModal';
+import { WelcomeModal } from './components/WelcomeModal';
 import { Logo } from './components/ui/Logo';
 import { ShareView } from './pages/ShareView';
 
@@ -220,6 +221,7 @@ function AppContent() {
         </AppShell.Footer>
 
         <GlossaryModal opened={glossaryOpened} onClose={closeGlossary} />
+        <WelcomeModal />
       </AppShell>
 
       {/* Mobile side-nav drawer */}
