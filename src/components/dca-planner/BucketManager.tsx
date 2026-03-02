@@ -128,12 +128,28 @@ export function BucketManager({
           {buckets.map(b => {
             const perStock = perSlotDailyAmt / b.tickers.length;
 
-            // Sum actual totals from enriched data so double-down extras are reflected
-            const totalBucketDaily = b.tickers.reduce((s, t) => s + (enrichedMap[t]?.totalDaily ?? 0), 0);
-            const hasExtra = b.tickers.some(t => (enrichedMap[t]?.extraDaily ?? 0) > 0);
-            // Fall back to base amounts if prices haven't loaded yet
-            const displayPeriodAmt = (totalBucketDaily > 0 ? totalBucketDaily : perSlotDailyAmt) * daysInPeriod;
-            const displayPerStock = totalBucketDaily > 0 ? totalBucketDaily / b.tickers.length : perStock;
+            // Three states per ticker: funded (amber), unfunded DD (red), plain (dimmed)
+            const isFunded  = (t: string) => (enrichedMap[t]?.extraDaily ?? 0) > 0;
+            const isUnfunded = (t: string) => {
+              const h = enrichedMap[t];
+              return !!(h?.doubleDown && h?.triggered && (h?.extraDaily ?? 0) === 0);
+            };
+            const tickerDisplayDaily = (t: string) => {
+              const h = enrichedMap[t];
+              if (!h) return perStock;
+              if (isFunded(t)) return h.totalDaily;
+              if (isUnfunded(t)) return h.baseDaily * 2; // potential if funded
+              return h.baseDaily;
+            };
+
+            const anyFunded   = b.tickers.some(isFunded);
+            const anyUnfunded = b.tickers.some(isUnfunded);
+            const totalDisplayDaily = b.tickers.reduce((s, t) => s + tickerDisplayDaily(t), 0) || perSlotDailyAmt;
+            const headerColor = anyFunded
+              ? 'var(--amber)'
+              : anyUnfunded
+                ? 'var(--mantine-color-red-5)'
+                : 'var(--mantine-color-dimmed)';
 
             return (
               <Paper
@@ -146,18 +162,29 @@ export function BucketManager({
                 <Text fw={700} size="sm" mb={2}>{b.name}</Text>
                 <Text size="xs" mb="xs">
                   <span style={{ color: 'var(--mantine-color-dimmed)' }}>1 slot · </span>
-                  <span style={{ color: hasExtra ? 'var(--amber)' : 'var(--mantine-color-dimmed)' }}>
-                    {formatDollars(displayPeriodAmt)}/{freqLabel.toLowerCase()}
+                  <span style={{ color: headerColor }}>
+                    {formatDollars(totalDisplayDaily * daysInPeriod)}/{freqLabel.toLowerCase()}
                   </span>
                   <span style={{ color: 'var(--mantine-color-dimmed)' }}> · </span>
-                  <span style={{ color: hasExtra ? 'var(--amber)' : 'var(--mantine-color-dimmed)' }}>
-                    {formatDollars(displayPerStock)}/stock/day
+                  <span style={{ color: headerColor }}>
+                    {formatDollars(totalDisplayDaily / b.tickers.length)}/stock/day
                   </span>
+                  {anyUnfunded && !anyFunded && (
+                    <span style={{ color: 'var(--mantine-color-red-5)', marginLeft: 4 }}>· unfunded</span>
+                  )}
                 </Text>
 
                 <Stack gap={6} mb="sm">
                   {b.tickers.map(ticker => {
                     const h = enrichedMap[ticker];
+                    const funded   = isFunded(ticker);
+                    const unfunded = isUnfunded(ticker);
+                    const displayDaily = tickerDisplayDaily(ticker);
+                    const amtColor = funded
+                      ? 'var(--amber)'
+                      : unfunded
+                        ? 'var(--mantine-color-red-5)'
+                        : 'var(--mantine-color-dimmed)';
                     return (
                       <Group key={ticker} gap="xs">
                         <Box
@@ -173,20 +200,15 @@ export function BucketManager({
                           title={h?.triggered ? 'Triggered' : 'Clear'}
                         />
                         <Text size="xs" fw={700} style={{ minWidth: 44 }}>{ticker}</Text>
-                        <Text
-                          size="xs"
-                          style={{
-                            flex: 1,
-                            color: h?.extraDaily > 0
-                              ? 'var(--amber)'
-                              : 'var(--mantine-color-dimmed)',
-                          }}
-                        >
-                          {formatDollars(h ? h.totalDaily : perStock)}/day
-                          {h?.extraDaily > 0 && (
+                        <Text size="xs" style={{ flex: 1, color: amtColor }}>
+                          {formatDollars(displayDaily)}/day
+                          {funded && h && (
                             <span style={{ color: 'var(--mantine-color-dimmed)', marginLeft: 4 }}>
                               ({formatDollars(h.baseDaily)} + {formatDollars(h.extraDaily)})
                             </span>
+                          )}
+                          {unfunded && (
+                            <span style={{ color: 'var(--mantine-color-dimmed)', marginLeft: 4 }}>unfunded</span>
                           )}
                         </Text>
                         {h && (
