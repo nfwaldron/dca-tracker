@@ -126,9 +126,10 @@ function AppContent() {
             display: 'flex',
             alignItems: 'center',
             padding: '0 0.75rem',
+            overflow: 'hidden',
           }}
         >
-          <Group justify="space-between" w="100%" style={{ height: '100%' }}>
+          <Group justify="space-between" w="100%" wrap="nowrap" style={{ height: '100%' }}>
             {/* Left: hamburger (mobile) + logo + nav links (desktop) */}
             <Group gap={0} style={{ height: '100%', overflow: 'hidden', flexShrink: 1, minWidth: 0 }}>
               {/* Hamburger — mobile/tablet only */}
@@ -169,15 +170,17 @@ function AppContent() {
                   <Text size="xs" c="dimmed">Prices: {formatAgo(lastUpdated)}</Text>
                 </Box>
               )}
-              <Button
-                variant="subtle"
-                color="gray"
-                size="sm"
-                onClick={openGlossary}
-                leftSection={<BsQuestionCircle />}
-              >
-                <Box visibleFrom="sm">Glossary</Box>
-              </Button>
+              <Box visibleFrom="xs">
+                <Button
+                  variant="subtle"
+                  color="gray"
+                  size="sm"
+                  onClick={openGlossary}
+                  leftSection={<BsQuestionCircle />}
+                >
+                  <Box visibleFrom="sm">Glossary</Box>
+                </Button>
+              </Box>
               <Button
                 variant="subtle"
                 color="gray"
@@ -247,6 +250,17 @@ function AppContent() {
               {label}
             </NavLink>
           ))}
+          <Button
+            variant="subtle"
+            color="gray"
+            justify="flex-start"
+            fullWidth
+            leftSection={<BsQuestionCircle />}
+            onClick={() => { closeDrawer(); openGlossary(); }}
+            style={{ marginTop: 4 }}
+          >
+            Glossary
+          </Button>
         </Stack>
       </Drawer>
     </>
