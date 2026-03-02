@@ -119,11 +119,15 @@ export function BucketManager({
 
   return (
     <Box mb="lg">
-      <SectionTitle>DCA buckets</SectionTitle>
-      <SectionDesc>
-        Group related core holdings into one slot so they share a single allocation. Useful for
-        sector pairs — e.g. two energy stocks that together get one slot's worth of DCA.
-      </SectionDesc>
+      {buckets.length > 0 && (
+        <>
+          <SectionTitle>DCA buckets</SectionTitle>
+          <SectionDesc>
+            Group related core holdings into one slot so they share a single allocation. Useful for
+            sector pairs — e.g. two energy stocks that together get one slot's worth of DCA.
+          </SectionDesc>
+        </>
+      )}
 
       {buckets.length > 0 && (
         <Group gap="sm" mb="sm" wrap="wrap">
@@ -200,17 +204,28 @@ export function BucketManager({
                             <span style={{ color: MC_DIMMED, marginLeft: 4 }}>unfunded</span>
                           )}
                         </Text>
-                        {h && (
-                          <Button
-                            size="compact-xs"
-                            variant={h.doubleDown ? 'light' : 'default'}
-                            color={h.doubleDown ? 'green' : 'gray'}
-                            leftSection={h.doubleDown ? <IconCheck /> : null}
-                            onClick={() => dispatch({ type: 'TOGGLE_DOUBLE_DOWN', payload: h.id })}
-                          >
-                            {h.doubleDown ? '2× Active' : 'Double Down'}
-                          </Button>
-                        )}
+                        {h && (() => {
+                          const optedIn = h.doubleDown && !h.triggered;
+                          const active  = h.doubleDown && h.triggered;
+                          const label   = active ? '2× Active' : optedIn ? 'Opted In' : 'Double Down';
+                          const tip     = active  ? undefined
+                                        : optedIn ? 'Pre-set — will activate when stock triggers'
+                                        : !h.triggered ? 'Enable to pre-set — will activate when stock triggers'
+                                        : undefined;
+                          return (
+                            <Button
+                              size="compact-xs"
+                              variant={h.doubleDown ? 'light' : 'default'}
+                              color={h.doubleDown ? 'green' : 'gray'}
+                              leftSection={h.doubleDown ? <IconCheck /> : null}
+                              title={tip}
+                              style={optedIn ? { opacity: 0.65 } : !h.triggered ? { opacity: 0.45 } : undefined}
+                              onClick={() => dispatch({ type: 'TOGGLE_DOUBLE_DOWN', payload: h.id })}
+                            >
+                              {label}
+                            </Button>
+                          );
+                        })()}
                       </Group>
                     );
                   })}

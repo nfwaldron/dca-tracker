@@ -101,7 +101,7 @@ export default function Manage() {
             <Stack gap="sm">
               <Text size="sm">
                 This will <strong>replace ALL</strong> your current holdings, prices, and settings with the example portfolio.
-                Positions are empty — just the tickers, roles, and categories to get you started.
+                Each position has 10 shares at a realistic average cost — adjust them to match your own holdings.
               </Text>
               <Text size="xs" c="dimmed">
                 {preview}{total > 5 ? ` … and ${total - 5} more` : ''} ({total} holdings)
@@ -204,7 +204,7 @@ export default function Manage() {
         directly into the <strong>DCA Planner</strong> and <strong>Portfolio</strong> tabs.
       </Text>
 
-      <Tabs defaultValue="settings">
+      <Tabs defaultValue="holdings">
         <Tabs.List mb="lg">
           <Tabs.Tab value="settings">Settings</Tabs.Tab>
           <Tabs.Tab value="holdings">Holdings</Tabs.Tab>
@@ -277,6 +277,11 @@ export default function Manage() {
         </Tabs.Panel>
 
         <Tabs.Panel value="prices">
+          <SectionDesc>
+            Prices are fetched from Yahoo Finance when you click <strong>Refresh prices</strong> in
+            the header. If a value looks wrong or the API is unavailable, you can manually override
+            any field here — overrides persist until the next successful refresh.
+          </SectionDesc>
           <PriceTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} />
         </Tabs.Panel>
 

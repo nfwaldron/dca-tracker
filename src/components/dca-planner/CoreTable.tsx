@@ -23,7 +23,7 @@ import { Muted } from '../ui/Layout';
 import type { EnrichedHolding, Action, DisplayPeriod } from '../../types';
 
 // Fixed columns: chevron + ticker + role + shares + price + trigger + double-down = 7
-// Per period: $/period + extra/period + total/period = 3 each
+// Per period: $/period [+ extra/period + total/period when any DD opted in] = 1 or 3 each
 // Trailing: vsMA + vsATH = 2
 const FIXED_COLS = 7;
 const TRAIL_COLS = 2;
@@ -40,7 +40,10 @@ export function CoreTable({
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const periods = displayPeriods.length > 0 ? displayPeriods : ['biweekly' as DisplayPeriod];
-  const COLS = FIXED_COLS + periods.length * 3 + TRAIL_COLS;
+  // Only show Extra/Total columns when at least one holding has double-down opted in
+  const showDdCols = holdings.some(h => h.doubleDown);
+  const perPeriodCols = showDdCols ? 3 : 1;
+  const COLS = FIXED_COLS + periods.length * perPeriodCols + TRAIL_COLS;
 
   const totalMktVal = holdings.reduce((s, h) => s + h.mktVal, 0);
 
@@ -68,11 +71,15 @@ export function CoreTable({
                   $/{PERIOD_COL_LABELS[p]}
                   <InfoTip text="Your regular DCA allocation for this stock — base budget ÷ number of slots, scaled to the selected time period." />
                 </Th>
-                <Th $num>
-                  Extra/{PERIOD_COL_LABELS[p]}
-                  <InfoTip text="Additional allocation from the Double-Down Budget. Only shown when Double Down is active for this stock." />
-                </Th>
-                <Th $num>Total/{PERIOD_COL_LABELS[p]}</Th>
+                {showDdCols && (
+                  <>
+                    <Th $num>
+                      Extra/{PERIOD_COL_LABELS[p]}
+                      <InfoTip text="Additional allocation from the Double-Down Budget. Only shown when Double Down is active for this stock." />
+                    </Th>
+                    <Th $num>Total/{PERIOD_COL_LABELS[p]}</Th>
+                  </>
+                )}
               </React.Fragment>
             ))}
             <Th $num $hideBelow={768}>
@@ -161,15 +168,19 @@ export function CoreTable({
                     return (
                       <React.Fragment key={p}>
                         <Td $num>{formatDollars(h.baseDaily * days)}</Td>
-                        <Td $num style={{ color: extraColor }}>
-                          {formatDollars(extraDisplay)}
-                          {ddState === 'unfunded' && (
-                            <span style={{ fontSize: '0.65rem', marginLeft: 3 }}>unfunded</span>
-                          )}
-                        </Td>
-                        <Td $num $bold style={{ color: totalColor }}>
-                          {formatDollars(totalDisplay)}
-                        </Td>
+                        {showDdCols && (
+                          <>
+                            <Td $num style={{ color: extraColor }}>
+                              {formatDollars(extraDisplay)}
+                              {ddState === 'unfunded' && (
+                                <span style={{ fontSize: '0.65rem', marginLeft: 3 }}>unfunded</span>
+                              )}
+                            </Td>
+                            <Td $num $bold style={{ color: totalColor }}>
+                              {formatDollars(totalDisplay)}
+                            </Td>
+                          </>
+                        )}
                       </React.Fragment>
                     );
                   })}
@@ -291,12 +302,16 @@ export function CoreTable({
                   <TotalTd $num>
                     {formatDollars(holdings.reduce((s, h) => s + h.baseDaily * days, 0))}
                   </TotalTd>
-                  <TotalTd $num>
-                    {formatDollars(holdings.reduce((s, h) => s + h.extraDaily * days, 0))}
-                  </TotalTd>
-                  <TotalTd $num>
-                    {formatDollars(holdings.reduce((s, h) => s + h.totalDaily * days, 0))}
-                  </TotalTd>
+                  {showDdCols && (
+                    <>
+                      <TotalTd $num>
+                        {formatDollars(holdings.reduce((s, h) => s + h.extraDaily * days, 0))}
+                      </TotalTd>
+                      <TotalTd $num>
+                        {formatDollars(holdings.reduce((s, h) => s + h.totalDaily * days, 0))}
+                      </TotalTd>
+                    </>
+                  )}
                 </React.Fragment>
               );
             })}

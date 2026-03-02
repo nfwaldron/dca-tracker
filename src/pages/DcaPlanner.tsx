@@ -167,24 +167,24 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
       <SimpleGrid cols={{ base: 2, sm: 4 }} mb="lg">
         <SummaryCard
           label="Portfolio value"
-          value={formatDollars(totalValue)}
+          value={totalValue > 0 ? formatDollars(totalValue) : '—'}
           sub="Total market value"
         />
         <SummaryCard
           label="Invested"
-          value={formatDollars(totalInvested)}
+          value={totalInvested > 0 ? formatDollars(totalInvested) : '—'}
           sub="Total cost basis"
         />
         <SummaryCard
           label="All-time G/L"
-          value={`${formatDollars(totalGL)} (${formatPercent(totalGLPct)})`}
+          value={totalValue > 0 ? `${formatDollars(totalGL)} (${formatPercent(totalGLPct)})` : '—'}
           sub="Unrealized P&L"
-          color={totalGL >= 0 ? COLOR_GAIN : COLOR_LOSS}
+          color={totalValue > 0 ? (totalGL >= 0 ? COLOR_GAIN : COLOR_LOSS) : undefined}
         />
         <SummaryCard
           label="Today's change"
-          value={`${formatDollars(dailyChange$)} (${formatPercent(dailyChangePct)})`}
-          color={dailyChange$ >= 0 ? COLOR_GAIN : COLOR_LOSS}
+          value={totalValue > 0 ? `${formatDollars(dailyChange$)} (${formatPercent(dailyChangePct)})` : '—'}
+          color={totalValue > 0 ? (dailyChange$ >= 0 ? COLOR_GAIN : COLOR_LOSS) : undefined}
         />
       </SimpleGrid>
 
