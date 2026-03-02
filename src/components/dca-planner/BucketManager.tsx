@@ -97,7 +97,7 @@ export function BucketManager({
 
   function deleteBucket(id: string, name: string) {
     modals.openConfirmModal({
-      title: 'Remove bucket',
+      title: 'Remove bucket?',
       children: (
         <Text size="sm">
           Remove bucket "{name}"? Stocks will return to solo allocation.
@@ -117,7 +117,7 @@ export function BucketManager({
 
   return (
     <Box mb="lg">
-      <SectionTitle>DCA Buckets</SectionTitle>
+      <SectionTitle>DCA buckets</SectionTitle>
       <SectionDesc>
         Group related core holdings into one slot so they share a single allocation. Useful for
         sector pairs — e.g. two energy stocks that together get one slot's worth of DCA.
@@ -188,12 +188,12 @@ export function BucketManager({
         </Group>
       )}
 
-      <Button size="xs" variant="default" onClick={openCreate}>+ Add Bucket</Button>
+      <Button size="xs" variant="default" onClick={openCreate}>+ Add bucket</Button>
 
       <Modal
         opened={opened}
         onClose={cancel}
-        title={<Text fw={700} size="sm">{editingId ? 'Edit Bucket' : 'New Bucket'}</Text>}
+        title={<Text fw={700} size="sm">{editingId ? 'Edit bucket' : 'New bucket'}</Text>}
         size="sm"
       >
         <Stack gap="md">
@@ -241,7 +241,7 @@ export function BucketManager({
           {error && <Text size="xs" c="red">{error}</Text>}
 
           <Group gap="xs">
-            <Button size="sm" onClick={save}>Save Bucket</Button>
+            <Button size="sm" onClick={save}>Save bucket</Button>
             <Button size="sm" variant="default" onClick={cancel}>Cancel</Button>
           </Group>
         </Stack>

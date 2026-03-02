@@ -128,12 +128,12 @@ export default function Portfolio() {
       </Group>
 
       <CardsGrid>
-        <SummaryCard label="Portfolio Value" value={formatDollars(totalValue)} sub="total market value" />
-        <SummaryCard label="Invested" value={formatDollars(totalInvested)} sub="total cost basis" />
+        <SummaryCard label="Portfolio value" value={formatDollars(totalValue)} sub="Total market value" />
+        <SummaryCard label="Invested" value={formatDollars(totalInvested)} sub="Total cost basis" />
         <SummaryCard
-          label={`Gain / Loss — ${PERIOD_LABELS[period]}`}
+          label={`Gain/loss — ${PERIOD_LABELS[period]}`}
           value={`${formatDollars(gl.dollar)} (${formatPercent(gl.pct)})`}
-          sub="unrealized P&L"
+          sub="Unrealized P&L"
           color={gl.dollar >= 0 ? 'var(--green)' : 'var(--red)'}
         />
       </CardsGrid>
@@ -149,7 +149,7 @@ export default function Portfolio() {
       <Modal
         opened={shareOpened}
         onClose={closeShare}
-        title="Share Portfolio"
+        title="Share portfolio"
         size="md"
       >
         <Stack gap="md">
@@ -182,7 +182,7 @@ export default function Portfolio() {
               leftSection={<BsTrash size={12} />}
               onClick={handleRevoke}
             >
-              Revoke Link
+              Revoke link
             </Button>
             <Button size="xs" variant="default" onClick={closeShare}>
               Close

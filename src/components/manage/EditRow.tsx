@@ -4,7 +4,7 @@ import { BsTrash, BsPlus } from 'react-icons/bs';
 import { InfoTip } from '../ui/InfoTip';
 import { InputCell, SelectCell } from '../ui/Input';
 import { BtnPrimary, BtnGhost } from '../ui/Button';
-import { fetchCompanyName } from '../../api/yahooFinance';
+import { fetchCompanyName } from '../../services/yahooFinance';
 import type { Holding, BrokerPosition } from '../../types';
 
 type PositionDraft = { broker: string; shares: string; avgCost: string };

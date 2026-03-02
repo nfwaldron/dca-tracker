@@ -83,7 +83,7 @@ export function GlossaryModal({ opened, onClose }: { opened: boolean; onClose: (
     <Modal
       opened={opened}
       onClose={onClose}
-      title={<Text fw={700} size="md">Glossary — Plain English Definitions</Text>}
+      title={<Text fw={700} size="md">Glossary — plain English definitions</Text>}
       size="lg"
     >
       <ScrollArea h={520} offsetScrollbars>

@@ -10,7 +10,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import { useStore } from '../store';
-import { HoldingsTable } from '../components/manage/HoldingsTable';
+import { ManageHoldingsTable } from '../components/manage/ManageHoldingsTable';
 import { PriceTable } from '../components/manage/PriceTable';
 import { RolesManager } from '../components/manage/RolesManager';
 import { TabContent, SectionTitle, SectionDesc } from '../components/ui/Layout';
@@ -92,7 +92,7 @@ export default function Manage() {
         const total = (data.holdings as { ticker?: string }[]).length;
         const preview = (data.holdings as { ticker?: string }[]).slice(0, 5).map(h => h.ticker ?? '?').join(', ');
         modals.openConfirmModal({
-          title: 'Load example portfolio?',
+          title: 'Load example portfolio',
           children: (
             <Stack gap="sm">
               <Text size="sm">
@@ -104,7 +104,7 @@ export default function Manage() {
               </Text>
             </Stack>
           ),
-          labels: { confirm: 'Load Example', cancel: 'Cancel' },
+          labels: { confirm: 'Load example', cancel: 'Cancel' },
           confirmProps: { color: 'blue' },
           onConfirm: () => {
             dispatch({ type: 'LOAD_SNAPSHOT', payload: data });
@@ -117,14 +117,14 @@ export default function Manage() {
 
   function clearAllHoldings() {
     modals.openConfirmModal({
-      title: 'Clear all holdings?',
+      title: 'Clear all holdings',
       children: (
         <Text size="sm">
           This will permanently delete all {state.holdings.length} holding{state.holdings.length !== 1 ? 's' : ''}.
           Your settings and roles will be kept. This cannot be undone.
         </Text>
       ),
-      labels: { confirm: 'Delete All', cancel: 'Cancel' },
+      labels: { confirm: 'Delete all', cancel: 'Cancel' },
       confirmProps: { color: 'red' },
       onConfirm: () => {
         dispatch({ type: 'LOAD_SNAPSHOT', payload: { ...state, holdings: [], buckets: [] } });
@@ -171,7 +171,7 @@ export default function Manage() {
           onClick={loadTemplate}
           title="Load a pre-built example portfolio to explore the app — positions are empty, just tickers and roles"
         >
-          Load Example Portfolio
+          Load example portfolio
         </Button>
         <Button
           variant="subtle"
@@ -182,7 +182,7 @@ export default function Manage() {
           disabled={state.holdings.length === 0}
           title="Delete all holdings and start fresh — settings and roles are kept"
         >
-          Clear All Holdings
+          Clear all holdings
         </Button>
         <input ref={fileRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
       </Group>
@@ -209,7 +209,7 @@ export default function Manage() {
             <Stack gap="xl">
               <Stack gap="xs">
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.06em' }}>
-                  Pay Frequency
+                  Pay frequency
                   <InfoTip text="How often you get paid. Controls the pay-period length used for all DCA allocation math — changes here immediately update every $/period column in the DCA Planner." />
                 </Text>
                 <Text size="xs" c="dimmed">How often you invest (your pay cycle)</Text>
@@ -232,7 +232,7 @@ export default function Manage() {
 
               <Stack gap="xs">
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.06em' }}>
-                  DCA Table — Display Columns
+                  DCA table — display columns
                   <InfoTip text="Which time-horizon columns to show in the Core Holdings table on the DCA Planner tab. Toggle multiple on to compare daily vs. bi-weekly vs. monthly amounts side by side." />
                 </Text>
                 <Text size="xs" c="dimmed">Time horizons shown in the DCA Planner table</Text>
@@ -254,14 +254,14 @@ export default function Manage() {
         </Tabs.Panel>
 
         <Tabs.Panel value="holdings">
-          <SectionTitle>All Holdings</SectionTitle>
+          <SectionTitle>All holdings</SectionTitle>
           <SectionDesc>
             Every stock you own or are tracking. <strong>Core</strong> holdings receive DCA
             allocations each pay period — <strong>extra</strong> = held but not DCA'd,{' '}
             <strong>wishlist</strong> = not yet owned, tracked but excluded from allocation math.
             Click the chevron on any row to see per-broker positions.
           </SectionDesc>
-          <HoldingsTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} roles={state.roles} />
+          <ManageHoldingsTable holdings={state.holdings} prices={state.prices} dispatch={dispatch} roles={state.roles} />
         </Tabs.Panel>
 
         <Tabs.Panel value="prices">

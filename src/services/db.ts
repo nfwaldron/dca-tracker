@@ -131,20 +131,19 @@ export async function savePortfolio(
       ? sb.from('prices').upsert(priceRows, { onConflict: 'ticker' })
       : Promise.resolve({ error: null }),
   ]);
-
   const saveError = [holdingsResult, bucketsResult, settingsResult, pricesResult]
     .find(r => r && 'error' in r && r.error)?.error as { message: string } | undefined;
   if (saveError) throw new Error(saveError.message);
 
   // Delete holdings no longer in state
   const holdingsDeleteResult = state.holdings.length > 0
-    ? await sb.from('holdings').delete().eq('user_id', userId).not('id', 'in', `(${state.holdings.map(h => `'${h.id}'`).join(',')})`)
+    ? await sb.from('holdings').delete().eq('user_id', userId).not('id', 'in', `(${state.holdings.map(h => h.id).join(',')})`)
     : await sb.from('holdings').delete().eq('user_id', userId);
   if (holdingsDeleteResult.error) throw new Error(holdingsDeleteResult.error.message);
 
   // Delete buckets no longer in state
   const bucketsDeleteResult = state.buckets.length > 0
-    ? await sb.from('buckets').delete().eq('user_id', userId).not('id', 'in', `(${state.buckets.map(b => `'${b.id}'`).join(',')})`)
+    ? await sb.from('buckets').delete().eq('user_id', userId).not('id', 'in', `(${state.buckets.map(b => b.id).join(',')})`)
     : await sb.from('buckets').delete().eq('user_id', userId);
   if (bucketsDeleteResult.error) throw new Error(bucketsDeleteResult.error.message);
 }

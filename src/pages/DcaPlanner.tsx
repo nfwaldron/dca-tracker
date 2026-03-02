@@ -4,7 +4,6 @@ import {
   Group,
   Stack,
   Text,
-  Divider,
   SimpleGrid,
   Accordion,
   Box,
@@ -14,7 +13,7 @@ import {
 import { useStore } from '../store';
 import { formatDollars, formatPercent } from '../utils/format';
 import { PERIOD_DAYS, FREQ_LABELS } from '../constants/periods';
-import { computeDcaAllocation } from '../services/dcaAllocation';
+import { computeDcaAllocation } from '../utils/dcaAllocation';
 import { SummaryCard } from '../components/SummaryCard';
 import { CoreTable } from '../components/dca-planner/CoreTable';
 import { WishlistChips } from '../components/dca-planner/WishlistChips';
@@ -56,7 +55,7 @@ function BudgetInput({
         decimalScale={2}
         hideControls
         size="sm"
-        style={{ width: 160 }}
+        style={{ width: '100%', maxWidth: 200 }}
       />
       {hint && (
         <Text size="xs" c="dimmed" mt={2}>
@@ -157,31 +156,31 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
         </Paper>
       )}
 
-      {/* Account Overview — stats strip */}
-      <SectionTitle>Account Overview</SectionTitle>
+      {/* Account overview — stats strip */}
+      <SectionTitle>Account overview</SectionTitle>
       <SectionDesc>
         Live snapshot of your total portfolio value, cost basis, and unrealized gains. Prices
         refresh when you click <strong>Refresh Prices</strong> in the header.
       </SectionDesc>
       <SimpleGrid cols={{ base: 2, sm: 4 }} mb="lg">
         <SummaryCard
-          label="Portfolio Value"
+          label="Portfolio value"
           value={formatDollars(totalValue)}
-          sub="total market value"
+          sub="Total market value"
         />
         <SummaryCard
           label="Invested"
           value={formatDollars(totalInvested)}
-          sub="total cost basis"
+          sub="Total cost basis"
         />
         <SummaryCard
-          label="All-Time G/L"
+          label="All-time G/L"
           value={`${formatDollars(totalGL)} (${formatPercent(totalGLPct)})`}
-          sub="unrealized P&L"
+          sub="Unrealized P&L"
           color={totalGL >= 0 ? 'var(--green)' : 'var(--red)'}
         />
         <SummaryCard
-          label="Today's Change"
+          label="Today's change"
           value={`${formatDollars(dailyChange$)} (${formatPercent(dailyChangePct)})`}
           color={dailyChange$ >= 0 ? 'var(--green)' : 'var(--red)'}
         />
@@ -201,48 +200,47 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
             onCommit={n => dispatch({ type: 'SET_BIWEEKLY_BUDGET', payload: n })}
             hint={`${slotBreakdown} · ${formatDollars(perSlotPeriodAmt, 0)}/slot/${freqLabel.toLowerCase()} · ${formatDollars(perSlotDailyAmt)}/slot/day`}
           />
-          <Divider orientation="vertical" h={40} style={{ alignSelf: 'center' }} />
           <BudgetInput
-            label={`Double-Down budget / ${freqLabel.toLowerCase()}`}
+            label={`Double-down budget / ${freqLabel.toLowerCase()}`}
             value={state.doubleDownBudget}
             onCommit={n => dispatch({ type: 'SET_DOUBLE_DOWN_BUDGET', payload: n })}
             hint={
               doubleDownActive.length > 0
                 ? `${formatDollars(extraNeededPeriod)} needed · ${doubleDownActive.length} stock${doubleDownActive.length > 1 ? 's' : ''}`
-                : 'set a budget to see your per-stock target'
+                : 'Set a budget to see your per-stock target'
             }
           />
         </Group>
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
           <SummaryCard
-            label={`${freqLabel} Budget`}
+            label={`${freqLabel} budget`}
             value={formatDollars(state.biWeeklyBudget)}
             sub={`${allCore.length} core · ${alloc.effectiveSlots} slots`}
           />
           <SummaryCard
-            label={`Per Slot / ${freqLabel}`}
+            label={`Per slot / ${freqLabel.toLowerCase()}`}
             value={formatDollars(perSlotPeriodAmt)}
             sub={`${formatDollars(perSlotDailyAmt)}/slot/day`}
           />
           <SummaryCard
-            label={`Active ${freqLabel}`}
+            label={`Active ${freqLabel.toLowerCase()}`}
             value={formatDollars(activePeriodTotal)}
             sub={
               activePeriodTotal > state.biWeeklyBudget
-                ? `incl. ${formatDollars(activePeriodTotal - state.biWeeklyBudget)} double-down`
-                : 'base only'
+                ? `Incl. ${formatDollars(activePeriodTotal - state.biWeeklyBudget)} double-down`
+                : 'Base only'
             }
           />
           {triggeredAll.length > 0 && (
             <SummaryCard
-              label="Double-Down Budget"
+              label="Double-down budget"
               value={extraAvailable > 0 ? formatDollars(actualExtraTotal) : formatDollars(extraNeededPeriod)}
               sub={
                 extraAvailable === 0
                   ? `${formatDollars(extraNeededPeriod)} needed — set double-down budget above`
                   : canFullyCover
-                    ? 'fully covered'
-                    : `short ${formatDollars(shortfall)} · ${Math.round(coverageRatio * 100)}% covered`
+                    ? 'Fully covered'
+                    : `Short ${formatDollars(shortfall)} · ${Math.round(coverageRatio * 100)}% covered`
               }
               color={
                 extraAvailable === 0
@@ -277,7 +275,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
         dispatch={dispatch}
       />
 
-      <SectionTitle>Core Holdings — DCA Schedule</SectionTitle>
+      <SectionTitle>Core holdings — DCA schedule</SectionTitle>
       <SectionDesc>
         Your regular DCA allocations per stock, plus Double Down amounts when active. Click any
         row to expand cost basis and gain/loss details.

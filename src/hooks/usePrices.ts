@@ -1,6 +1,6 @@
 import { useState, useCallback, type Dispatch } from 'react';
 import type { Action } from '../types';
-import { fetchQuotes } from '../api/yahooFinance';
+import { fetchQuotes } from '../services/yahooFinance';
 import { notifications } from '@mantine/notifications';
 
 export interface UsePricesResult {

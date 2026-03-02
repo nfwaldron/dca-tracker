@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '../../../test/utils';
 import userEvent from '@testing-library/user-event';
-import { HoldingsTable } from '../HoldingsTable';
+import { ManageHoldingsTable } from '../ManageHoldingsTable';
 import { makeHolding } from '../../../test/fixtures';
 
-describe('HoldingsTable', () => {
+describe('ManageHoldingsTable', () => {
   let dispatch: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('HoldingsTable', () => {
       makeHolding({ id: 'AMZN', ticker: 'AMZN', name: 'Amazon' }),
       makeHolding({ id: 'NVDA', ticker: 'NVDA', name: 'Nvidia' }),
     ];
-    render(<HoldingsTable holdings={holdings} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={holdings} dispatch={dispatch} />);
     expect(screen.getByText('AMZN')).toBeInTheDocument();
     expect(screen.getByText('Amazon')).toBeInTheDocument();
     expect(screen.getByText('NVDA')).toBeInTheDocument();
@@ -24,13 +24,13 @@ describe('HoldingsTable', () => {
   });
 
   it('shows an "Add Holding" button', () => {
-    render(<HoldingsTable holdings={[]} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={[]} dispatch={dispatch} />);
     expect(screen.getByRole('button', { name: /add holding/i })).toBeInTheDocument();
   });
 
   it('opens the add form when "Add Holding" is clicked', async () => {
     const user = userEvent.setup();
-    render(<HoldingsTable holdings={[]} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={[]} dispatch={dispatch} />);
     await user.click(screen.getByRole('button', { name: /add holding/i }));
     expect(await screen.findByPlaceholderText('TICKER')).toBeInTheDocument();
   });
@@ -38,7 +38,7 @@ describe('HoldingsTable', () => {
   it('dispatches DELETE_HOLDING after confirming deletion', async () => {
     const user = userEvent.setup();
     const holdings = [makeHolding({ id: 'AMZN', ticker: 'AMZN' })];
-    render(<HoldingsTable holdings={holdings} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={holdings} dispatch={dispatch} />);
     // Buttons in order: [Add Holding, Chevron, Edit, Trash]
     const allBtns = screen.getAllByRole('button');
     await user.click(allBtns.at(-1)!); // last = trash
@@ -51,7 +51,7 @@ describe('HoldingsTable', () => {
   it('does not dispatch DELETE_HOLDING when confirmation is cancelled', async () => {
     const user = userEvent.setup();
     const holdings = [makeHolding({ id: 'AMZN', ticker: 'AMZN' })];
-    render(<HoldingsTable holdings={holdings} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={holdings} dispatch={dispatch} />);
     const allBtns = screen.getAllByRole('button');
     await user.click(allBtns[allBtns.length - 1]);
     const dialog = await screen.findByRole('dialog');
@@ -68,7 +68,7 @@ describe('HoldingsTable', () => {
         { broker: 'Moomoo', shares: 3, avgCost: 120 },
       ],
     });
-    render(<HoldingsTable holdings={[h]} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={[h]} dispatch={dispatch} />);
     const chevron = screen.getByTitle('Show broker breakdown');
     await user.click(chevron);
     expect(screen.getByText('Robinhood')).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('HoldingsTable', () => {
 
   it('disables the expand button when the holding has no positions', () => {
     const h = makeHolding({ id: 'EMPTY', positions: [] });
-    render(<HoldingsTable holdings={[h]} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={[h]} dispatch={dispatch} />);
     const chevron = screen.getByTitle('Show broker breakdown');
     expect(chevron).toBeDisabled();
   });
@@ -88,7 +88,7 @@ describe('HoldingsTable', () => {
       makeHolding({ id: 'E', ticker: 'E', category: 'extra' }),
       makeHolding({ id: 'C', ticker: 'C', category: 'core' }),
     ];
-    render(<HoldingsTable holdings={holdings} dispatch={dispatch} />);
+    render(<ManageHoldingsTable holdings={holdings} dispatch={dispatch} />);
     const tickers = screen.getAllByText(/^[CWE]$/).map(el => el.textContent);
     expect(tickers).toEqual(['C', 'E', 'W']);
   });

@@ -180,15 +180,15 @@ export function CoreTable({
                           }}
                         >
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Current Price</Text>
+                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Current price</Text>
                             <Text size="sm" fw={600}>{h.price > 0 ? formatDollars(h.price) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Wtd Avg Cost</Text>
+                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Wtd avg cost</Text>
                             <Text size="sm" fw={600}>{h.weightedAvg > 0 ? formatDollars(h.weightedAvg) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Cost Basis</Text>
+                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Cost basis</Text>
                             <Text size="sm" fw={600}>{formatDollars(h.costBasis)}</Text>
                           </Stack>
                         </Group>
@@ -204,7 +204,7 @@ export function CoreTable({
                           }}
                         >
                           <Stack gap={2}>
-                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Mkt Value</Text>
+                            <Text size="xs" tt="uppercase" c="dimmed" fw={600} style={{ letterSpacing: '0.05em' }}>Mkt value</Text>
                             <Text size="sm" fw={600}>{h.mktVal > 0 ? formatDollars(h.mktVal) : '—'}</Text>
                           </Stack>
                           <Stack gap={2}>

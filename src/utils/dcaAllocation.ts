@@ -1,5 +1,5 @@
 import type { Holding, DcaBucket, EnrichedHolding, PriceRow } from '../types';
-import { enrichHolding } from '../utils/holding';
+import { enrichHolding } from './holding';
 
 export interface DcaAllocation {
   // ── Holdings slices ────────────────────────────────────────────

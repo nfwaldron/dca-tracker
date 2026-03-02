@@ -23,7 +23,7 @@ import DcaPlanner from './pages/DcaPlanner';
 import Portfolio from './pages/Portfolio';
 import Manage from './pages/Manage';
 import StrategyGuide from './pages/StrategyGuide';
-import { GlossaryModal } from './components/ui/GlossaryModal';
+import { GlossaryModal } from './components/GlossaryModal';
 import { ShareView } from './pages/ShareView';
 
 // Read once — share token is stable for the lifetime of the page load
@@ -33,7 +33,7 @@ const NAV_LINKS = [
   { to: '/planner', label: 'DCA Planner' },
   { to: '/portfolio', label: 'Portfolio' },
   { to: '/manage', label: 'Manage' },
-  { to: '/guide', label: 'Strategy Guide' },
+  { to: '/guide', label: 'Strategy guide' },
 ] as const;
 
 // Desktop: horizontal nav link with underline indicator
@@ -169,7 +169,7 @@ function AppContent() {
                 disabled={loading}
                 leftSection={<IconRefresh spinning={loading} />}
               >
-                <Box visibleFrom="sm">{loading ? 'Fetching…' : 'Refresh Prices'}</Box>
+                <Box visibleFrom="sm">{loading ? 'Fetching…' : 'Refresh prices'}</Box>
               </Button>
               <UserButton />
             </Group>

@@ -52,9 +52,9 @@ export function HoldingsTable({
               Cat
               <InfoTip text="Category: core = actively DCA'd; extra = held but not DCA'd; wishlist = not yet owned." />
             </Th>
-            <Th $num $hideBelow={768}>Total Shares</Th>
+            <Th $num $hideBelow={768}>Total shares</Th>
             <Th $num $hideBelow={768}>
-              Wtd Avg
+              Wtd avg
               <InfoTip text="Weighted Average Cost — total cost basis ÷ total shares. Accounts for purchases at different prices across multiple brokers." />
             </Th>
             <Th $num>Price</Th>
@@ -63,11 +63,11 @@ export function HoldingsTable({
               <InfoTip text="Highest price reached in the past 52 weeks (or ATH if set and higher). Used to calculate the Double Down trigger condition." />
             </Th>
             <Th $num>
-              Mkt Val
+              Mkt val
               <InfoTip text="Market Value — total shares × current price." />
             </Th>
             <Th $num $hideBelow={768}>
-              Cost Basis
+              Cost basis
               <InfoTip text="Total amount invested — sum of (shares × average cost) across all broker positions." />
             </Th>
             <Th $num>

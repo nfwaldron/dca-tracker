@@ -103,7 +103,7 @@ export function ShareView({ token }: { token: string }) {
         <Group justify="space-between" w="100%">
           <Group gap="sm">
             <Text fw={700} size="lg" style={{ letterSpacing: '-0.02em' }}>DCA Tracker</Text>
-            <Badge variant="light" color="blue">Shared Portfolio</Badge>
+            <Badge variant="light" color="blue">Shared portfolio</Badge>
           </Group>
           <Group gap="sm">
             {sharedDate && <Text size="xs" c="dimmed">Snapshot from {sharedDate}</Text>}
@@ -115,12 +115,12 @@ export function ShareView({ token }: { token: string }) {
       {/* Content */}
       <TabContent>
         <CardsGrid>
-          <SummaryCard label="Portfolio Value" value={formatDollars(totalValue)} sub="total market value" />
-          <SummaryCard label="Invested" value={formatDollars(totalInvested)} sub="total cost basis" />
+          <SummaryCard label="Portfolio value" value={formatDollars(totalValue)} sub="Total market value" />
+          <SummaryCard label="Invested" value={formatDollars(totalInvested)} sub="Total cost basis" />
           <SummaryCard
-            label="All-Time Gain / Loss"
+            label="All-time gain/loss"
             value={`${formatDollars(totalGL)} (${formatPercent(totalGLPct)})`}
-            sub="unrealized P&L"
+            sub="Unrealized P&L"
             color={totalGL >= 0 ? 'var(--green)' : 'var(--red)'}
           />
         </CardsGrid>

@@ -33,7 +33,7 @@ const brokerTdStyle: React.CSSProperties = {
 
 const COLS = 10;
 
-export function HoldingsTable({
+export function ManageHoldingsTable({
   holdings,
   prices = {},
   dispatch,
