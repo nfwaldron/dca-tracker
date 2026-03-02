@@ -1,3 +1,5 @@
+import { LOGO_BRAND_BLUE, MC_TEXT, MC_DIMMED } from './colors';
+
 export function Logo({ size = 28 }: { size?: number }) {
   return (
     <div
@@ -19,7 +21,7 @@ export function Logo({ size = 28 }: { size?: number }) {
         aria-label="DCA Tracker logo"
       >
         {/* Background tile */}
-        <rect width="32" height="32" rx="8" fill="#1971c2" />
+        <rect width="32" height="32" rx="8" fill={LOGO_BRAND_BLUE} />
 
         {/* Three rising bars (bottom-anchored at y=27) */}
         <rect x="4"  y="19" width="6" height="8"  rx="1.5" fill="rgba(255,255,255,0.38)" />
@@ -44,7 +46,7 @@ export function Logo({ size = 28 }: { size?: number }) {
           fontWeight: 700,
           fontSize: '1.0rem',
           letterSpacing: '-0.025em',
-          color: 'var(--mantine-color-text)',
+          color: MC_TEXT,
           lineHeight: 1,
         }}
       >
@@ -52,7 +54,7 @@ export function Logo({ size = 28 }: { size?: number }) {
         <span
           style={{
             fontWeight: 400,
-            color: 'var(--mantine-color-dimmed)',
+            color: MC_DIMMED,
           }}
         >
           Tracker

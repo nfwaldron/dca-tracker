@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
+import { COLOR_GAIN, COLOR_LOSS } from '../components/ui/colors';
 import { Button, Group, Modal, TextInput, CopyButton, Stack, Text, ActionIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useAuth } from '@clerk/clerk-react';
@@ -134,7 +135,7 @@ export default function Portfolio() {
           label={`Gain/loss — ${PERIOD_LABELS[period]}`}
           value={`${formatDollars(gl.dollar)} (${formatPercent(gl.pct)})`}
           sub="Unrealized P&L"
-          color={gl.dollar >= 0 ? 'var(--green)' : 'var(--red)'}
+          color={gl.dollar >= 0 ? COLOR_GAIN : COLOR_LOSS}
         />
       </CardsGrid>
 

@@ -1,6 +1,10 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatDollars } from '../../utils/format';
 import { ChartSection, SectionTitle } from '../ui/Layout';
+import {
+  CHART_TOOLTIP_BG, CHART_TOOLTIP_BORDER, CHART_TOOLTIP_LABEL,
+  CHART_TOOLTIP_ITEM, CHART_LEGEND_TEXT, CHART_LEGEND_PCT,
+} from '../ui/colors';
 
 export const PIE_COLORS = [
   '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6',
@@ -30,9 +34,9 @@ function PieLegend({ data }: { data: PieSlice[] }) {
         return (
           <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}>
             <div style={{ width: 11, height: 11, borderRadius: 2, background: d.color, flexShrink: 0 }} />
-            <span style={{ color: '#94a3b8', whiteSpace: 'nowrap' }}>
+            <span style={{ color: CHART_LEGEND_TEXT, whiteSpace: 'nowrap' }}>
               {d.name}{' '}
-              <span style={{ color: '#64748b' }}>{pct}%</span>
+              <span style={{ color: CHART_LEGEND_PCT }}>{pct}%</span>
             </span>
           </div>
         );
@@ -63,9 +67,9 @@ export function AllocationPie({ data, compact }: { data: PieSlice[]; compact?: b
             const pct = total > 0 ? ((val as number) / total * 100).toFixed(1) : '0';
             return [`${formatDollars(val as number)} (${pct}%)`, name];
           }}
-          contentStyle={{ background: '#1e293b', border: '1px solid #334155' }}
-          labelStyle={{ color: '#f1f5f9', fontWeight: 600 }}
-          itemStyle={{ color: '#94a3b8' }}
+          contentStyle={{ background: CHART_TOOLTIP_BG, border: `1px solid ${CHART_TOOLTIP_BORDER}` }}
+          labelStyle={{ color: CHART_TOOLTIP_LABEL, fontWeight: 600 }}
+          itemStyle={{ color: CHART_TOOLTIP_ITEM }}
         />
       </PieChart>
     </ResponsiveContainer>

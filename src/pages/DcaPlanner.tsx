@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { COLOR_GAIN, COLOR_LOSS, COLOR_AMBER, MC_BLUE_5, MC_DARK_4 } from '../components/ui/colors';
 import {
   Paper,
   Group,
@@ -127,7 +128,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
     <TabContent>
       {/* Empty-state onboarding card */}
       {allCore.length === 0 && (
-        <Paper withBorder p="lg" radius="md" mb="lg" style={{ borderLeft: '3px solid var(--mantine-color-blue-5)' }}>
+        <Paper withBorder p="lg" radius="md" mb="lg" style={{ borderLeft: `3px solid ${MC_BLUE_5}` }}>
           <Text fw={700} mb="xs">Welcome to DCA Tracker</Text>
           <Text size="sm" c="dimmed" mb="md">
             You don't have any core holdings yet. Follow these 3 steps to get started:
@@ -143,7 +144,7 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
                   w={22} h={22}
                   style={{
                     borderRadius: '50%',
-                    background: i === 0 ? 'var(--mantine-color-blue-5)' : 'var(--mantine-color-dark-4)',
+                    background: i === 0 ? MC_BLUE_5 : MC_DARK_4,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}
                 >
@@ -178,12 +179,12 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
           label="All-time G/L"
           value={`${formatDollars(totalGL)} (${formatPercent(totalGLPct)})`}
           sub="Unrealized P&L"
-          color={totalGL >= 0 ? 'var(--green)' : 'var(--red)'}
+          color={totalGL >= 0 ? COLOR_GAIN : COLOR_LOSS}
         />
         <SummaryCard
           label="Today's change"
           value={`${formatDollars(dailyChange$)} (${formatPercent(dailyChangePct)})`}
-          color={dailyChange$ >= 0 ? 'var(--green)' : 'var(--red)'}
+          color={dailyChange$ >= 0 ? COLOR_GAIN : COLOR_LOSS}
         />
       </SimpleGrid>
 
@@ -245,10 +246,10 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
               }
               color={
                 extraAvailable === 0
-                  ? 'var(--amber)'
+                  ? COLOR_AMBER
                   : canFullyCover
-                    ? 'var(--green)'
-                    : 'var(--red)'
+                    ? COLOR_GAIN
+                    : COLOR_LOSS
               }
             />
           )}

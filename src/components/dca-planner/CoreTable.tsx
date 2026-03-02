@@ -7,6 +7,8 @@ import { PctCell } from '../PctCell';
 import { formatDollars, formatPercent, formatShares } from '../../utils/format';
 import { PERIOD_DAYS, PERIOD_COL_LABELS } from '../../constants/periods';
 import { TriggerBadge } from './TriggerBadge';
+import { getDdState, getDdDisplayDaily, DD_COLOR } from '../../utils/ddDisplay';
+import { COLOR_GAIN, COLOR_LOSS, COLOR_MUTED, COLOR_BG, COLOR_BORDER } from '../ui/colors';
 import {
   TableWrap,
   DataTable,
@@ -86,8 +88,10 @@ export function CoreTable({
         <tbody>
           {holdings.map(h => {
             const isExpanded = expandedId === h.id;
-            const glColor = h.gl >= 0 ? 'var(--green)' : 'var(--red)';
+            const glColor = h.gl >= 0 ? COLOR_GAIN : COLOR_LOSS;
             const alloc = totalMktVal > 0 ? (h.mktVal / totalMktVal) * 100 : 0;
+
+            const ddState = getDdState(h);
 
             return (
               <React.Fragment key={h.id}>
@@ -103,7 +107,7 @@ export function CoreTable({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: 'var(--muted)',
+                        color: COLOR_MUTED,
                       }}
                     >
                       <IconChevron open={isExpanded} />
@@ -125,6 +129,8 @@ export function CoreTable({
                       variant={h.doubleDown ? 'light' : 'default'}
                       color={h.doubleDown ? 'green' : 'gray'}
                       leftSection={h.doubleDown ? <IconCheck /> : null}
+                      title={!h.triggered ? 'Stock must be triggered before double-down activates' : undefined}
+                      style={!h.triggered ? { opacity: 0.45 } : undefined}
                       onClick={e => {
                         e.stopPropagation();
                         dispatch({ type: 'TOGGLE_DOUBLE_DOWN', payload: h.id });
@@ -135,17 +141,23 @@ export function CoreTable({
                   </Td>
                   {periods.map(p => {
                     const days = PERIOD_DAYS[p];
+                    const extraDisplay = ddState === 'funded'   ? h.extraDaily * days
+                                       : ddState === 'unfunded' ? h.baseDaily  * days
+                                       : 0;
+                    const extraColor = ddState !== 'inactive' ? DD_COLOR[ddState] : COLOR_MUTED;
+                    const totalDisplay = ddState === 'unfunded' ? h.baseDaily * 2 * days : h.totalDaily * days;
+                    const totalColor   = ddState === 'unfunded' ? DD_COLOR.unfunded : undefined;
                     return (
                       <React.Fragment key={p}>
                         <Td $num>{formatDollars(h.baseDaily * days)}</Td>
-                        <Td
-                          $num
-                          style={{ color: h.extraDaily > 0 ? 'var(--amber)' : 'var(--muted)' }}
-                        >
-                          {formatDollars(h.extraDaily * days)}
+                        <Td $num style={{ color: extraColor }}>
+                          {formatDollars(extraDisplay)}
+                          {ddState === 'unfunded' && (
+                            <span style={{ fontSize: '0.65rem', marginLeft: 3 }}>unfunded</span>
+                          )}
                         </Td>
-                        <Td $num $bold>
-                          {formatDollars(h.totalDaily * days)}
+                        <Td $num $bold style={{ color: totalColor }}>
+                          {formatDollars(totalDisplay)}
                         </Td>
                       </React.Fragment>
                     );
@@ -160,8 +172,8 @@ export function CoreTable({
                       colSpan={COLS}
                       style={{
                         padding: 0,
-                        background: 'var(--bg)',
-                        borderBottom: '1px solid var(--border)',
+                        background: COLOR_BG,
+                        borderBottom: `1px solid ${COLOR_BORDER}`,
                       }}
                     >
                       <Group
@@ -174,7 +186,7 @@ export function CoreTable({
                           pr="xl"
                           mr="xl"
                           style={{
-                            borderRight: '1px solid var(--border)',
+                            borderRight: `1px solid ${COLOR_BORDER}`,
                             paddingTop: '0.35rem',
                             paddingBottom: '0.35rem',
                           }}
@@ -198,7 +210,7 @@ export function CoreTable({
                           pr="xl"
                           mr="xl"
                           style={{
-                            borderRight: '1px solid var(--border)',
+                            borderRight: `1px solid ${COLOR_BORDER}`,
                             paddingTop: '0.35rem',
                             paddingBottom: '0.35rem',
                           }}

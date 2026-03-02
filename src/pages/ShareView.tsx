@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { COLOR_GAIN, COLOR_LOSS, COLOR_BORDER } from '../components/ui/colors';
 import {
   Center,
   Stack,
@@ -93,7 +94,7 @@ export function ShareView({ token }: { token: string }) {
       {/* Header */}
       <Paper
         style={{
-          borderBottom: '1px solid var(--border)',
+          borderBottom: `1px solid ${COLOR_BORDER}`,
           padding: '0 1.5rem',
           height: 56,
           display: 'flex',
@@ -121,7 +122,7 @@ export function ShareView({ token }: { token: string }) {
             label="All-time gain/loss"
             value={`${formatDollars(totalGL)} (${formatPercent(totalGLPct)})`}
             sub="Unrealized P&L"
-            color={totalGL >= 0 ? 'var(--green)' : 'var(--red)'}
+            color={totalGL >= 0 ? COLOR_GAIN : COLOR_LOSS}
           />
         </CardsGrid>
 

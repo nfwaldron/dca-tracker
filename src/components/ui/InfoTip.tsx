@@ -1,5 +1,6 @@
 import { Tooltip } from '@mantine/core';
 import { BsInfoCircle } from 'react-icons/bs';
+import { COLOR_MUTED } from './colors';
 
 export function InfoTip({ text }: { text: string }) {
   return (
@@ -23,7 +24,7 @@ export function InfoTip({ text }: { text: string }) {
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          color: 'var(--muted)',
+          color: COLOR_MUTED,
           cursor: 'default',
           position: 'relative',
           top: '1px',

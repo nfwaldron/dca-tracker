@@ -1,4 +1,5 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
+import { COLOR_CARD, COLOR_BORDER, MC_BLUE_4, MC_BLUE_LIGHT, MC_DIMMED, MC_TEXT } from './components/ui/colors';
 import { Routes, Route, NavLink, Navigate, Link, useNavigate } from 'react-router-dom';
 import {
   AppShell,
@@ -39,7 +40,7 @@ const NAV_LINKS = [
 
 // Desktop: horizontal nav link with underline indicator
 const desktopNavStyle = ({ isActive }: { isActive: boolean }) => ({
-  color: isActive ? 'var(--mantine-color-blue-4)' : 'var(--mantine-color-dimmed)',
+  color: isActive ? MC_BLUE_4 : MC_DIMMED,
   textDecoration: 'none',
   fontWeight: isActive ? 600 : 400,
   fontSize: '0.875rem',
@@ -48,7 +49,7 @@ const desktopNavStyle = ({ isActive }: { isActive: boolean }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   whiteSpace: 'nowrap' as const,
-  borderBottom: isActive ? '2px solid var(--mantine-color-blue-4)' : '2px solid transparent',
+  borderBottom: isActive ? `2px solid ${MC_BLUE_4}` : '2px solid transparent',
   transition: 'color 0.15s, border-color 0.15s',
 });
 
@@ -60,8 +61,8 @@ const drawerNavStyle = ({ isActive }: { isActive: boolean }) => ({
   textDecoration: 'none',
   fontWeight: isActive ? 600 : 400,
   fontSize: '1rem',
-  color: isActive ? 'var(--mantine-color-blue-4)' : 'var(--mantine-color-text)',
-  background: isActive ? 'var(--mantine-color-blue-light)' : 'transparent',
+  color: isActive ? MC_BLUE_4 : MC_TEXT,
+  background: isActive ? MC_BLUE_LIGHT : 'transparent',
   transition: 'background 0.15s, color 0.15s',
 });
 
@@ -82,8 +83,22 @@ function AppContent() {
     }
   }, [loaded, tickers.length, refresh]);
 
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const fmtTime = (d: Date | null) =>
     d ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+
+  const formatAgo = (d: Date | null): string => {
+    if (!d) return '—';
+    const mins = Math.floor((Date.now() - d.getTime()) / 60_000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins} min ago`;
+    return `${Math.floor(mins / 60)} hr ago`;
+  };
 
   if (!loaded) {
     return (
@@ -105,8 +120,8 @@ function AppContent() {
       >
         <AppShell.Header
           style={{
-            background: 'var(--card)',
-            borderBottom: '1px solid var(--border)',
+            background: COLOR_CARD,
+            borderBottom: `1px solid ${COLOR_BORDER}`,
             display: 'flex',
             alignItems: 'center',
             padding: '0 0.75rem',
@@ -121,7 +136,7 @@ function AppContent() {
                   opened={drawerOpened}
                   onClick={drawerOpened ? closeDrawer : openDrawer}
                   size="sm"
-                  color="var(--mantine-color-dimmed)"
+                  color={MC_DIMMED}
                 />
               </Box>
 
@@ -149,8 +164,8 @@ function AppContent() {
                 </Badge>
               )}
               {lastUpdated && !error && (
-                <Box visibleFrom="sm">
-                  <Text size="xs" c="dimmed">Prices: {fmtTime(lastUpdated)}</Text>
+                <Box visibleFrom="sm" title={`Fetched at ${fmtTime(lastUpdated)}`} style={{ cursor: 'default' }}>
+                  <Text size="xs" c="dimmed">Prices: {formatAgo(lastUpdated)}</Text>
                 </Box>
               )}
               <Button
@@ -192,8 +207,8 @@ function AppContent() {
 
         <AppShell.Footer
           style={{
-            background: 'var(--card)',
-            borderTop: '1px solid var(--border)',
+            background: COLOR_CARD,
+            borderTop: `1px solid ${COLOR_BORDER}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -219,8 +234,8 @@ function AppContent() {
           </Link>
         }
         styles={{
-          content: { background: 'var(--card)' },
-          header: { background: 'var(--card)', borderBottom: '1px solid var(--border)' },
+          content: { background: COLOR_CARD },
+          header: { background: COLOR_CARD, borderBottom: `1px solid ${COLOR_BORDER}` },
         }}
       >
         <Stack gap={4} mt="sm">

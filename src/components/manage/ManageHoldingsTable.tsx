@@ -6,6 +6,7 @@ import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { IconEdit, IconTrash, IconPlus, IconChevron } from '../icons';
 import { enrichHolding } from '../../utils/holding';
+import { COLOR_MUTED, COLOR_BG, COLOR_BORDER, COLOR_TEXT } from '../ui/colors';
 import { formatDollars, formatShares } from '../../utils/format';
 import { InfoTip } from '../ui/InfoTip';
 import { CAT_HEX, CAT_ORDER } from '../../constants/categories';
@@ -20,7 +21,7 @@ const brokerThStyle: React.CSSProperties = {
   padding: '0.2rem 1rem 0.2rem 0',
   textAlign: 'right',
   fontWeight: 600,
-  color: 'var(--muted)',
+  color: COLOR_MUTED,
   fontSize: '0.7rem',
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
@@ -28,7 +29,7 @@ const brokerThStyle: React.CSSProperties = {
 const brokerTdStyle: React.CSSProperties = {
   padding: '0.2rem 1rem 0.2rem 0',
   textAlign: 'right',
-  color: 'var(--muted)',
+  color: COLOR_MUTED,
 };
 
 const COLS = 10;
@@ -174,7 +175,7 @@ export function ManageHoldingsTable({
                     <Td $num>
                       {formatShares(totalShares)}
                       {h.positions.length > 1 && (
-                        <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: 5 }}>
+                        <span style={{ fontSize: '0.7rem', color: COLOR_MUTED, marginLeft: 5 }}>
                           ({h.positions.length} brokers)
                         </span>
                       )}
@@ -194,7 +195,7 @@ export function ManageHoldingsTable({
                     <tr>
                       <td
                         colSpan={COLS}
-                        style={{ padding: 0, background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}
+                        style={{ padding: 0, background: COLOR_BG, borderBottom: `1px solid ${COLOR_BORDER}` }}
                       >
                         <div style={{ padding: '0.6rem 2.5rem 0.75rem' }}>
                           <table style={{ width: 'auto', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
@@ -212,7 +213,7 @@ export function ManageHoldingsTable({
                             <tbody>
                               {h.positions.map((p, i) => (
                                 <tr key={i}>
-                                  <td style={{ ...brokerTdStyle, textAlign: 'left', fontWeight: 600, color: 'var(--text)' }}>{p.broker || '—'}</td>
+                                  <td style={{ ...brokerTdStyle, textAlign: 'left', fontWeight: 600, color: COLOR_TEXT }}>{p.broker || '—'}</td>
                                   <td style={brokerTdStyle}>{formatShares(p.shares)}</td>
                                   <td style={brokerTdStyle}>{formatDollars(p.avgCost)}</td>
                                   <td style={brokerTdStyle}>{formatDollars(p.shares * p.avgCost)}</td>

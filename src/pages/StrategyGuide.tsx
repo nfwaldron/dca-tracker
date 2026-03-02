@@ -19,6 +19,7 @@ import {
   BsCheckCircle,
   BsBookmark,
 } from 'react-icons/bs';
+import { MC_BLUE_5, MC_GREEN_5, MC_TEAL_5, MC_ORANGE_5, MC_VIOLET_5 } from '../components/ui/colors';
 
 export default function StrategyGuide() {
   return (
@@ -100,7 +101,7 @@ export default function StrategyGuide() {
                 <Group align="flex-start" gap="xl" grow>
                   <Paper withBorder p="md" radius="md">
                     <Text size="xs" fw={700} tt="uppercase" c="green.4" mb="xs">Benefits</Text>
-                    <List size="sm" spacing="xs" icon={<BsCheckCircle color="var(--mantine-color-green-5)" />}>
+                    <List size="sm" spacing="xs" icon={<BsCheckCircle color={MC_GREEN_5} />}>
                       <List.Item>Reduces the impact of market volatility on your psyche</List.Item>
                       <List.Item>Keeps you disciplined, ensuring you invest regularly</List.Item>
                       <List.Item>Helps avoid the pitfalls of emotional decision-making</List.Item>
@@ -214,7 +215,7 @@ export default function StrategyGuide() {
                   during market lows. By doubling down on your positions when they fall <strong>20% or
                   more below their 52-week high</strong>, you're essentially buying more shares at a discount.
                 </Text>
-                <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-blue-5)' }}>
+                <Paper withBorder p="md" radius="md" style={{ borderLeft: `3px solid ${MC_BLUE_5}` }}>
                   <Text size="xs" fw={700} tt="uppercase" c="blue.4" mb="xs">Why 20%?</Text>
                   <Text size="sm">
                     A 20% drop is significant enough to represent a substantial correction, often driven
@@ -324,7 +325,7 @@ export default function StrategyGuide() {
                 </Text>
                 <Text size="sm">A practical way to stay rational — create a simple checklist. Before making any investment or doubling down, ask yourself:</Text>
                 <Paper withBorder p="md" radius="md">
-                  <List size="sm" spacing="xs" icon={<BsCheckCircle color="var(--mantine-color-blue-5)" />}>
+                  <List size="sm" spacing="xs" icon={<BsCheckCircle color={MC_BLUE_5} />}>
                     <List.Item>Has my investment thesis changed?</List.Item>
                     <List.Item>Are the fundamentals still intact?</List.Item>
                     <List.Item>Am I acting out of fear or rational analysis?</List.Item>
@@ -477,19 +478,19 @@ export default function StrategyGuide() {
               </Text>
 
               <Stack gap="sm">
-                <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-blue-5)' }}>
+                <Paper withBorder p="md" radius="md" style={{ borderLeft: `3px solid ${MC_BLUE_5}` }}>
                   <Text size="sm" fw={600} mb={4}>Dollar-Cost Averaging (DCA) is foundational</Text>
                   <Text size="sm" c="dimmed">You invest a fixed amount periodically, regardless of market swings. Over time, this consistency helps lower your average cost and simplifies your decision-making.</Text>
                 </Paper>
-                <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-teal-5)' }}>
+                <Paper withBorder p="md" radius="md" style={{ borderLeft: `3px solid ${MC_TEAL_5}` }}>
                   <Text size="sm" fw={600} mb={4}>Double Down adds a layer of strategy</Text>
                   <Text size="sm" c="dimmed">When a quality stock or ETF drops 20% or more below its 52-week high, and you're confident in its fundamentals, you increase your investments to capitalize on the discount.</Text>
                 </Paper>
-                <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-orange-5)' }}>
+                <Paper withBorder p="md" radius="md" style={{ borderLeft: `3px solid ${MC_ORANGE_5}` }}>
                   <Text size="sm" fw={600} mb={4}>Discipline is non-negotiable</Text>
                   <Text size="sm" c="dimmed">Emotional reactions can lead to poor choices, especially in volatile markets. A structured plan helps you avoid panic selling or reckless buying.</Text>
                 </Paper>
-                <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-violet-5)' }}>
+                <Paper withBorder p="md" radius="md" style={{ borderLeft: `3px solid ${MC_VIOLET_5}` }}>
                   <Text size="sm" fw={600} mb={4}>Flexibility is key</Text>
                   <Text size="sm" c="dimmed">Life events and changing goals may require you to adjust your DCA contributions. Regularly reviewing your plan ensures it remains aligned with your financial situation.</Text>
                 </Paper>

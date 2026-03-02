@@ -14,6 +14,8 @@ import { modals } from '@mantine/modals';
 import { IconCheck } from '../icons';
 import { formatDollars } from '../../utils/format';
 import { PERIOD_DAYS, FREQ_LABELS } from '../../constants/periods';
+import { getDdState, getDdDisplayDaily, DD_COLOR } from '../../utils/ddDisplay';
+import { MC_BLUE_5, MC_RED_5, MC_DARK_4, MC_DIMMED } from '../ui/colors';
 import { SectionTitle, SectionDesc } from '../ui/Layout';
 import type { DcaBucket, Holding, EnrichedHolding, Action, PayFrequency } from '../../types';
 
@@ -128,28 +130,20 @@ export function BucketManager({
           {buckets.map(b => {
             const perStock = perSlotDailyAmt / b.tickers.length;
 
-            // Three states per ticker: funded (amber), unfunded DD (red), plain (dimmed)
-            const isFunded  = (t: string) => (enrichedMap[t]?.extraDaily ?? 0) > 0;
-            const isUnfunded = (t: string) => {
-              const h = enrichedMap[t];
-              return !!(h?.doubleDown && h?.triggered && (h?.extraDaily ?? 0) === 0);
-            };
+            const ddStateOf = (t: string) => { const h = enrichedMap[t]; return h ? getDdState(h) : 'inactive' as const; };
+            const anyFunded   = b.tickers.some(t => ddStateOf(t) === 'funded');
+            const anyUnfunded = b.tickers.some(t => ddStateOf(t) === 'unfunded');
             const tickerDisplayDaily = (t: string) => {
               const h = enrichedMap[t];
               if (!h) return perStock;
-              if (isFunded(t)) return h.totalDaily;
-              if (isUnfunded(t)) return h.baseDaily * 2; // potential if funded
-              return h.baseDaily;
+              return getDdDisplayDaily(h);
             };
-
-            const anyFunded   = b.tickers.some(isFunded);
-            const anyUnfunded = b.tickers.some(isUnfunded);
             const totalDisplayDaily = b.tickers.reduce((s, t) => s + tickerDisplayDaily(t), 0) || perSlotDailyAmt;
             const headerColor = anyFunded
-              ? 'var(--amber)'
+              ? DD_COLOR.funded
               : anyUnfunded
-                ? 'var(--mantine-color-red-5)'
-                : 'var(--mantine-color-dimmed)';
+                ? DD_COLOR.unfunded
+                : MC_DIMMED;
 
             return (
               <Paper
@@ -157,34 +151,29 @@ export function BucketManager({
                 withBorder
                 p="md"
                 radius="md"
-                style={{ borderLeft: '3px solid var(--mantine-color-blue-5)', minWidth: 260 }}
+                style={{ borderLeft: `3px solid ${MC_BLUE_5}`, minWidth: 260 }}
               >
                 <Text fw={700} size="sm" mb={2}>{b.name}</Text>
                 <Text size="xs" mb="xs">
-                  <span style={{ color: 'var(--mantine-color-dimmed)' }}>1 slot · </span>
+                  <span style={{ color: MC_DIMMED }}>1 slot · </span>
                   <span style={{ color: headerColor }}>
                     {formatDollars(totalDisplayDaily * daysInPeriod)}/{freqLabel.toLowerCase()}
                   </span>
-                  <span style={{ color: 'var(--mantine-color-dimmed)' }}> · </span>
+                  <span style={{ color: MC_DIMMED }}> · </span>
                   <span style={{ color: headerColor }}>
                     {formatDollars(totalDisplayDaily / b.tickers.length)}/stock/day
                   </span>
                   {anyUnfunded && !anyFunded && (
-                    <span style={{ color: 'var(--mantine-color-red-5)', marginLeft: 4 }}>· unfunded</span>
+                    <span style={{ color: MC_RED_5, marginLeft: 4 }}>· unfunded</span>
                   )}
                 </Text>
 
                 <Stack gap={6} mb="sm">
                   {b.tickers.map(ticker => {
                     const h = enrichedMap[ticker];
-                    const funded   = isFunded(ticker);
-                    const unfunded = isUnfunded(ticker);
+                    const ddState      = ddStateOf(ticker);
                     const displayDaily = tickerDisplayDaily(ticker);
-                    const amtColor = funded
-                      ? 'var(--amber)'
-                      : unfunded
-                        ? 'var(--mantine-color-red-5)'
-                        : 'var(--mantine-color-dimmed)';
+                    const amtColor     = ddState !== 'inactive' ? DD_COLOR[ddState] : MC_DIMMED;
                     return (
                       <Group key={ticker} gap="xs">
                         <Box
@@ -193,8 +182,8 @@ export function BucketManager({
                           style={{
                             borderRadius: '50%',
                             background: h?.triggered
-                              ? 'var(--mantine-color-red-5)'
-                              : 'var(--mantine-color-dark-4)',
+                              ? MC_RED_5
+                              : MC_DARK_4,
                             flexShrink: 0,
                           }}
                           title={h?.triggered ? 'Triggered' : 'Clear'}
@@ -202,13 +191,13 @@ export function BucketManager({
                         <Text size="xs" fw={700} style={{ minWidth: 44 }}>{ticker}</Text>
                         <Text size="xs" style={{ flex: 1, color: amtColor }}>
                           {formatDollars(displayDaily)}/day
-                          {funded && h && (
-                            <span style={{ color: 'var(--mantine-color-dimmed)', marginLeft: 4 }}>
+                          {ddState === 'funded' && h && (
+                            <span style={{ color: MC_DIMMED, marginLeft: 4 }}>
                               ({formatDollars(h.baseDaily)} + {formatDollars(h.extraDaily)})
                             </span>
                           )}
-                          {unfunded && (
-                            <span style={{ color: 'var(--mantine-color-dimmed)', marginLeft: 4 }}>unfunded</span>
+                          {ddState === 'unfunded' && (
+                            <span style={{ color: MC_DIMMED, marginLeft: 4 }}>unfunded</span>
                           )}
                         </Text>
                         {h && (

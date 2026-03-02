@@ -1,4 +1,5 @@
 import { Modal, Text, Badge, Stack, ScrollArea } from '@mantine/core';
+import { COLOR_BORDER } from './ui/colors';
 
 const GLOSSARY: { term: string; plain: string }[] = [
   {
@@ -91,7 +92,7 @@ export function GlossaryModal({ opened, onClose }: { opened: boolean; onClose: (
           {GLOSSARY.map(({ term, plain }) => (
             <div
               key={term}
-              style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.85rem' }}
+              style={{ borderBottom: `1px solid ${COLOR_BORDER}`, paddingBottom: '0.85rem' }}
             >
               <Badge color="blue" variant="light" mb={6} radius="sm" style={{ textTransform: 'none', fontSize: '0.78rem' }}>
                 {term}
