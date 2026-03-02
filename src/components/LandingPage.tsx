@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Center, Stack, Text, Button, Anchor, Group, Divider } from '@mantine/core';
+import { Center, Stack, Text, Button, Anchor, Group, Divider, Paper } from '@mantine/core';
 import { SignIn } from '@clerk/clerk-react';
+import { SiYoutube, SiPatreon } from 'react-icons/si';
 import { Logo } from './ui/Logo';
 
 export function LandingPage({ onGuest }: { onGuest: () => void }) {
@@ -27,23 +28,39 @@ export function LandingPage({ onGuest }: { onGuest: () => void }) {
               Plan your bi-weekly investments, monitor double-down triggers,
               and see exactly how your budget allocates each pay period.
             </Text>
-            <Divider w={200} my={4} />
-            <Text size="xs" c="dimmed" ta="center">
-              Built around{' '}
-              <Anchor href="https://www.youtube.com/@TomNashTV" target="_blank" rel="noopener noreferrer" size="xs">
-                Tom Nash
-              </Anchor>
-              's Enhanced DCA + Double Down strategy
-            </Text>
-            <Group gap="xs" justify="center">
-              <Anchor href="https://www.youtube.com/@TomNashTV" target="_blank" rel="noopener noreferrer" size="xs">
-                YouTube
-              </Anchor>
-              <Text size="xs" c="dimmed">·</Text>
-              <Anchor href="https://www.patreon.com/cw/tomnash" target="_blank" rel="noopener noreferrer" size="xs">
-                Patreon
-              </Anchor>
-            </Group>
+            <Divider w={200} my={8} />
+            <Paper withBorder radius="md" p="sm" style={{ width: '100%', maxWidth: 320 }}>
+              <Stack gap={6} align="center">
+                <Text size="sm" ta="center" style={{ lineHeight: 1.4 }}>
+                  Built around{' '}
+                  <Text component="span" fw={600}>Tom Nash</Text>
+                  's Enhanced DCA + Double Down strategy
+                </Text>
+                <Group gap="sm" justify="center">
+                  <Anchor
+                    href="https://www.youtube.com/@TomNashTV"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="sm"
+                    style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+                  >
+                    <SiYoutube size={15} color="#ff0000" />
+                    YouTube
+                  </Anchor>
+                  <Text size="sm" c="dimmed">·</Text>
+                  <Anchor
+                    href="https://www.patreon.com/cw/tomnash"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="sm"
+                    style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+                  >
+                    <SiPatreon size={14} color="#ff424d" />
+                    Patreon
+                  </Anchor>
+                </Group>
+              </Stack>
+            </Paper>
           </Stack>
         </Stack>
 
