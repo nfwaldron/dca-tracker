@@ -116,7 +116,7 @@ function AppContent() {
     <>
       <AppShell
         header={{ height: 56 }}
-        footer={{ height: 32 }}
+        footer={{ height: 48 }}
         padding={0}
       >
         <AppShell.Header
@@ -213,6 +213,7 @@ function AppContent() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            padding: '0 1.5rem',
           }}
         >
           <Text size="xs" c="dimmed">
