@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Center, Stack, Text, Button } from '@mantine/core';
+import { Center, Stack, Text, Button, Anchor, Group, Divider } from '@mantine/core';
 import { SignIn } from '@clerk/clerk-react';
 import { Logo } from './ui/Logo';
 
@@ -23,10 +23,27 @@ export function LandingPage({ onGuest }: { onGuest: () => void }) {
             <Text fw={700} size="1.75rem" ta="center" style={{ letterSpacing: '-0.02em' }}>
               DCA Tracker
             </Text>
-            <Text size="sm" c="dimmed" ta="center" maw={320}>
+            <Text size="sm" ta="center" maw={320}>
               Plan your bi-weekly investments, monitor double-down triggers,
               and see exactly how your budget allocates each pay period.
             </Text>
+            <Divider w={200} my={4} />
+            <Text size="xs" c="dimmed" ta="center">
+              Built around{' '}
+              <Anchor href="https://www.youtube.com/@TomNashTV" target="_blank" rel="noopener noreferrer" size="xs">
+                Tom Nash
+              </Anchor>
+              's Enhanced DCA + Double Down strategy
+            </Text>
+            <Group gap="xs" justify="center">
+              <Anchor href="https://www.youtube.com/@TomNashTV" target="_blank" rel="noopener noreferrer" size="xs">
+                YouTube
+              </Anchor>
+              <Text size="xs" c="dimmed">·</Text>
+              <Anchor href="https://www.patreon.com/cw/tomnash" target="_blank" rel="noopener noreferrer" size="xs">
+                Patreon
+              </Anchor>
+            </Group>
           </Stack>
         </Stack>
 
