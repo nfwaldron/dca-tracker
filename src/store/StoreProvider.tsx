@@ -8,12 +8,15 @@ import React, {
   useCallback,
   type Dispatch,
 } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+import { notifications } from '@mantine/notifications';
 import type { DBState, Action } from '../types';
 import { makeSupabase } from '../services/supabase';
 import { loadPortfolio, savePortfolio } from '../services/db';
 import { reducer, INITIAL_STATE } from './reducer';
 import { notifyError } from '../utils/notify';
+import { useAppAuth } from './AuthProvider';
+
+const GUEST_STATE_KEY = 'dca-guest-state';
 
 interface StoreCtx {
   state: DBState;
@@ -24,10 +27,12 @@ interface StoreCtx {
 const StoreContext = createContext<StoreCtx | null>(null);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const { userId, getToken } = useAuth();
+  const { userId, getToken } = useAppAuth();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const [loaded, setLoaded] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track previous userId to detect guest → signed-in transition
+  const prevUserIdRef = useRef<string | null | undefined>(undefined);
 
   /** Get an authenticated Supabase client using the active Clerk session JWT. */
   const getSupabase = useCallback(async () => {
@@ -35,25 +40,81 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     return makeSupabase(token);
   }, [getToken]);
 
-  // ── Load from Supabase on mount (once userId is available) ────────────────
+  // ── Load from localStorage (guest) or Supabase (signed-in) ───────────────
   useEffect(() => {
-    if (!userId) return;
+    const wasGuest = prevUserIdRef.current === null;
+    prevUserIdRef.current = userId ?? null;
+
     (async () => {
       try {
+        if (!userId) {
+          // Guest mode — load from localStorage
+          const raw = localStorage.getItem(GUEST_STATE_KEY);
+          if (raw) {
+            try {
+              dispatch({ type: 'LOAD_SNAPSHOT', payload: JSON.parse(raw) });
+            } catch {
+              // Corrupted data — start fresh
+              localStorage.removeItem(GUEST_STATE_KEY);
+            }
+          }
+          setLoaded(true);
+          return;
+        }
+
         const sb = await getSupabase();
+
+        if (wasGuest) {
+          // Guest just signed in — check for guest data to migrate
+          const raw = localStorage.getItem(GUEST_STATE_KEY);
+          if (raw) {
+            try {
+              const cloud = await loadPortfolio(sb, userId);
+              if (cloud.holdings.length === 0) {
+                // New account → migrate guest state automatically
+                const guestState = JSON.parse(raw) as DBState;
+                await savePortfolio(sb, userId, guestState);
+                dispatch({ type: 'LOAD_SNAPSHOT', payload: guestState });
+                localStorage.removeItem(GUEST_STATE_KEY);
+                localStorage.removeItem('dca-guest-mode');
+                notifications.show({
+                  color: 'green',
+                  message: 'Your guest portfolio has been saved to your account.',
+                  autoClose: 4000,
+                });
+                setLoaded(true);
+                return;
+              }
+            } catch {
+              // Migration failed — fall through to normal cloud load
+            }
+            // Existing account or migration failed — clear guest data
+            localStorage.removeItem(GUEST_STATE_KEY);
+            localStorage.removeItem('dca-guest-mode');
+          }
+        }
+
         const snapshot = await loadPortfolio(sb, userId);
         dispatch({ type: 'LOAD_SNAPSHOT', payload: snapshot });
       } catch (err) {
-        notifyError('Failed to load portfolio', err);
+        if (userId) notifyError('Failed to load portfolio', err);
       } finally {
         setLoaded(true);
       }
     })();
   }, [userId, getSupabase]);
 
-  // ── Debounced save to Supabase on every state change ─────────────────────
+  // ── Save to localStorage (guest) or Supabase (signed-in) ─────────────────
   useEffect(() => {
-    if (!loaded || !userId) return;
+    if (!loaded) return;
+
+    if (!userId) {
+      // Guest mode — save to localStorage immediately (no debounce needed)
+      localStorage.setItem(GUEST_STATE_KEY, JSON.stringify(state));
+      return;
+    }
+
+    // Signed-in — debounced Supabase save
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       try {

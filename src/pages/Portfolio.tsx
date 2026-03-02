@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { COLOR_GAIN, COLOR_LOSS } from '../components/ui/colors';
 import { Button, Group, Modal, TextInput, CopyButton, Stack, Text, ActionIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useAuth } from '@clerk/clerk-react';
+import { useAppAuth } from '../store/AuthProvider';
 import { BsShareFill, BsClipboard, BsCheck, BsTrash } from 'react-icons/bs';
 import { notifications } from '@mantine/notifications';
 import { useStore } from '../store';
@@ -23,7 +23,7 @@ const PERIOD_LABELS: Record<Period, string> = {
 
 export default function Portfolio() {
   const { state } = useStore();
-  const { userId, getToken } = useAuth();
+  const { userId, getToken } = useAppAuth();
   const [period, setPeriod] = useState<Period>('alltime');
   const [shareOpened, { open: openShare, close: closeShare }] = useDisclosure(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);

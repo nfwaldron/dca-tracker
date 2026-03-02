@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@clerk/clerk-react';
+import { useAppAuth } from '../store/AuthProvider';
 import {
   Modal,
   Stepper,
@@ -26,21 +26,22 @@ function welcomeKey(userId: string) {
 const TOTAL_STEPS = 3;
 
 export function WelcomeModal() {
-  const { userId } = useAuth();
+  const { userId } = useAppAuth();
   const { state, dispatch, loaded } = useStore();
   const [opened, { open, close }] = useDisclosure(false);
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loaded || !userId) return;
+    if (!loaded) return;
     if (state.holdings.length > 0) return;
-    if (localStorage.getItem(welcomeKey(userId))) return;
+    const key = welcomeKey(userId ?? 'guest');
+    if (localStorage.getItem(key)) return;
     open();
   }, [loaded, userId, state.holdings.length, open]);
 
   function dismiss() {
-    if (userId) localStorage.setItem(welcomeKey(userId), 'true');
+    localStorage.setItem(welcomeKey(userId ?? 'guest'), 'true');
     close();
   }
 

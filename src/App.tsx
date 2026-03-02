@@ -6,6 +6,7 @@ import {
   Box,
   Group,
   Text,
+  Anchor,
   Badge,
   Button,
   Burger,
@@ -15,9 +16,10 @@ import {
   Center,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react';
+import { useClerk, UserButton } from '@clerk/clerk-react';
 import { BsQuestionCircle } from 'react-icons/bs';
 import { useStore } from './store';
+import { useAppAuth } from './store/AuthProvider';
 import { usePrices } from './hooks/usePrices';
 import { IconRefresh } from './components/icons';
 import DcaPlanner from './pages/DcaPlanner';
@@ -28,9 +30,13 @@ import { GlossaryModal } from './components/GlossaryModal';
 import { WelcomeModal } from './components/WelcomeModal';
 import { Logo } from './components/ui/Logo';
 import { ShareView } from './pages/ShareView';
+import { LandingPage } from './components/LandingPage';
 
 // Read once — share token is stable for the lifetime of the page load
 const SHARE_TOKEN = new URLSearchParams(window.location.search).get('share');
+
+// Whether Clerk is configured — compile-time constant based on env var
+const CLERK_ENABLED = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 const NAV_LINKS = [
   { to: '/planner', label: 'DCA Planner' },
@@ -67,7 +73,57 @@ const drawerNavStyle = ({ isActive }: { isActive: boolean }) => ({
   transition: 'background 0.15s, color 0.15s',
 });
 
+// ── Clerk-specific sub-components ─────────────────────────────────────────────
+// Only ever rendered when CLERK_ENABLED is true, so ClerkProvider is always
+// present — safe to call useClerk() unconditionally inside them.
+
+function ClerkHeaderControls({ isGuest }: { isGuest: boolean }) {
+  const { openSignIn } = useClerk();
+  if (isGuest) {
+    return (
+      <Button size="sm" variant="light" onClick={() => openSignIn()}>
+        Sign in
+      </Button>
+    );
+  }
+  return <UserButton />;
+}
+
+function ClerkGuestBanner() {
+  const { openSignIn } = useClerk();
+  return (
+    <Box
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: MC_BLUE_LIGHT,
+        borderBottom: `1px solid ${COLOR_BORDER}`,
+        padding: '7px 1rem',
+        textAlign: 'center',
+      }}
+    >
+      <Text size="xs">
+        You&apos;re in guest mode — data saves to this browser only.{' '}
+        <Anchor
+          component="button"
+          size="xs"
+          fw={600}
+          onClick={() => openSignIn()}
+        >
+          Sign in to sync across devices →
+        </Anchor>
+      </Text>
+    </Box>
+  );
+}
+
+// ── Main app shell ─────────────────────────────────────────────────────────────
+
 function AppContent() {
+  const { userId } = useAppAuth();
+  const isGuest = !userId;
+
   const { state, dispatch, loaded } = useStore();
   const [glossaryOpened, { open: openGlossary, close: closeGlossary }] = useDisclosure(false);
   const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -191,13 +247,14 @@ function AppContent() {
               >
                 <Box visibleFrom="sm">{loading ? 'Fetching…' : 'Refresh prices'}</Box>
               </Button>
-              <UserButton />
+              {CLERK_ENABLED && <ClerkHeaderControls isGuest={isGuest} />}
             </Group>
           </Group>
         </AppShell.Header>
 
         <AppShell.Main>
           <div style={{ height: '100%', overflow: 'auto', paddingBottom: 40 }}>
+            {CLERK_ENABLED && isGuest && <ClerkGuestBanner />}
             <Routes>
               <Route index element={<Navigate to="/planner" replace />} />
               <Route path="/planner" element={<DcaPlanner onNavigateToManage={() => navigate('/manage')} />} />
@@ -267,19 +324,31 @@ function AppContent() {
   );
 }
 
-export default function App() {
-  if (SHARE_TOKEN) return <ShareView token={SHARE_TOKEN} />;
+// ── Auth gate (only used when CLERK_ENABLED) ───────────────────────────────────
+
+function AuthGate() {
+  const { userId } = useAppAuth();
+  const [guestMode, setGuestMode] = useState(
+    () => localStorage.getItem('dca-guest-mode') === 'true',
+  );
+
+  if (userId || guestMode) return <AppContent />;
 
   return (
-    <>
-      <SignedOut>
-        <Center h="100vh">
-          <SignIn routing="hash" />
-        </Center>
-      </SignedOut>
-      <SignedIn>
-        <AppContent />
-      </SignedIn>
-    </>
+    <LandingPage
+      onGuest={() => {
+        localStorage.setItem('dca-guest-mode', 'true');
+        setGuestMode(true);
+      }}
+    />
   );
+}
+
+// ── Root ───────────────────────────────────────────────────────────────────────
+
+export default function App() {
+  if (SHARE_TOKEN) return <ShareView token={SHARE_TOKEN} />;
+  // No Clerk key configured → skip landing page, always guest mode
+  if (!CLERK_ENABLED) return <AppContent />;
+  return <AuthGate />;
 }

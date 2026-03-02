@@ -11,6 +11,8 @@ import {
   Divider,
   Paper,
   Box,
+  Anchor,
+  ThemeIcon,
 } from '@mantine/core';
 import {
   BsInfoCircle,
@@ -18,6 +20,8 @@ import {
   BsLightbulb,
   BsCheckCircle,
   BsBookmark,
+  BsYoutube,
+  BsHeartFill,
 } from 'react-icons/bs';
 import { MC_BLUE_5, MC_GREEN_5, MC_TEAL_5, MC_ORANGE_5, MC_VIOLET_5 } from '../components/ui/colors';
 
@@ -44,7 +48,47 @@ export default function StrategyGuide() {
         </Alert>
       </Stack>
 
-      <Divider mb="xl" />
+      {/* ── Credit ─────────────────────────────────────────────────────────── */}
+      <Paper withBorder p="lg" radius="md" mt="xl" style={{ borderLeft: `3px solid ${MC_ORANGE_5}` }}>
+        <Group gap="sm" mb="xs" align="center">
+          <ThemeIcon size="md" radius="xl" color="orange" variant="light">
+            <BsHeartFill size={12} />
+          </ThemeIcon>
+          <Text fw={700} size="sm">Strategy by Tom Nash</Text>
+        </Group>
+        <Text size="sm" c="dimmed" mb="md">
+          This Enhanced DCA + Double Down strategy was created and shared freely by{' '}
+          <strong>Tom Nash</strong> — investor, educator, and one of the most straightforward voices
+          in retail investing. Tom publishes his full strategy on his Patreon at no cost and
+          explains the philosophy in depth on YouTube. This app exists to make that strategy
+          easier to execute — all credit for the approach goes to him.
+        </Text>
+        <Group gap="xl">
+          <Anchor
+            href="https://www.youtube.com/watch?v=GzTpIeT3prY"
+            target="_blank"
+            rel="noopener noreferrer"
+            size="sm"
+            fw={600}
+          >
+            <Group gap={6} align="center">
+              <BsYoutube size={16} color="#FF0000" />
+              Watch the strategy announcement
+            </Group>
+          </Anchor>
+          <Anchor
+            href="https://www.patreon.com/cw/tomnash"
+            target="_blank"
+            rel="noopener noreferrer"
+            size="sm"
+            fw={600}
+          >
+            Get the full strategy on Patreon (free)
+          </Anchor>
+        </Group>
+      </Paper>
+
+      <Divider my="xl" />
 
       <Accordion variant="separated" radius="md" chevronPosition="left">
 
