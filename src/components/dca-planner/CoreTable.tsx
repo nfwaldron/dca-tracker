@@ -124,20 +124,31 @@ export function CoreTable({
                     <TriggerBadge h={h} />
                   </Td>
                   <Td>
-                    <Button
-                      size="compact-xs"
-                      variant={h.doubleDown ? 'light' : 'default'}
-                      color={h.doubleDown ? 'green' : 'gray'}
-                      leftSection={h.doubleDown ? <IconCheck /> : null}
-                      title={!h.triggered ? 'Stock must be triggered before double-down activates' : undefined}
-                      style={!h.triggered ? { opacity: 0.45 } : undefined}
-                      onClick={e => {
-                        e.stopPropagation();
-                        dispatch({ type: 'TOGGLE_DOUBLE_DOWN', payload: h.id });
-                      }}
-                    >
-                      {h.doubleDown ? '2× Active' : 'Double Down'}
-                    </Button>
+                    {(() => {
+                      const optedIn = h.doubleDown && !h.triggered;
+                      const active  = h.doubleDown && h.triggered;
+                      const label   = active ? '2× Active' : optedIn ? 'Opted In' : 'Double Down';
+                      const tip     = active  ? undefined
+                                    : optedIn ? 'Pre-set — will activate when stock triggers'
+                                    : !h.triggered ? 'Enable to pre-set — will activate when stock triggers'
+                                    : undefined;
+                      return (
+                        <Button
+                          size="compact-xs"
+                          variant={h.doubleDown ? 'light' : 'default'}
+                          color={h.doubleDown ? 'green' : 'gray'}
+                          leftSection={h.doubleDown ? <IconCheck /> : null}
+                          title={tip}
+                          style={optedIn ? { opacity: 0.65 } : !h.triggered ? { opacity: 0.45 } : undefined}
+                          onClick={e => {
+                            e.stopPropagation();
+                            dispatch({ type: 'TOGGLE_DOUBLE_DOWN', payload: h.id });
+                          }}
+                        >
+                          {label}
+                        </Button>
+                      );
+                    })()}
                   </Td>
                   {periods.map(p => {
                     const days = PERIOD_DAYS[p];
