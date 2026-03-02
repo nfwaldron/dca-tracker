@@ -7,7 +7,7 @@ import { PctCell } from '../PctCell';
 import { formatDollars, formatPercent, formatShares } from '../../utils/format';
 import { PERIOD_DAYS, PERIOD_COL_LABELS } from '../../constants/periods';
 import { TriggerBadge } from './TriggerBadge';
-import { getDdState, getDdDisplayDaily, DD_COLOR } from '../../utils/ddDisplay';
+import { getDdState, DD_COLOR } from '../../utils/ddDisplay';
 import { COLOR_GAIN, COLOR_LOSS, COLOR_MUTED, COLOR_BG, COLOR_BORDER } from '../ui/colors';
 import {
   TableWrap,
