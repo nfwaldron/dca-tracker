@@ -169,11 +169,7 @@ export function WelcomeModal() {
             </Box>
           </Group>
 
-          <Text size="sm">A stock <strong>triggers</strong> when either condition is met:</Text>
-          <List size="sm" spacing={6}>
-            <List.Item>Price is <strong>below its 200-day moving average</strong> — below the long-term trend</List.Item>
-            <List.Item>Price is <strong>20% or more off its 52-week high</strong> — a meaningful drawdown from recent strength</List.Item>
-          </List>
+          <Text size="sm">A stock <strong>triggers</strong> when its price is <strong>20% or more below its 52-week high</strong> — a meaningful drawdown from recent strength.</Text>
 
           <List size="sm" spacing={6} mt="xs">
             <List.Item>

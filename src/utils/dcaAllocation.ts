@@ -37,9 +37,8 @@ function isTriggered(h: Holding, prices: Record<string, PriceRow>): boolean {
   const p = prices[h.ticker];
   if (!p || p.price === 0) return false;
   const highRef = Math.max(h.ath ?? 0, p.h52);
-  const belowMA = p.ma200 > 0 && p.price < p.ma200;
   const belowATH = highRef > 0 && (highRef - p.price) / highRef >= 0.2;
-  return belowMA || belowATH;
+  return belowATH;
 }
 
 /**

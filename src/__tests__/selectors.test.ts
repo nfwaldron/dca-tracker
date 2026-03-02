@@ -149,9 +149,10 @@ describe('enrich', () => {
   });
 
   describe('trigger logic', () => {
-    it('triggers when price is below 200-MA', () => {
+    it('triggers when price is ≥20% below 52-week high', () => {
       const holding = makeHolding({ ath: null });
-      const prices = { TEST: makePriceRow({ price: 40, ma200: 55 }) };
+      // price: 40, h52: 90 → (90-40)/90 = 55.6% off high → triggers
+      const prices = { TEST: makePriceRow({ price: 40, h52: 90 }) };
       const result = enrichHolding(holding, prices, 0, 0);
       expect(result.triggered).toBe(true);
     });
@@ -171,9 +172,9 @@ describe('enrich', () => {
       expect(result.triggered).toBe(false);
     });
 
-    it('does not trigger when price or ma200 is 0', () => {
+    it('does not trigger when price is 0', () => {
       const holding = makeHolding({ ath: null });
-      const prices = { TEST: makePriceRow({ price: 0, ma200: 0 }) };
+      const prices = { TEST: makePriceRow({ price: 0, h52: 90 }) };
       const result = enrichHolding(holding, prices, 0, 0);
       expect(result.triggered).toBe(false);
     });

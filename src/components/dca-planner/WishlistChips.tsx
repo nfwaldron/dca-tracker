@@ -10,7 +10,7 @@ export function WishlistChips({ holdings }: { holdings: EnrichedHolding[] }) {
       <SectionTitle style={{ marginBottom: '0.35rem' }}>Watchlist</SectionTitle>
       <SectionDesc>
         Stocks you're watching but don't own yet. An amber <strong>on sale</strong> badge appears
-        when a stock is triggered — below its 200-day MA or 20%+ off its high.
+        when a stock is triggered — 20% or more below its 52-week high (or ATH if set).
       </SectionDesc>
       <Group gap="sm" wrap="wrap">
         {holdings.map(h => (

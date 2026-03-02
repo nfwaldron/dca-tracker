@@ -149,9 +149,9 @@ describe('holdings slices', () => {
 
 describe('double-down groups', () => {
   it('identifies triggered holdings', () => {
-    // price below ma200 → triggered
+    // price: 40, h52: 90 → 55% off high → triggered
     const holdings = [makeHolding({ id: 'A', ticker: 'A', category: 'core', doubleDown: false })];
-    const priceMap = { A: makePriceRow({ price: 40, ma200: 55 }) };
+    const priceMap = { A: makePriceRow({ price: 40 }) };
     const result = computeDcaAllocation(holdings, [], priceMap, 100, 0, BI_WEEKLY_DAYS);
     expect(result.triggeredAll).toHaveLength(1);
   });

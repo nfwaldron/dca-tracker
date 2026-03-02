@@ -203,7 +203,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             <Collapse in={showDdBudget}>
               <Stack gap="xs">
                 <Text size="xs" c="dimmed">
-                  Funds extra purchases when a stock is on sale — below its 200-day MA or 20% off its high.
+                  Funds extra purchases when a stock is 20% or more below its 52-week high (or ATH if set).
                 </Text>
                 <NumberInput
                   value={parseFloat(ddBudgetStr) || 0}

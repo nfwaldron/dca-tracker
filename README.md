@@ -31,12 +31,7 @@ Your total DCA budget is divided into equal **slots**:
 
 ### The Double Down
 
-When a core holding meets either condition, it becomes eligible for a **Double Down** — an extra allocation on top of its regular DCA slot:
-
-| Trigger | Condition |
-|---|---|
-| Below 200-day MA | Price is below the long-term trend line |
-| Off 52-week high | Price is ≥ 20% below its recent high |
+When a core holding drops **20% or more below its 52-week high** (or all-time high if set), it becomes eligible for a **Double Down** — an extra allocation on top of its regular DCA slot.
 
 Triggering alone does nothing — you **opt in** per holding in the DCA Planner. This forces a deliberate conviction check before deploying extra capital.
 
@@ -52,13 +47,30 @@ The system is designed so you never have to decide in the moment:
 
 ---
 
-## Try It
+## Get Started
+
+| | Option | What you need |
+|---|---|---|
+| **Web app** | [dca-tracker-gold.vercel.app](https://dca-tracker-gold.vercel.app) | Nothing — open and use immediately |
+| **Self-hosted** | Clone and run locally | Node.js — no accounts, no API keys |
+
+### Web app
 
 **No account required.** Click **"Try without an account"** on the landing page to use the full app immediately. Your data saves to your browser locally. If you later decide to create an account, your portfolio migrates automatically.
 
 **Create a free account** to sync your portfolio across devices. Sign up takes under a minute — Google sign-in is supported.
 
 **Share your portfolio** — generate a read-only snapshot link from the Portfolio tab. Anyone can view it with no login required.
+
+### Run it yourself
+
+```bash
+git clone https://github.com/nfwaldron/dca-tracker.git
+npm install
+npm run dev   # opens at http://localhost:5173
+```
+
+That's it. The app runs in guest mode — data saves to your browser's localStorage. No Supabase, no Clerk, no API keys required. Live price refresh won't work without extra setup (see the Developer section below), but you can enter prices manually under Manage → Price Data.
 
 ---
 

@@ -292,12 +292,8 @@ export default function DcaPlanner({ onNavigateToManage }: { onNavigateToManage?
           <Accordion.Panel>
             <Box fz="sm" c="dimmed" style={{ lineHeight: 1.6 }}>
               <Text size="sm" mb="xs">
-                <strong>Trigger conditions</strong> — a stock is "triggered" when either of these is true:
+                <strong>Trigger condition</strong> — a stock is "triggered" when its price is <strong>20% or more below its 52-week high</strong> (or ATH if you've set one).
               </Text>
-              <ul style={{ margin: '0 0 0.75rem', paddingLeft: '1.25rem' }}>
-                <li>Price is <strong>below its 200-day moving average</strong> (trading below long-term trend)</li>
-                <li>Price is <strong>20% or more below its 52-week high</strong> (or ATH if you've set one)</li>
-              </ul>
               <Text size="sm" mb="xs">
                 <strong>Double Down</strong> — triggering alone does nothing. You opt in per stock by
                 clicking the "Double Down" button in the table below. When active, the stock receives

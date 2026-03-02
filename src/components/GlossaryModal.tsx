@@ -35,7 +35,7 @@ const GLOSSARY: { term: string; plain: string }[] = [
   {
     term: 'Triggered',
     plain:
-      'A stock is triggered when its price drops 20% or more below its 52-week high (or all-time high if set), OR falls below its 200-day moving average. This signals a potential buying opportunity — but it does not automatically change your investment. You have to opt in by toggling Double Down.',
+      'A stock is triggered when its price drops 20% or more below its 52-week high (or all-time high if set). This signals a potential buying opportunity — but it does not automatically change your investment. You have to opt in by toggling Double Down.',
   },
   {
     term: 'Double Down',
@@ -45,12 +45,12 @@ const GLOSSARY: { term: string; plain: string }[] = [
   {
     term: '200-day Moving Average (200-MA)',
     plain:
-      'The average of a stock\'s closing prices over the past 200 trading days. A common indicator of the long-term price trend. If the current price falls below this average, it is one of the two conditions that trigger the Double Down signal.',
+      'The average of a stock\'s closing prices over the past 200 trading days. A common indicator of the long-term price trend. Displayed in the DCA Planner for reference.',
   },
   {
     term: '52-Week High (52W High)',
     plain:
-      'The highest price the stock traded at in the past 52 weeks. A drop of 20% or more from this level is the other trigger condition. The app tracks this as a floor — it never resets downward due to a rolling window.',
+      'The highest price the stock traded at in the past 52 weeks. A drop of 20% or more from this level is the trigger condition for a Double Down. The app tracks this as a floor — it never resets downward due to a rolling window.',
   },
   {
     term: 'All-Time High (ATH)',

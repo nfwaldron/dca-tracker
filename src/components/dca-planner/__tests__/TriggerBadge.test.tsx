@@ -22,12 +22,6 @@ describe('TriggerBadge', () => {
     expect(screen.getByText(/Clear/i)).toBeInTheDocument();
   });
 
-  it('includes "< 200-MA" in the title when price is below the 200-MA', () => {
-    const h = makeEnrichedHolding({ price: 40, triggered: true, ma200: 55, ath: null });
-    render(<TriggerBadge h={h} />);
-    expect(screen.getByTitle(/< 200-MA/)).toBeInTheDocument();
-  });
-
   it('includes "≥20% off ATH" in the title when ath exceeds h52', () => {
     // price = 70, ath = 100, h52 = 80 → high-water = 100, 30% off ATH
     const h = makeEnrichedHolding({ price: 70, triggered: true, ma200: 60, ath: 100, h52: 80 });

@@ -59,7 +59,7 @@ export function CoreTable({
             <Th $num>Price</Th>
             <Th>
               Trigger
-              <InfoTip text="Met when the stock's price is BELOW its 200-day moving average OR is 20%+ below its 52-week high (or ATH if set). Triggered stocks are eligible for a Double Down." />
+              <InfoTip text="Met when the stock's price is 20%+ below its 52-week high (or ATH if set). Triggered stocks are eligible for a Double Down." />
             </Th>
             <Th>
               Double Down
