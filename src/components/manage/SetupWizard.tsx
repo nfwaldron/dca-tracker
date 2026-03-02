@@ -129,9 +129,9 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
   return (
     <Stack gap="xl" style={{ maxWidth: 600, margin: '0 auto', paddingTop: '1rem' }}>
       <Stepper active={step} size="sm" styles={{ stepLabel: { fontSize: '0.78rem' } }}>
-        <Stepper.Step label="Budget & schedule" />
-        <Stepper.Step label="Add your stocks" />
-        <Stepper.Step label="You're all set!" />
+        <Stepper.Step label="Set budget" />
+        <Stepper.Step label="Add stocks" />
+        <Stepper.Step label="All set!" />
       </Stepper>
 
       {/* ── Step 0: Budget & Schedule ────────────────────────────────────── */}
@@ -148,7 +148,7 @@ export function SetupWizard({ onSkip }: { onSkip: () => void }) {
             <Text size="xs" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.05em' }}>
               Pay frequency
             </Text>
-            <Group gap="xs">
+            <Group gap="xs" wrap="wrap">
               {PAY_OPTIONS.map(opt => (
                 <Button
                   key={opt.value}

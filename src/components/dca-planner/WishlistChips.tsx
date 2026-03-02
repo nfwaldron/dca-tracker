@@ -9,8 +9,8 @@ export function WishlistChips({ holdings }: { holdings: EnrichedHolding[] }) {
     <Box mt="xl">
       <SectionTitle style={{ marginBottom: '0.35rem' }}>Watchlist</SectionTitle>
       <SectionDesc>
-        Stocks you're watching but don't own yet. An amber <strong>On sale</strong> badge means the
-        stock is triggered — below its 200-day MA or 20%+ off its high.
+        Stocks you're watching but don't own yet. An amber <strong>on sale</strong> badge appears
+        when a stock is triggered — below its 200-day MA or 20%+ off its high.
       </SectionDesc>
       <Group gap="sm" wrap="wrap">
         {holdings.map(h => (

@@ -198,7 +198,7 @@ export function WelcomeModal() {
       )}
 
       {/* ── Navigation ──────────────────────────────────────────────────── */}
-      <Group justify="space-between" mt="xl">
+      <Group justify="space-between" mt="xl" wrap="wrap" gap="xs">
         <Button
           variant="subtle"
           color="gray"
@@ -211,7 +211,7 @@ export function WelcomeModal() {
         {step < TOTAL_STEPS - 1 ? (
           <Button onClick={() => setStep(s => s + 1)}>Next</Button>
         ) : (
-          <Group gap="sm">
+          <Group gap="sm" wrap="wrap">
             <Button variant="default" onClick={handleStartFresh}>
               Start fresh
             </Button>

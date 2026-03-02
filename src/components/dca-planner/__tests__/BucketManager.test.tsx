@@ -50,9 +50,15 @@ describe('BucketManager', () => {
     expect(screen.queryByText('DCA buckets')).toBeNull();
   });
 
-  it('shows the "DCA buckets" section heading', () => {
-    renderBucketManager();
+  it('shows the "DCA buckets" section heading when buckets exist', () => {
+    const buckets = [makeBucket({ id: 'b1', name: 'Cloud Pair', tickers: ['AMZN', 'NVDA'] })];
+    renderBucketManager(buckets);
     expect(screen.getByText('DCA buckets')).toBeInTheDocument();
+  });
+
+  it('hides the "DCA buckets" section heading when no buckets exist', () => {
+    renderBucketManager();
+    expect(screen.queryByText('DCA buckets')).toBeNull();
   });
 
   it('shows an "+ Add Bucket" button by default', () => {

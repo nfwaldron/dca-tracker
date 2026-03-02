@@ -42,4 +42,16 @@ describe('WishlistChips', () => {
     render(<WishlistChips holdings={[h]} />);
     expect(screen.getByText('Watchlist')).toBeInTheDocument();
   });
+
+  it('shows an "On sale" badge when the holding is triggered', () => {
+    const h = makeEnrichedHolding({ id: 'GOOGL', ticker: 'GOOGL', triggered: true });
+    render(<WishlistChips holdings={[h]} />);
+    expect(screen.getByText('On sale')).toBeInTheDocument();
+  });
+
+  it('does not show an "On sale" badge when the holding is not triggered', () => {
+    const h = makeEnrichedHolding({ id: 'GOOGL', ticker: 'GOOGL', triggered: false });
+    render(<WishlistChips holdings={[h]} />);
+    expect(screen.queryByText('On sale')).toBeNull();
+  });
 });
