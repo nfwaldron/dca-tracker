@@ -18,6 +18,9 @@ dist-ssr
 # Claude Code local settings
 .claude/
 
+# Agent skills (downloaded via npx skills — reinstall using skills-lock.json)
+.agents/
+
 # Local docs / reference files
 docs/
 
